@@ -1,0 +1,53 @@
+<?php
+$this->headLink()->appendStylesheet($this->assetUrl('css/admin/osii.css', 'Osii'));
+if ($import) {
+    $this->htmlElement('body')->appendAttribute('class', 'osii import edit');
+} else {
+    $this->htmlElement('body')->appendAttribute('class', 'osii import add');
+}
+$form->prepare();
+?>
+
+<?php if ($import): ?>
+<?php echo $this->pageTitle($this->translate('Edit import'), 1, $this->translate('Omeka S Item Importer'), $import->label()); ?>
+<?php else: ?>
+<?php echo $this->pageTitle($this->translate('Add import'), 1, $this->translate('Omeka S Item Importer')); ?>
+<?php endif; ?>
+
+<?php echo $this->form()->openTag($form); ?>
+
+<div id="page-actions">
+    <?php if ($import): ?>
+    <a href="#" id="delete-button" class="delete button"><?php echo $this->translate('Delete'); ?></a>
+    <?php echo $import->link($this->translate('Cancel'), 'show', ['class' => 'button']); ?>
+    <?php else: ?>
+    <?php echo $this->hyperlink($this->translate('Cancel'), $this->url('admin/osii-import', ['action' => 'browse'], true), ['class' => 'button']); ?>
+    <?php endif; ?>
+    <input type="submit" value="<?php echo $this->escapeHtml($this->translate('Submit')); ?>">
+</div>
+
+<div class="breadcrumbs">
+    <?php echo $this->hyperlink($this->translate('Imports'), $this->url('admin/osii-import', ['action' => 'browse'], true)); ?>
+    <?php if ($import): ?>
+    <div class="separator"></div>
+    <?php echo $import->link($this->translate('Manage'), 'show'); ?>
+    <?php endif; ?>
+    <div class="separator"></div>
+    <?php echo $import ? $this->translate('Edit') : $this->translate('Add'); ?>
+</div>
+
+<fieldset>
+    <?php echo $this->formRow($form->get('o:label')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:root_endpoint')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:key_identity')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:key_credential')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:remote_query')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:local_item_set')); ?>
+</fieldset>
+
+<?php echo $this->formHidden($form->get('csrf')); ?>
+<?php echo $this->form()->closeTag(); ?>
+
+<?php if ($import): ?>
+<?php echo $this->deleteConfirm($import, $this->translate('import')); ?>
+<?php endif; ?>

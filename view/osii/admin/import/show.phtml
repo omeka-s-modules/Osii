@@ -1,0 +1,42 @@
+<?php
+$this->headLink()->appendStylesheet($this->assetUrl('css/admin/osii.css', 'Osii'));
+$this->htmlElement('body')->appendAttribute('class', 'osii import show');
+?>
+
+<?php echo $this->pageTitle($this->translate('Manage import'), 1, $this->translate('Omeka S Item Importer'), $import->label()); ?>
+
+<div id="page-actions">
+    <?php echo $import->link($this->translate('Edit import'), 'edit', ['class' => 'button']); ?>
+</div>
+
+<div class="breadcrumbs">
+    <?php echo $this->hyperlink($this->translate('Imports'), $this->url('admin/osii-import', ['action' => 'browse'], true)); ?>
+    <div class="separator"></div>
+    <?php echo $this->translate('Manage'); ?>
+</div>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Label'); ?></h4>
+    <div class="value"><?php echo $import->label(); ?></div>
+</div>
+<div class="meta-group">
+    <h4><?php echo $this->translate('Root endpoint'); ?></h4>
+    <div class="value"><?php echo $import->rootEndpoint(); ?></div>
+</div>
+<div class="meta-group">
+    <h4><?php echo $this->translate('Key identity'); ?></h4>
+    <div class="value"><?php echo $import->keyIdentity() ?: $this->translate('[n/a]'); ?></div>
+</div>
+<div class="meta-group">
+    <h4><?php echo $this->translate('Key credential'); ?></h4>
+    <div class="value"><?php echo $import->keyCredential() ?: $this->translate('[n/a]'); ?></div>
+</div>
+<div class="meta-group">
+    <h4><?php echo $this->translate('Remote query'); ?></h4>
+    <div class="value"><?php echo $import->remoteQuery() ?: $this->translate('[n/a]'); ?></div>
+</div>
+<div class="meta-group">
+    <?php $localItemSet = $import->localItemSet(); ?>
+    <h4><?php echo $this->translate('Local item set'); ?></h4>
+    <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
+</div>

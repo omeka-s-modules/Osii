@@ -1,0 +1,72 @@
+<?php
+$this->headLink()->appendStylesheet($this->assetUrl('css/admin/osii.css', 'Osii'));
+$this->htmlElement('body')->appendAttribute('class', 'osii import browse');
+?>
+
+<?php echo $this->pageTitle($this->translate('Browse imports'), 1, $this->translate('Omeka S Item Importer')); ?>
+
+<div id="page-actions">
+    <?php echo $this->hyperlink($this->translate('Add import'), $this->url('admin/osii-import', ['action' => 'add'], true), ['class' => 'button']); ?>
+</div>
+
+<div class="breadcrumbs">
+    <?php echo $this->translate('Imports'); ?>
+</div>
+
+<div class="browse-controls">
+    <?php echo $this->pagination(); ?>
+    <?php echo $this->sortSelector([
+    [
+        'label' => $this->translate('Date created'),
+        'value' => 'created',
+    ],
+    [
+        'label' => $this->translate('Label'),
+        'value' => 'label',
+    ],
+]); ?>
+</div>
+
+<?php if ($imports): ?>
+
+<table class="tablesaw" data-tablesaw-mode="stack">
+    <thead>
+        <tr>
+            <th><?php echo $this->translate('Import'); ?></th>
+            <th><?php echo $this->translate('Root endpoint'); ?></th>
+            <th><?php echo $this->translate('Owner'); ?></th>
+            <th><?php echo $this->translate('Snapshot status'); ?></th>
+            <th><?php echo $this->translate('Import status'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($imports as $import): ?>
+    <?php $owner = $import->owner(); ?>
+        <tr>
+            <td>
+                <?php echo $this->hyperlink($import->label(), $import->url('show')); ?>
+                <ul class="actions">
+                    <li><?php echo $import->link('', 'edit', ['class' => 'fa fa-pencil-alt', 'title' => $this->translate('Edit')]) ?></li>
+                </ul>
+            </td>
+            <td><?php echo $import->rootEndpoint(); ?></td>
+            <td><?php echo $owner ? $owner->link($owner->name()) : ''; ?></td>
+            <td></td>
+            <td></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
+<div class="browse-controls">
+    <?php echo $this->pagination(); ?>
+</div>
+
+<?php else: ?>
+<div class="no-resources">
+    <p><?php echo sprintf(
+        $this->translate('No imports found. %s'),
+        $this->hyperlink($this->translate('Add a new import.'), $this->url('admin/osii-import', ['action' => 'add'], true))
+    ); ?></p>
+</div>
+<?php endif; ?>

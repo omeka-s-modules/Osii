@@ -33,7 +33,7 @@ return [
     ],
     'api_adapters' => [
         'invokables' => [
-            'osii_import' => Api\Adapter\OsiiImportAdapter::class,
+            'osii_imports' => Api\Adapter\OsiiImportAdapter::class,
         ],
     ],
     'controllers' => [
