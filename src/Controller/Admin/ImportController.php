@@ -5,7 +5,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Omeka\Form as OmekaForm;
 use Osii\Form as OsiiForm;
-use Osii\Job\TakeSnapshot;
+use Osii\Job;
 
 class ImportController extends AbstractActionController
 {
@@ -105,7 +105,7 @@ class ImportController extends AbstractActionController
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
                 $job = $this->jobDispatcher()->dispatch(
-                    DoSnapshot::class,
+                    Job\DoSnapshot::class,
                     ['import_id' => $import->id()]
                 );
                 $message = new Message(
