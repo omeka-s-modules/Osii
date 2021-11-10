@@ -3,8 +3,9 @@ namespace Osii\Controller\Admin;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Omeka\Form\ConfirmForm;
-use Osii\Form\ImportForm;
+use Omeka\Form as OmekaForm;
+use Osii\Form as OsiiForm;
+use Osii\Job\TakeSnapshot;
 
 class ImportController extends AbstractActionController
 {
@@ -23,7 +24,7 @@ class ImportController extends AbstractActionController
 
     public function addAction()
     {
-        $form = $this->getForm(ImportForm::class, ['import' => null]);
+        $form = $this->getForm(OsiiForm\ImportForm::class, ['import' => null]);
 
         if ($this->getRequest()->isPost()) {
             $postData = $this->params()->fromPost();
@@ -51,7 +52,7 @@ class ImportController extends AbstractActionController
     public function editAction()
     {
         $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
-        $form = $this->getForm(ImportForm::class, ['import' => $import]);
+        $form = $this->getForm(OsiiForm\ImportForm::class, ['import' => $import]);
 
         if ($this->getRequest()->isPost()) {
             $postData = $this->params()->fromPost();
@@ -83,16 +84,74 @@ class ImportController extends AbstractActionController
     {
         $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
 
+        $formDoSnapshot = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
+        $formDoSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-snapshot'], true));
+
+        $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
+        $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
+
         $view = new ViewModel;
         $view->setVariable('import', $import);
+        $view->setVariable('formDoSnapshot', $formDoSnapshot);
+        $view->setVariable('formDoImport', $formDoImport);
         return $view;
+    }
+
+    public function doSnapshotAction()
+    {
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        if ($this->getRequest()->isPost()) {
+            $form = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
+            $form->setData($this->getRequest()->getPost());
+            if ($form->isValid()) {
+                $job = $this->jobDispatcher()->dispatch(
+                    DoSnapshot::class,
+                    ['import_id' => $import->id()]
+                );
+                $message = new Message(
+                    'Taking snapshot. This may take a while. %s', // @translate
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->getId()])),
+                        $this->translate('See this job for snapshot progress.')
+                    ));
+                $message->setEscapeHtml(false);
+                $this->messenger()->addSuccess($message);
+            }
+        }
+        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+    }
+
+    public function doImportAction()
+    {
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        if ($this->getRequest()->isPost()) {
+            $form = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
+            $form->setData($this->getRequest()->getPost());
+            if ($form->isValid()) {
+                $job = $this->jobDispatcher()->dispatch(
+                    DoImport::class,
+                    ['import_id' => $import->id()]
+                );
+                $message = new Message(
+                    'Importing. This may take a while. %s', // @translate
+                    sprintf(
+                        '<a href="%s">%s</a>',
+                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->getId()])),
+                        $this->translate('See this job for import progress.')
+                    ));
+                $message->setEscapeHtml(false);
+                $this->messenger()->addSuccess($message);
+            }
+        }
+        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
     }
 
     public function deleteAction()
     {
         if ($this->getRequest()->isPost()) {
             $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
-            $form = $this->getForm(ConfirmForm::class);
+            $form = $this->getForm(OmekaForm\ConfirmForm::class);
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
                 $response = $this->api($form)->delete('osii_imports', $import->id());

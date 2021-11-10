@@ -2,6 +2,7 @@
 namespace Osii\Api\Representation;
 
 use Omeka\Api\Representation\AbstractEntityRepresentation;
+use Omeka\Entity\Job;
 
 class OsiiImportRepresentation extends AbstractEntityRepresentation
 {
@@ -115,5 +116,33 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     public function modified()
     {
         return $this->resource->getModified();
+    }
+
+    /**
+     * Can the user take a snapshot?
+     *
+     * @return bool
+     */
+    public function canDoSnapshot()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : true;
+        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        return $snapshotStatus && $importStatus;
+    }
+
+    /**
+     * Can the user import?
+     *
+     * @return bool
+     */
+    public function canDoImport()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
+        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        return $snapshotStatus && $importStatus && !is_null($this->dataTypeMap());
     }
 }

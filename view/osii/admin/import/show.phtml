@@ -15,28 +15,36 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
     <?php echo $this->translate('Manage'); ?>
 </div>
 
-<div class="meta-group">
-    <h4><?php echo $this->translate('Label'); ?></h4>
-    <div class="value"><?php echo $import->label(); ?></div>
-</div>
-<div class="meta-group">
-    <h4><?php echo $this->translate('Root endpoint'); ?></h4>
-    <div class="value"><?php echo $import->rootEndpoint(); ?></div>
-</div>
-<div class="meta-group">
-    <h4><?php echo $this->translate('Key identity'); ?></h4>
-    <div class="value"><?php echo $import->keyIdentity() ?: $this->translate('[n/a]'); ?></div>
-</div>
-<div class="meta-group">
-    <h4><?php echo $this->translate('Key credential'); ?></h4>
-    <div class="value"><?php echo $import->keyCredential() ?: $this->translate('[n/a]'); ?></div>
-</div>
-<div class="meta-group">
-    <h4><?php echo $this->translate('Remote query'); ?></h4>
-    <div class="value"><?php echo $import->remoteQuery() ?: $this->translate('[n/a]'); ?></div>
-</div>
-<div class="meta-group">
-    <?php $localItemSet = $import->localItemSet(); ?>
-    <h4><?php echo $this->translate('Local item set'); ?></h4>
-    <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
+<div id="import-metadata" class="sidebar always-open">
+    <h3><?php echo $this->translate('Actions'); ?></h3>
+    <div class="meta-group">
+        <?php echo $this->form($formDoSnapshot); ?>
+        <?php echo $this->form($formDoImport); ?>
+    </div>
+    <h3><?php echo $this->translate('Import metadata'); ?></h3>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Label'); ?></h4>
+        <div class="value"><?php echo $import->label(); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Root endpoint'); ?></h4>
+        <div class="value"><?php echo $import->rootEndpoint(); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Key identity'); ?></h4>
+        <div class="value"><?php echo $import->keyIdentity() ?: $this->translate('[n/a]'); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Key credential'); ?></h4>
+        <div class="value"><?php echo $import->keyCredential() ?: $this->translate('[n/a]'); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Remote query'); ?></h4>
+        <div class="value"><?php echo $import->remoteQuery() ?: $this->translate('[n/a]'); ?></div>
+    </div>
+    <div class="meta-group">
+        <?php $localItemSet = $import->localItemSet(); ?>
+        <h4><?php echo $this->translate('Local item set'); ?></h4>
+        <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
+    </div>
 </div>
