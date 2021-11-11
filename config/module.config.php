@@ -39,7 +39,9 @@ return [
     'controllers' => [
         'invokables' => [
             'Osii\Controller\Admin\Index' => Controller\Admin\IndexController::class,
-            'Osii\Controller\Admin\Import' => Controller\Admin\ImportController::class,
+        ],
+        'factories' => [
+            'Osii\Controller\Admin\Import' => Service\Controller\Admin\ImportControllerFactory::class,
         ],
     ],
     'controller_plugins' => [

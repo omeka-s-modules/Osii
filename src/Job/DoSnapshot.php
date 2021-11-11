@@ -8,7 +8,6 @@ use Osii\Entity as OsiiEntity;
 
 class DoSnapshot extends AbstractJob
 {
-    protected $importRepresentation;
     protected $importEntity;
 
     protected $allVocabularies = [];
@@ -19,6 +18,10 @@ class DoSnapshot extends AbstractJob
     protected $usedProperties = [];
     protected $usedClasses = [];
 
+    protected $snapshotDataTypes = [];
+    protected $snapshotProperties = [];
+    protected $snapshotClasses = [];
+
     /**
      * Sync a dataset with its item set.
      */
@@ -27,13 +30,6 @@ class DoSnapshot extends AbstractJob
         ini_set('memory_limit', '500M'); // Set a high memory limit.
 
         $importId = $this->getArg('import_id');
-
-        // Set the import representation.
-        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
-        $this->importRepresentation = $api->read('osii_imports', $importId)->getContent();
-        if (!$this->importRepresentation->canDoSnapshot()) {
-            throw new Exception\RuntimeException('Cannot take a snapshot');
-        }
 
         // Set the import entity.
         $em = $this->getServiceLocator()->get('Omeka\EntityManager');
@@ -77,9 +73,36 @@ class DoSnapshot extends AbstractJob
         arsort($this->usedProperties, SORT_NUMERIC);
         arsort($this->usedClasses, SORT_NUMERIC);
 
-        // print_r($this->usedDataTypes);
-        // print_r($this->usedProperties);
-        // print_r($this->usedClasses);
+        foreach ($this->usedDataTypes as $dataTypeId => $count) {
+            $this->snapshotDataTypes[$dataTypeId] = [
+                'label' => null, // Placeholder until data_types resource is available
+                'count' => $count,
+            ];
+        }
+        foreach ($this->usedProperties as $propertyId => $count) {
+            $property = $this->allProperties[$propertyId];
+            $vocabularyId = $property['o:vocabulary']['o:id'];
+            $vocabulary = $this->allVocabularies[$vocabularyId];
+            $this->snapshotProperties[$vocabulary['o:namespace_uri']][$propertyId] = [
+                'local_name' => $property['o:local_name'],
+                'count' => $count,
+            ];
+        }
+        foreach ($this->usedClasses as $classId => $count) {
+            $class = $this->allClasses[$classId];
+            $vocabularyId = $property['o:vocabulary']['o:id'];
+            $vocabulary = $this->allVocabularies[$vocabularyId];
+            $this->snapshotClasses[$vocabulary['o:namespace_uri']][$classId] = [
+                'local_name' => $class['o:local_name'],
+                'count' => $count,
+            ];
+        }
+
+        $this->importEntity->setSnapshotDataTypes($this->snapshotDataTypes);
+        $this->importEntity->setSnapshotProperties($this->snapshotProperties);
+        $this->importEntity->setSnapshotClasses($this->snapshotClasses);
+
+        $em->flush();
     }
 
     protected function cacheAllVocabularies()
@@ -106,7 +129,7 @@ class DoSnapshot extends AbstractJob
         do {
             $properties = $this->getApiOutput($client, $query);
             foreach ($properties as $property) {
-                $this->allProperties[$property['o:vocabulary']['o:id']][$property['o:id']] = $property;
+                $this->allProperties[$property['o:id']] = $property;
             }
             $query['page']++;
         } while ($properties);
@@ -121,7 +144,7 @@ class DoSnapshot extends AbstractJob
         do {
             $classes = $this->getApiOutput($client, $query);
             foreach ($classes as $class) {
-                $this->allClasses[$class['o:vocabulary']['o:id']][$class['o:id']] = $class;
+                $this->allClasses[$class['o:id']] = $class;
             }
             $query['page']++;
         } while ($classes);

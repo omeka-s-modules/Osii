@@ -1,14 +1,24 @@
 <?php
 namespace Osii\Controller\Admin;
 
+use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Omeka\Form as OmekaForm;
+use Omeka\Stdlib\Message;
+use Osii\Entity;
 use Osii\Form as OsiiForm;
 use Osii\Job;
 
 class ImportController extends AbstractActionController
 {
+    protected $entityManager;
+
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function browseAction()
     {
         $this->setBrowseDefaults('created');
@@ -47,7 +57,7 @@ class ImportController extends AbstractActionController
         $view->setVariable('import', null);
         $view->setVariable('form', $form);
         return $view;
-     }
+    }
 
     public function editAction()
     {
@@ -99,7 +109,8 @@ class ImportController extends AbstractActionController
 
     public function doSnapshotAction()
     {
-        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        $importId = $this->params('import-id');
+        $import = $this->api()->read('osii_imports', $importId)->getContent();
         if ($this->getRequest()->isPost()) {
             $form = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
             $form->setData($this->getRequest()->getPost());
@@ -108,6 +119,9 @@ class ImportController extends AbstractActionController
                     Job\DoSnapshot::class,
                     ['import_id' => $import->id()]
                 );
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $importEntity->setSnapshotJob($job);
+                $this->entityManager->flush();
                 $message = new Message(
                     'Taking snapshot. This may take a while. %s', // @translate
                     sprintf(
@@ -124,7 +138,8 @@ class ImportController extends AbstractActionController
 
     public function doImportAction()
     {
-        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        $importId = $this->params('import-id');
+        $import = $this->api()->read('osii_imports', $importId)->getContent();
         if ($this->getRequest()->isPost()) {
             $form = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
             $form->setData($this->getRequest()->getPost());
@@ -133,6 +148,9 @@ class ImportController extends AbstractActionController
                     DoImport::class,
                     ['import_id' => $import->id()]
                 );
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $importEntity->setImportJob($importJob);
+                $this->entityManager->flush();
                 $message = new Message(
                     'Importing. This may take a while. %s', // @translate
                     sprintf(

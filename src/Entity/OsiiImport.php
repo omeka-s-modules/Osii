@@ -216,12 +216,12 @@ class OsiiImport extends AbstractEntity
      */
     protected $snapshotDataTypes;
 
-    public function setSnapshotDataTypes(?string $snapshotDataTypes) : void
+    public function setSnapshotDataTypes(?array $snapshotDataTypes) : void
     {
         $this->snapshotDataTypes = $snapshotDataTypes;
     }
 
-    public function getSnapshotDataTypes() : ?string
+    public function getSnapshotDataTypes() : ?array
     {
         return $this->snapshotDataTypes;
     }
@@ -234,12 +234,12 @@ class OsiiImport extends AbstractEntity
      */
     protected $snapshotProperties;
 
-    public function setSnapshotProperties(?string $snapshotProperties) : void
+    public function setSnapshotProperties(?array $snapshotProperties) : void
     {
         $this->snapshotProperties = $snapshotProperties;
     }
 
-    public function getSnapshotProperties() : ?string
+    public function getSnapshotProperties() : ?array
     {
         return $this->snapshotProperties;
     }
@@ -252,12 +252,12 @@ class OsiiImport extends AbstractEntity
      */
     protected $snapshotClasses;
 
-    public function setSnapshotClasses(?string $snapshotClasses) : void
+    public function setSnapshotClasses(?array $snapshotClasses) : void
     {
         $this->snapshotClasses = $snapshotClasses;
     }
 
-    public function getSnapshotClasses() : ?string
+    public function getSnapshotClasses() : ?array
     {
         return $this->snapshotClasses;
     }
@@ -270,12 +270,12 @@ class OsiiImport extends AbstractEntity
      */
     protected $dataTypeMap;
 
-    public function setDataTypeMap(?string $dataTypeMap) : void
+    public function setDataTypeMap(?array $dataTypeMap) : void
     {
         $this->dataTypeMap = $dataTypeMap;
     }
 
-    public function getDataTypeMap() : ?string
+    public function getDataTypeMap() : ?array
     {
         return $this->dataTypeMap;
     }

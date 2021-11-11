@@ -5,8 +5,6 @@ use DateTime;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Omeka\Entity\AbstractEntity;
 use Omeka\Entity\Item;
-use Omeka\Entity\User;
-use Osii\Entity\OsiiImport;
 
 /**
  * @Entity
