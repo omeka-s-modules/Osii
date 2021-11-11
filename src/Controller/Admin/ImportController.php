@@ -100,10 +100,12 @@ class ImportController extends AbstractActionController
         $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
         $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
 
+        $localDataTypeSelect = $this->osii()->getLocalDataTypeSelect();
         $view = new ViewModel;
         $view->setVariable('import', $import);
         $view->setVariable('formDoSnapshot', $formDoSnapshot);
         $view->setVariable('formDoImport', $formDoImport);
+        $view->setVariable('localDataTypeSelect', $localDataTypeSelect);
         return $view;
     }
 

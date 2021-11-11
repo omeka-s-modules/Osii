@@ -15,11 +15,74 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
     <?php echo $this->translate('Manage'); ?>
 </div>
 
+<?php if ($import->canMapDataTypes()): ?>
+<h3><?php echo $this->translate('Map data types'); ?></h3>
+<table id="data-type-map" class="tablesaw" data-tablesaw-mode="stack">
+    <thead>
+        <tr>
+            <th><?php echo $this->translate('Remote data type'); ?></th>
+            <th><?php echo $this->translate('Local data type'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php $index = 0; ?>
+    <?php foreach ($import->snapshotDataTypes() as $remoteDataTypeId => $remoteDataType): ?>
+        <tr>
+            <td>
+                <span class="remote-data-type-id-span"><?php echo sprintf('%s (%s)', $remoteDataTypeId, $remoteDataType['count']); ?></span>
+                <input type="hidden" class="remote-data-type-id"
+                    name="<?php echo $this->escapeHtml(sprintf('data_type_map[%s][remote]', $index)); ?>"
+                    value="<?php echo $this->escapeHtml($remoteDataTypeId); ?>">
+            </td>
+            <td>
+                <?php $localDataTypeSelect->setName(sprintf('data_type_map[%s][local]', $index)); ?>
+                <?php echo $this->formElement($localDataTypeSelect); ?>
+            </td>
+        </tr>
+    <?php $index++; ?>
+    <?php endforeach; ?>
+    <tbody>
+</table>
+<h3><?php echo $this->translate('View properties'); ?></h3>
+<table id="data-type-map" class="tablesaw" data-tablesaw-mode="stack">
+    <thead>
+        <tr>
+            <th><?php echo $this->translate('Remote property'); ?></th>
+            <th><?php echo $this->translate('On local install?'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($import->snapshotProperties() as $remoteVocabNamespaceUri => $remoteProperties): ?>
+    <?php foreach ($remoteProperties as $remotePropertyId => $remoteProperty): ?>
+        <tr>
+            <td><?php echo sprintf('%s%s (%s)', $remoteVocabNamespaceUri, $remoteProperty['local_name'], $remoteProperty['count']); ?></td>
+            <td></td>
+        </tr>
+    <?php endforeach; ?>
+    <?php endforeach; ?>
+    <tbody>
+</table>
+<?php endif; ?>
+
 <div id="import-metadata" class="sidebar always-open">
     <h3><?php echo $this->translate('Actions'); ?></h3>
     <div class="meta-group">
-        <?php echo $this->form($formDoSnapshot); ?>
-        <?php echo $this->form($formDoImport); ?>
+        <h4><?php echo sprintf($this->translate('Snapshot status: %s'), $import->snapshotJob() ?  $import->snapshotJob()->status() : $this->translate('[n/a]')); ?></h4>
+        <div class="value">
+            <?php if ($import->canDoSnapshot()): ?>
+            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-snapshot"><?php echo $this->translate('Snapshot available'); ?></a>
+            <?php else: ?>
+            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Snapshot unavailable'); ?></button>
+            <?php endif; ?>
+        </div>
+        <h4><?php echo sprintf($this->translate('Import status: %s'), $import->importJob() ?  $import->importJob()->status() : $this->translate('[n/a]')); ?></h4>
+        <div class="value">
+            <?php if ($import->canDoImport()): ?>
+            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-import"><?php echo $this->translate('Import available'); ?></a>
+            <?php else: ?>
+            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Import unavailable'); ?></button>
+            <?php endif; ?>
+        </div>
     </div>
     <h3><?php echo $this->translate('Import metadata'); ?></h3>
     <div class="meta-group">
@@ -47,4 +110,18 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
         <h4><?php echo $this->translate('Local item set'); ?></h4>
         <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
     </div>
+</div>
+
+<div id="do-snapshot" class="sidebar">
+    <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
+    <h3><?php echo $this->translate('Snapshot'); ?></h3>
+    <p><?php echo $this->translate('Take a snapshot of the remote items in their current state. This will gather the data needed to reconcile the local installation with the remote one.'); ?></p>
+    <?php echo $this->form($formDoSnapshot); ?>
+</div>
+
+<div id="do-import" class="sidebar">
+    <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
+    <h3><?php echo $this->translate('Import'); ?></h3>
+    <p><?php echo $this->translate('Import the current snapshot. This will add new items and update existing items.'); ?></p>
+    <?php echo $this->form($formDoImport); ?>
 </div>

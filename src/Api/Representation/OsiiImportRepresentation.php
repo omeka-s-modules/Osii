@@ -145,4 +145,18 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
         return $snapshotStatus && $importStatus && !is_null($this->dataTypeMap());
     }
+
+    /**
+     * Can the user map data types?
+     *
+     * @return bool
+     */
+    public function canMapDataTypes()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
+        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        return $snapshotStatus && $importStatus;
+    }
 }
