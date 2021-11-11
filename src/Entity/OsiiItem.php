@@ -55,18 +55,18 @@ class OsiiItem extends AbstractEntity
      *     targetEntity="Omeka\Entity\Item",
      * )
      * @JoinColumn(
-     *     nullable=false,
+     *     nullable=true,
      *     onDelete="CASCADE"
      * )
      */
     protected $localItem;
 
-    public function setLocalItem(Item $localItem) : void
+    public function setLocalItem(?Item $localItem) : void
     {
         $this->localItem = $localItem;
     }
 
-    public function getLocalItem() : Item
+    public function getLocalItem() : ?Item
     {
         return $this->localItem;
     }
@@ -79,12 +79,12 @@ class OsiiItem extends AbstractEntity
      */
     protected $snapshotItem;
 
-    public function setSnapshotItem(?string $snapshotItem) : void
+    public function setSnapshotItem(?array $snapshotItem) : void
     {
         $this->snapshotItem = $snapshotItem;
     }
 
-    public function getSnapshotItem() : ?string
+    public function getSnapshotItem() : ?array
     {
         return $this->snapshotItem;
     }

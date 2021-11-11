@@ -392,7 +392,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function setSnapshotDataTypes(?string $snapshotDataTypes): void
+    public function setSnapshotDataTypes(?array $snapshotDataTypes): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotDataTypes', [$snapshotDataTypes]);
@@ -403,7 +403,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function getSnapshotDataTypes(): ?string
+    public function getSnapshotDataTypes(): ?array
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotDataTypes', []);
@@ -414,7 +414,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function setSnapshotProperties(?string $snapshotProperties): void
+    public function setSnapshotProperties(?array $snapshotProperties): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotProperties', [$snapshotProperties]);
@@ -425,7 +425,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function getSnapshotProperties(): ?string
+    public function getSnapshotProperties(): ?array
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotProperties', []);
@@ -436,7 +436,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function setSnapshotClasses(?string $snapshotClasses): void
+    public function setSnapshotClasses(?array $snapshotClasses): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotClasses', [$snapshotClasses]);
@@ -447,7 +447,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function getSnapshotClasses(): ?string
+    public function getSnapshotClasses(): ?array
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotClasses', []);
@@ -458,7 +458,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function setDataTypeMap(?string $dataTypeMap): void
+    public function setDataTypeMap(?array $dataTypeMap): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDataTypeMap', [$dataTypeMap]);
@@ -469,7 +469,7 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function getDataTypeMap(): ?string
+    public function getDataTypeMap(): ?array
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDataTypeMap', []);

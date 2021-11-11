@@ -163,7 +163,8 @@ class OsiiImport extends AbstractEntity
 
     public function setKeyIdentity(?string $keyIdentity) : void
     {
-        $this->keyIdentity = $keyIdentity;
+        $keyIdentity = trim($keyIdentity);
+        $this->keyIdentity = $keyIdentity ?: null;
     }
 
     public function getKeyIdentity() : ?string
@@ -182,7 +183,8 @@ class OsiiImport extends AbstractEntity
 
     public function setKeyCredential(?string $keyCredential) : void
     {
-        $this->keyCredential = $keyCredential;
+        $keyCredential = trim($keyCredential);
+        $this->keyCredential = $keyCredential ?: null;
     }
 
     public function getKeyCredential() : ?string
@@ -200,7 +202,8 @@ class OsiiImport extends AbstractEntity
 
     public function setRemoteQuery(?string $remoteQuery) : void
     {
-        $this->remoteQuery = $remoteQuery;
+        $remoteQuery = trim($remoteQuery);
+        $this->remoteQuery = $remoteQuery ?: null;
     }
 
     public function getRemoteQuery() : ?string

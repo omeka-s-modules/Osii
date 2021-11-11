@@ -216,7 +216,7 @@ class OsiiItem extends \Osii\Entity\OsiiItem implements \Doctrine\ORM\Proxy\Prox
     /**
      * {@inheritDoc}
      */
-    public function setLocalItem(\Omeka\Entity\Item $localItem): void
+    public function setLocalItem(?\Omeka\Entity\Item $localItem): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLocalItem', [$localItem]);
@@ -227,7 +227,7 @@ class OsiiItem extends \Osii\Entity\OsiiItem implements \Doctrine\ORM\Proxy\Prox
     /**
      * {@inheritDoc}
      */
-    public function getLocalItem(): \Omeka\Entity\Item
+    public function getLocalItem(): ?\Omeka\Entity\Item
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLocalItem', []);
@@ -238,7 +238,7 @@ class OsiiItem extends \Osii\Entity\OsiiItem implements \Doctrine\ORM\Proxy\Prox
     /**
      * {@inheritDoc}
      */
-    public function setSnapshotItem(?string $snapshotItem): void
+    public function setSnapshotItem(?array $snapshotItem): void
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotItem', [$snapshotItem]);
@@ -249,7 +249,7 @@ class OsiiItem extends \Osii\Entity\OsiiItem implements \Doctrine\ORM\Proxy\Prox
     /**
      * {@inheritDoc}
      */
-    public function getSnapshotItem(): ?string
+    public function getSnapshotItem(): ?array
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotItem', []);

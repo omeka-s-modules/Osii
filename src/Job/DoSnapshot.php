@@ -1,6 +1,7 @@
 <?php
 namespace Osii\Job;
 
+use DateTime;
 use Laminas\Http\Client;
 use Omeka\Job\AbstractJob;
 use Omeka\Job\Exception;
@@ -51,34 +52,61 @@ class DoSnapshot extends AbstractJob
         $query['per_page'] = 50;
         $query['page'] = 1;
 
-        do {
+        while (true) {
             $items = $this->getApiOutput($client, $query);
-            $values = $this->getValuesFromResourcesOutput($items);
-            foreach ($values as $value) {
-                $this->usedDataTypes[] = $value['type'];
-                $this->usedProperties[] = $value['property_id'];
+            if (!$items) {
+                break; // No more items.
             }
-            $classes = $this->getClassesFromResourcesOutput($items);
-            foreach ($classes as $class) {
-                $this->usedClasses[] = $class['o:id'];
+            foreach ($items as $item) {
+                // Save snapshots of remote items.
+                $itemEntity = $em->find(OsiiEntity\OsiiItem::class, $item['o:id']);
+                if (null === $itemEntity) {
+                    // This is a new remote item.
+                    $itemEntity = new OsiiEntity\OsiiItem;
+                    $itemEntity->setImport($this->importEntity);
+                    $itemEntity->setRemoteItemId($item['o:id']);
+                    $em->persist($itemEntity);
+                } else {
+                    // This is an existing remote item.
+                    $itemEntity->setModified(new DateTime('now'));
+                }
+                $itemEntity->setSnapshotItem($item);
+                // Cache used data types and properties.
+                $values = $this->getValuesFromResource($item);
+                foreach ($values as $value) {
+                    $this->usedDataTypes[] = $value['type'];
+                    $this->usedProperties[] = $value['property_id'];
+                }
+                // Cache used classes.
+                if (isset($item['o:resource_class'])) {
+                    $this->usedClasses[] = $item['o:resource_class']['o:id'];
+                }
             }
+            // Save memory by flushing and clearing the entity manager at the
+            // end of every iteration. We must re-load the import entity to
+            // avoid a "A new entity was found" error.
+            $em->flush();
+            $em->clear();
+            $this->importEntity = $em->find(OsiiEntity\OsiiImport::class, $importId);
+            // Increment the page.
             $query['page']++;
-        } while ($items);
+        }
 
         $this->usedDataTypes = array_count_values($this->usedDataTypes);
         $this->usedProperties = array_count_values($this->usedProperties);
         $this->usedClasses = array_count_values($this->usedClasses);
-
         arsort($this->usedDataTypes, SORT_NUMERIC);
         arsort($this->usedProperties, SORT_NUMERIC);
         arsort($this->usedClasses, SORT_NUMERIC);
 
+        // Cache the snapshot data types.
         foreach ($this->usedDataTypes as $dataTypeId => $count) {
             $this->snapshotDataTypes[$dataTypeId] = [
                 'label' => null, // Placeholder until data_types resource is available
                 'count' => $count,
             ];
         }
+        // Cache the snapshot properties.
         foreach ($this->usedProperties as $propertyId => $count) {
             $property = $this->allProperties[$propertyId];
             $vocabularyId = $property['o:vocabulary']['o:id'];
@@ -88,6 +116,7 @@ class DoSnapshot extends AbstractJob
                 'count' => $count,
             ];
         }
+        // Cache the snapshot classes.
         foreach ($this->usedClasses as $classId => $count) {
             $class = $this->allClasses[$classId];
             $vocabularyId = $property['o:vocabulary']['o:id'];
@@ -105,51 +134,75 @@ class DoSnapshot extends AbstractJob
         $em->flush();
     }
 
+    /**
+     * Cache all remote vocabularies.
+     */
     protected function cacheAllVocabularies()
     {
         $endpoint = sprintf('%s/vocabularies', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
-        do {
+        while (true) {
             $vocabularies = $this->getApiOutput($client, $query);
+            if (!$vocabularies) {
+                break; // No more vocabularies.
+            }
             foreach ($vocabularies as $vocabulary) {
                 $this->allVocabularies[$vocabulary['o:id']] = $vocabulary;
             }
             $query['page']++;
-        } while ($vocabularies);
+        }
     }
 
+    /**
+     * Cache all remote properties.
+     */
     protected function cacheAllProperties()
     {
         $endpoint = sprintf('%s/properties', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
-        do {
+        while (true) {
             $properties = $this->getApiOutput($client, $query);
+            if (!$properties) {
+                break; // No more properties.
+            }
             foreach ($properties as $property) {
                 $this->allProperties[$property['o:id']] = $property;
             }
             $query['page']++;
-        } while ($properties);
+        }
     }
 
+    /**
+     * Cache all remote classes.
+     */
     protected function cacheAllClasses()
     {
         $endpoint = sprintf('%s/resource_classes', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
-        do {
+        while (true) {
             $classes = $this->getApiOutput($client, $query);
+            if (!$classes) {
+                break; // No more classes.
+            }
             foreach ($classes as $class) {
                 $this->allClasses[$class['o:id']] = $class;
             }
             $query['page']++;
-        } while ($classes);
+        };
     }
 
+    /**
+     * Get the API client.
+     *
+     * @param string $endpoint
+     * @return Client
+     */
     protected function getApiClient($endpoint)
     {
         $client = $this->getServiceLocator()->get('Omeka\HttpClient');
@@ -157,6 +210,13 @@ class DoSnapshot extends AbstractJob
         return $client;
     }
 
+    /**
+     * Get API output.
+     *
+     * @param Client $client
+     * @param array $query
+     * @return array
+     */
     protected function getApiOutput(Client $client, array $query)
     {
         $client->setParameterGet($query);
@@ -171,40 +231,28 @@ class DoSnapshot extends AbstractJob
         return $output;
     }
 
-    protected function getValuesFromResourcesOutput($resourcesOutput)
+    /**
+     * Get values from resource API output (JSON-LD).
+     *
+     * @param array $resource
+     * @return array
+     */
+    protected function getValuesFromResource($resource)
     {
-        $values = [];
-        foreach ($resourcesOutput as $resourceOutput) {
-            foreach ($resourceOutput as $valuesOutput) {
-                if (!is_array($valuesOutput)) {
+        $resourceValues = [];
+        foreach ($resource as $values) {
+            if (!is_array($values)) {
+                continue;
+            }
+            foreach ($values as $value) {
+                if (!is_array($value)) {
                     continue;
                 }
-                foreach ($valuesOutput as $valueOutput) {
-                    if (!is_array($valueOutput)) {
-                        continue;
-                    }
-                    if (isset($valueOutput['type']) && isset($valueOutput['property_id'])) {
-                        $values[] = $valueOutput;
-                    }
+                if (isset($value['type']) && isset($value['property_id'])) {
+                    $resourceValues[] = $value;
                 }
             }
         }
-        return $values;
-    }
-
-    protected function getClassesFromResourcesOutput($resourcesOutput)
-    {
-        $classes = [];
-        foreach ($resourcesOutput as $resourceOutput) {
-            foreach ($resourceOutput as $key => $classOutput) {
-                if (!is_array($classOutput)) {
-                    continue;
-                }
-                if ('o:resource_class' === $key) {
-                    $classes[] = $classOutput;
-                }
-            }
-        }
-        return $classes;
+        return $resourceValues;
     }
 }
