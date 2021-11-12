@@ -15,7 +15,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
     <?php echo $this->translate('Manage'); ?>
 </div>
 
-<?php if ($import->canMapDataTypes()): ?>
+<?php if ($import->canPrepareImport()): ?>
 <h3><?php echo $this->translate('Map data types'); ?></h3>
 <table id="data-type-map" class="tablesaw" data-tablesaw-mode="stack">
     <thead>
@@ -70,9 +70,9 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
         <h4><?php echo sprintf($this->translate('Snapshot status: %s'), $import->snapshotJob() ?  $import->snapshotJob()->status() : $this->translate('[n/a]')); ?></h4>
         <div class="value">
             <?php if ($import->canDoSnapshot()): ?>
-            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-snapshot"><?php echo $this->translate('Snapshot available'); ?></a>
+            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-snapshot"><?php echo $this->translate('Take snapshot available'); ?></a>
             <?php else: ?>
-            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Snapshot unavailable'); ?></button>
+            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Take snapshot not available'); ?></button>
             <?php endif; ?>
         </div>
         <h4><?php echo sprintf($this->translate('Import status: %s'), $import->importJob() ?  $import->importJob()->status() : $this->translate('[n/a]')); ?></h4>
@@ -80,7 +80,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
             <?php if ($import->canDoImport()): ?>
             <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-import"><?php echo $this->translate('Import available'); ?></a>
             <?php else: ?>
-            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Import unavailable'); ?></button>
+            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Import not available'); ?></button>
             <?php endif; ?>
         </div>
     </div>

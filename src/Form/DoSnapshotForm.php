@@ -11,7 +11,7 @@ class DoSnapshotForm extends Form
             'type' => 'submit',
             'name' => 'submit',
             'attributes' => [
-                'value' => 'Snapshot', // @translate
+                'value' => 'Take snapshot', // @translate
             ],
         ]);
 
