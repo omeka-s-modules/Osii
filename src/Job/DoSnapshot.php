@@ -60,18 +60,20 @@ class DoSnapshot extends AbstractJob
             }
             foreach ($items as $item) {
                 // Save snapshots of remote items.
-                $itemEntity = $entityManager->find(OsiiEntity\OsiiItem::class, $item['o:id']);
-                if (null === $itemEntity) {
+                $osiiItemEntity = $entityManager
+                    ->getRepository(OsiiEntity\OsiiItem::class)
+                    ->findOneBy(['remoteItemId' => $item['o:id']]);
+                if (null === $osiiItemEntity) {
                     // This is a new remote item.
-                    $itemEntity = new OsiiEntity\OsiiItem;
-                    $itemEntity->setImport($this->importEntity);
-                    $itemEntity->setRemoteItemId($item['o:id']);
-                    $entityManager->persist($itemEntity);
+                    $osiiItemEntity = new OsiiEntity\OsiiItem;
+                    $osiiItemEntity->setImport($this->importEntity);
+                    $osiiItemEntity->setRemoteItemId($item['o:id']);
+                    $entityManager->persist($osiiItemEntity);
                 } else {
                     // This is an existing remote item.
-                    $itemEntity->setModified(new DateTime('now'));
+                    $osiiItemEntity->setModified(new DateTime('now'));
                 }
-                $itemEntity->setSnapshotItem($item);
+                $osiiItemEntity->setSnapshotItem($item);
                 // Cache used data types and properties.
                 $values = $this->getValuesFromResource($item);
                 foreach ($values as $value) {
