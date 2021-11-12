@@ -103,6 +103,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getSnapshotClasses();
     }
 
+    public function snapshotVocabularies()
+    {
+        return $this->resource->getSnapshotVocabularies();
+    }
+
     public function dataTypeMap()
     {
         return $this->resource->getDataTypeMap();

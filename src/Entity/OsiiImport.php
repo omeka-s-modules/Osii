@@ -271,6 +271,24 @@ class OsiiImport extends AbstractEntity
      *     nullable=true
      * )
      */
+    protected $snapshotVocabularies;
+
+    public function setSnapshotVocabularies(?array $snapshotVocabularies) : void
+    {
+        $this->snapshotVocabularies = $snapshotVocabularies;
+    }
+
+    public function getSnapshotVocabularies() : ?array
+    {
+        return $this->snapshotVocabularies;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
     protected $dataTypeMap;
 
     public function setDataTypeMap(?array $dataTypeMap) : void

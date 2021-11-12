@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'dataTypeMap', 'created', 'modified'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'dataTypeMap', 'created', 'modified'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified'];
     }
 
     /**
@@ -453,6 +453,28 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotClasses', []);
 
         return parent::getSnapshotClasses();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSnapshotVocabularies(?array $snapshotVocabularies): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotVocabularies', [$snapshotVocabularies]);
+
+        parent::setSnapshotVocabularies($snapshotVocabularies);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSnapshotVocabularies(): ?array
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotVocabularies', []);
+
+        return parent::getSnapshotVocabularies();
     }
 
     /**

@@ -16,52 +16,113 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 </div>
 
 <?php if ($import->canPrepareImport()): ?>
-<h3><?php echo $this->translate('Map data types'); ?></h3>
-<table id="data-type-map" class="tablesaw" data-tablesaw-mode="stack">
-    <thead>
-        <tr>
-            <th><?php echo $this->translate('Remote data type'); ?></th>
-            <th><?php echo $this->translate('Local data type'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php $index = 0; ?>
-    <?php foreach ($import->snapshotDataTypes() as $remoteDataTypeId => $remoteDataType): ?>
-        <tr>
-            <td>
-                <span class="remote-data-type-id-span"><?php echo sprintf('%s (%s)', $remoteDataTypeId, $remoteDataType['count']); ?></span>
-                <input type="hidden" class="remote-data-type-id"
-                    name="<?php echo $this->escapeHtml(sprintf('data_type_map[%s][remote]', $index)); ?>"
-                    value="<?php echo $this->escapeHtml($remoteDataTypeId); ?>">
-            </td>
-            <td>
-                <?php $localDataTypeSelect->setName(sprintf('data_type_map[%s][local]', $index)); ?>
-                <?php echo $this->formElement($localDataTypeSelect); ?>
-            </td>
-        </tr>
-    <?php $index++; ?>
-    <?php endforeach; ?>
-    <tbody>
-</table>
-<h3><?php echo $this->translate('View properties'); ?></h3>
-<table id="data-type-map" class="tablesaw" data-tablesaw-mode="stack">
-    <thead>
-        <tr>
-            <th><?php echo $this->translate('Remote property'); ?></th>
-            <th><?php echo $this->translate('On local install?'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
+
+<p><?php echo $this->translate('Prepare the import below.'); ?></p>
+
+<?php
+echo $this->sectionNav([
+    'map-data-types' => $this->translate('Map data types'),
+    'remote-properties' => $this->translate('Remote properties'),
+    'remote-classes' => $this->translate('Remote classes'),
+]);
+?>
+
+<div id="map-data-types" class="section active">
+    <h3><?php echo $this->translate('Map data types'); ?></h3>
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+            <tr>
+                <th><?php echo $this->translate('Remote data type'); ?></th>
+                <th><?php echo $this->translate('Remote value count'); ?></th>
+                <th><?php echo $this->translate('Local data type'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php $index = 0; ?>
+        <?php foreach ($import->snapshotDataTypes() as $remoteDataTypeId => $remoteDataType): ?>
+            <tr>
+                <td>
+                    <?php echo $remoteDataTypeId; ?>
+                    <input type="hidden"
+                        name="<?php echo $this->escapeHtml(sprintf('data_type_map[%s][remote]', $index)); ?>"
+                        value="<?php echo $this->escapeHtml($remoteDataTypeId); ?>">
+                </td>
+                <td><?php echo $remoteDataType['count']; ?></td>
+                <td>
+                    <?php $localDataTypeSelect->setName(sprintf('data_type_map[%s][local]', $index)); ?>
+                    <?php echo $this->formElement($localDataTypeSelect); ?>
+                </td>
+            </tr>
+        <?php $index++; ?>
+        <?php endforeach; ?>
+        <tbody>
+    </table>
+</div>
+
+<div id="remote-properties" class="section">
+    <h3><?php echo $this->translate('Remote properties'); ?></h3>
     <?php foreach ($import->snapshotProperties() as $remoteVocabNamespaceUri => $remoteProperties): ?>
-    <?php foreach ($remoteProperties as $remotePropertyId => $remoteProperty): ?>
-        <tr>
-            <td><?php echo sprintf('%s%s (%s)', $remoteVocabNamespaceUri, $remoteProperty['local_name'], $remoteProperty['count']); ?></td>
-            <td></td>
-        </tr>
+    <ul>
+        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $import->snapshotVocabularies()[$remoteVocabNamespaceUri]['label']); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $remoteVocabNamespaceUri); ?></li>
+    </ul>
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+            <tr>
+                <th><?php echo $this->translate('Remote local name'); ?></th>
+                <th><?php echo $this->translate('Remote label'); ?></th>
+                <th><?php echo $this->translate('Remote value count'); ?></th>
+                <th><?php echo $this->translate('On local install?'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($remoteProperties as $remotePropertyId => $remoteProperty): ?>
+            <?php $propertyUri = sprintf('%s%s', $remoteVocabNamespaceUri, $remoteProperty['local_name']); ?>
+            <tr>
+                <td><?php echo $remoteProperty['local_name']; ?></td>
+                <td><?php echo $remoteProperty['label']; ?></td>
+                <td><?php echo $remoteProperty['count']; ?></td>
+                <td><?php echo in_array($propertyUri, $localProperties) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <tbody>
+    </table>
     <?php endforeach; ?>
+</div>
+
+<div id="remote-classes" class="section">
+    <h3><?php echo $this->translate('Remote classes'); ?></h3>
+    <?php foreach ($import->snapshotClasses() as $remoteVocabNamespaceUri => $remoteClasses): ?>
+    <ul>
+        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $import->snapshotVocabularies()[$remoteVocabNamespaceUri]['label']); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $remoteVocabNamespaceUri); ?></li>
+    </ul>
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+            <tr>
+                <th><?php echo $this->translate('Remote local name'); ?></th>
+                <th><?php echo $this->translate('Remote label'); ?></th>
+                <th><?php echo $this->translate('Remote item count'); ?></th>
+                <th><?php echo $this->translate('On local install?'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($remoteClasses as $remoteClassId => $remoteClass): ?>
+            <?php $classUri = sprintf('%s%s', $remoteVocabNamespaceUri, $remoteClass['local_name']); ?>
+            <tr>
+                <td><?php echo $remoteClass['local_name']; ?></td>
+                <td><?php echo $remoteClass['label']; ?></td>
+                <td><?php echo $remoteClass['count']; ?></td>
+                <td><?php echo in_array($classUri, $localClasses) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <tbody>
+    </table>
     <?php endforeach; ?>
-    <tbody>
-</table>
+</div>
+
+<?php else: ?>
+<p><?php echo $this->translate('Prepare import is not available.'); ?></p>
 <?php endif; ?>
 
 <div id="import-metadata" class="sidebar always-open">

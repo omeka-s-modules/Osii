@@ -43,4 +43,36 @@ class Osii extends AbstractPlugin
         $element->setAttribute('class', 'local-data-type-select');
         return $element;
     }
+
+    /**
+     * Get all local property URIs.
+     *
+     * @return array
+     */
+    public function getLocalProperties()
+    {
+        $entityManager = $this->services->get('Omeka\EntityManager');
+        $dql = '
+        SELECT CONCAT(v.namespaceUri, p.localName) AS uri
+        FROM Omeka\Entity\Property p
+        JOIN p.vocabulary v';
+        $query = $entityManager->createQuery($dql);
+        return array_column($query->getResult(), 'uri');
+    }
+
+    /**
+     * Get all local class URIs.
+     *
+     * @return array
+     */
+    public function getLocalClasses()
+    {
+        $entityManager = $this->services->get('Omeka\EntityManager');
+        $dql = '
+        SELECT CONCAT(v.namespaceUri, c.localName) AS uri
+        FROM Omeka\Entity\ResourceClass c
+        JOIN c.vocabulary v';
+        $query = $entityManager->createQuery($dql);
+        return array_column($query->getResult(), 'uri');
+    }
 }

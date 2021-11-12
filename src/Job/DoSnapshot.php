@@ -11,9 +11,9 @@ class DoSnapshot extends AbstractJob
 {
     protected $importEntity;
 
-    protected $allVocabularies = [];
     protected $allProperties = [];
     protected $allClasses = [];
+    protected $allVocabularies = [];
 
     protected $usedDataTypes = [];
     protected $usedProperties = [];
@@ -22,6 +22,7 @@ class DoSnapshot extends AbstractJob
     protected $snapshotDataTypes = [];
     protected $snapshotProperties = [];
     protected $snapshotClasses = [];
+    protected $snapshotVocabularies = [];
 
     /**
      * Sync a dataset with its item set.
@@ -33,13 +34,13 @@ class DoSnapshot extends AbstractJob
         $importId = $this->getArg('import_id');
 
         // Set the import entity.
-        $em = $this->getServiceLocator()->get('Omeka\EntityManager');
-        $this->importEntity = $em->find(OsiiEntity\OsiiImport::class, $importId);
+        $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+        $this->importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
 
-        // Cache all remote vocabularies, properties, and classes.
-        $this->cacheAllVocabularies();
+        // Cache all remote properties, classes, and vocabularies.
         $this->cacheAllProperties();
         $this->cacheAllClasses();
+        $this->cacheAllVocabularies();
 
         // Iterate remote items. Cache used data types, properties, and classes.
         $endpoint = sprintf('%s/items', $this->importEntity->getRootEndpoint());
@@ -59,13 +60,13 @@ class DoSnapshot extends AbstractJob
             }
             foreach ($items as $item) {
                 // Save snapshots of remote items.
-                $itemEntity = $em->find(OsiiEntity\OsiiItem::class, $item['o:id']);
+                $itemEntity = $entityManager->find(OsiiEntity\OsiiItem::class, $item['o:id']);
                 if (null === $itemEntity) {
                     // This is a new remote item.
                     $itemEntity = new OsiiEntity\OsiiItem;
                     $itemEntity->setImport($this->importEntity);
                     $itemEntity->setRemoteItemId($item['o:id']);
-                    $em->persist($itemEntity);
+                    $entityManager->persist($itemEntity);
                 } else {
                     // This is an existing remote item.
                     $itemEntity->setModified(new DateTime('now'));
@@ -85,9 +86,9 @@ class DoSnapshot extends AbstractJob
             // Save memory by flushing and clearing the entity manager at the
             // end of every iteration. We must re-load the import entity to
             // avoid a "A new entity was found" error.
-            $em->flush();
-            $em->clear();
-            $this->importEntity = $em->find(OsiiEntity\OsiiImport::class, $importId);
+            $entityManager->flush();
+            $entityManager->clear();
+            $this->importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
             // Increment the page.
             $query['page']++;
         }
@@ -106,32 +107,39 @@ class DoSnapshot extends AbstractJob
                 'count' => $count,
             ];
         }
-        // Cache the snapshot properties.
+        // Cache the snapshot properties (and vocabularies).
         foreach ($this->usedProperties as $propertyId => $count) {
             $property = $this->allProperties[$propertyId];
-            $vocabularyId = $property['o:vocabulary']['o:id'];
-            $vocabulary = $this->allVocabularies[$vocabularyId];
+            $vocabulary = $this->allVocabularies[$property['o:vocabulary']['o:id']];
             $this->snapshotProperties[$vocabulary['o:namespace_uri']][$propertyId] = [
+                'label' => $property['o:label'],
                 'local_name' => $property['o:local_name'],
                 'count' => $count,
             ];
+            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
+                'label' => $vocabulary['o:label'],
+            ];
         }
-        // Cache the snapshot classes.
+        // Cache the snapshot classes (and vocabularies).
         foreach ($this->usedClasses as $classId => $count) {
             $class = $this->allClasses[$classId];
-            $vocabularyId = $property['o:vocabulary']['o:id'];
-            $vocabulary = $this->allVocabularies[$vocabularyId];
+            $vocabulary = $this->allVocabularies[$class['o:vocabulary']['o:id']];
             $this->snapshotClasses[$vocabulary['o:namespace_uri']][$classId] = [
+                'label' => $class['o:label'],
                 'local_name' => $class['o:local_name'],
                 'count' => $count,
+            ];
+            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
+                'label' => $vocabulary['o:label'],
             ];
         }
 
         $this->importEntity->setSnapshotDataTypes($this->snapshotDataTypes);
         $this->importEntity->setSnapshotProperties($this->snapshotProperties);
         $this->importEntity->setSnapshotClasses($this->snapshotClasses);
+        $this->importEntity->setSnapshotVocabularies($this->snapshotVocabularies);
 
-        $em->flush();
+        $entityManager->flush();
     }
 
     /**
@@ -194,7 +202,7 @@ class DoSnapshot extends AbstractJob
                 $this->allClasses[$class['o:id']] = $class;
             }
             $query['page']++;
-        };
+        }
     }
 
     /**
