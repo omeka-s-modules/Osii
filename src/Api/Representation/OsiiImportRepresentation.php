@@ -123,6 +123,16 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getModified();
     }
 
+    public function snapshotCompleted()
+    {
+        return $this->resource->getSnapshotCompleted();
+    }
+
+    public function importCompleted()
+    {
+        return $this->resource->getImportCompleted();
+    }
+
     /**
      * Can the user take a snapshot?
      *
@@ -138,6 +148,20 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     }
 
     /**
+     * Can the user stop a snapshot?
+     *
+     * @return bool
+     */
+    public function canStopSnapshot()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED !== $snapshotJob->status() : false;
+        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        return $snapshotStatus && $importStatus;
+    }
+
+    /**
      * Can the user prepare import?
      *
      * @return bool
@@ -146,7 +170,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     {
         $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
-        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : $this->snapshotCompleted();
         $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
         return $snapshotStatus && $importStatus;
     }
@@ -160,8 +184,8 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     {
         $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
-        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : $this->snapshotCompleted();
         $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
-        return $snapshotStatus && $importStatus && !is_null($this->dataTypeMap());
+        return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
     }
 }

@@ -135,6 +135,9 @@ echo $this->sectionNav([
             <?php else: ?>
             <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Take snapshot not available'); ?></button>
             <?php endif; ?>
+            <?php if ($import->canStopSnapshot()): ?>
+            <a href="#" class="sidebar-content" style="width: 100%; color: red;" data-sidebar-selector="#stop-snapshot"><?php echo $this->translate('Stop snapshot'); ?></a>
+            <?php endif; ?>
         </div>
         <h4><?php echo sprintf($this->translate('Import status: %s'), $import->importJob() ?  $import->importJob()->status() : $this->translate('[n/a]')); ?></h4>
         <div class="value">
@@ -178,6 +181,13 @@ echo $this->sectionNav([
     <h3><?php echo $this->translate('Snapshot'); ?></h3>
     <p><?php echo $this->translate('Take a snapshot of the remote items in their current state. This will gather the data needed to reconcile the local installation with the remote one.'); ?></p>
     <?php echo $this->form($formDoSnapshot); ?>
+</div>
+
+<div id="stop-snapshot" class="sidebar">
+    <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
+    <h3><?php echo $this->translate('Snapshot'); ?></h3>
+    <p><?php echo $this->translate('Stop the currently running snapshot.'); ?></p>
+    <?php echo $this->form($formStopSnapshot); ?>
 </div>
 
 <div id="do-import" class="sidebar">

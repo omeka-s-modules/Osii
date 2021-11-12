@@ -97,6 +97,9 @@ class ImportController extends AbstractActionController
         $formDoSnapshot = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
         $formDoSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-snapshot'], true));
 
+        $formStopSnapshot = $this->getForm(OsiiForm\StopSnapshotForm::class, ['import' => $import]);
+        $formStopSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'stop-snapshot'], true));
+
         $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
         $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
 
@@ -107,6 +110,7 @@ class ImportController extends AbstractActionController
         $view = new ViewModel;
         $view->setVariable('import', $import);
         $view->setVariable('formDoSnapshot', $formDoSnapshot);
+        $view->setVariable('formStopSnapshot', $formStopSnapshot);
         $view->setVariable('formDoImport', $formDoImport);
         $view->setVariable('localDataTypeSelect', $localDataTypeSelect);
         $view->setVariable('localProperties', $localProperties);
@@ -129,15 +133,25 @@ class ImportController extends AbstractActionController
                 $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
                 $importEntity->setSnapshotJob($job);
                 $this->entityManager->flush();
-                $message = new Message(
-                    'Taking snapshot. This may take a while. %s', // @translate
-                    sprintf(
-                        '<a href="%s">%s</a>',
-                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->getId()])),
-                        $this->translate('See this job for snapshot progress.')
-                    ));
-                $message->setEscapeHtml(false);
-                $this->messenger()->addSuccess($message);
+                $this->messenger()->addSuccess('Taking snapshot. This may take a while.'); // @translate
+            }
+        }
+        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+    }
+
+    public function stopSnapshotAction()
+    {
+        $importId = $this->params('import-id');
+        $import = $this->api()->read('osii_imports', $importId)->getContent();
+        if ($this->getRequest()->isPost()) {
+            $form = $this->getForm(OsiiForm\StopSnapshotForm::class, ['import' => $import]);
+            $form->setData($this->getRequest()->getPost());
+            if ($form->isValid()) {
+                $this->jobDispatcher()->stop($import->snapshotJob()->id());
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $importEntity->setSnapshotJob(null);
+                $this->entityManager->flush();
+                $this->messenger()->addSuccess('Stopping snapshot.'); // @translate
             }
         }
         return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
@@ -158,15 +172,7 @@ class ImportController extends AbstractActionController
                 $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
                 $importEntity->setImportJob($importJob);
                 $this->entityManager->flush();
-                $message = new Message(
-                    'Importing. This may take a while. %s', // @translate
-                    sprintf(
-                        '<a href="%s">%s</a>',
-                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->getId()])),
-                        $this->translate('See this job for import progress.')
-                    ));
-                $message->setEscapeHtml(false);
-                $this->messenger()->addSuccess($message);
+                $this->messenger()->addSuccess('Importing. This may take a while.'); // @translate
             }
         }
         return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());

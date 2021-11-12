@@ -54,6 +54,9 @@ class DoSnapshot extends AbstractJob
         $query['page'] = 1;
 
         while (true) {
+            if ($this->shouldStop()) {
+                return;
+            }
             $items = $this->getApiOutput($client, $query);
             if (!$items) {
                 break; // No more items.
@@ -141,6 +144,7 @@ class DoSnapshot extends AbstractJob
         $this->importEntity->setSnapshotClasses($this->snapshotClasses);
         $this->importEntity->setSnapshotVocabularies($this->snapshotVocabularies);
 
+        $this->importEntity->setSnapshotCompleted(new DateTime('now'));
         $entityManager->flush();
     }
 

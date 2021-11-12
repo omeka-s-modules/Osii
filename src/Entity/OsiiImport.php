@@ -338,6 +338,42 @@ class OsiiImport extends AbstractEntity
     }
 
     /**
+     * @Column(
+     *     type="datetime",
+     *     nullable=true
+     * )
+     */
+    protected $snapshotCompleted;
+
+    public function setSnapshotCompleted(?DateTime $snapshotCompleted) : void
+    {
+        $this->snapshotCompleted = $snapshotCompleted;
+    }
+
+    public function getSnapshotCompleted() : ?DateTime
+    {
+        return $this->snapshotCompleted;
+    }
+
+    /**
+     * @Column(
+     *     type="datetime",
+     *     nullable=true
+     * )
+     */
+    protected $importCompleted;
+
+    public function setImportCompleted(?DateTime $importCompleted) : void
+    {
+        $this->importCompleted = $importCompleted;
+    }
+
+    public function getImportCompleted() : ?DateTime
+    {
+        return $this->importCompleted;
+    }
+
+    /**
      * @PrePersist
      */
     public function prePersist(LifecycleEventArgs $eventArgs) : void
