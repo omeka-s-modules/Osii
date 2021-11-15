@@ -128,15 +128,22 @@ echo $this->sectionNav([
 <div id="import-metadata" class="sidebar always-open">
     <h3><?php echo $this->translate('Actions'); ?></h3>
     <div class="meta-group">
-        <h4><?php echo sprintf($this->translate('Snapshot status: %s'), $import->snapshotJob() ?  $import->snapshotJob()->status() : $this->translate('[n/a]')); ?></h4>
+        <h4><?php echo sprintf($this->translate('Snapshot status: %s'), $import->snapshotStatusLabel()); ?></h4>
         <div class="value">
             <?php if ($import->canDoSnapshot()): ?>
-            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-snapshot"><?php echo $this->translate('Take snapshot available'); ?></a>
-            <?php else: ?>
-            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Take snapshot not available'); ?></button>
+                <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
+                'class' => 'sidebar-content',
+                'style' => 'color: green;',
+                'data-sidebar-selector' => '#do-snapshot',
+            ]); ?>
             <?php endif; ?>
             <?php if ($import->canStopSnapshot()): ?>
-            <a href="#" class="sidebar-content" style="width: 100%; color: red;" data-sidebar-selector="#stop-snapshot"><?php echo $this->translate('Stop snapshot'); ?></a>
+            <?php echo $this->hyperlink($this->translate('Stop snapshot'), '#', [
+                'class' => 'sidebar-content',
+                'style' => 'color: red;',
+                'data-sidebar-selector' => '#stop-snapshot',
+            ]); ?>
+            <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true), ['class' => 'button']); ?>
             <?php endif; ?>
         </div>
         <h4><?php echo sprintf($this->translate('Import status: %s'), $import->importJob() ?  $import->importJob()->status() : $this->translate('[n/a]')); ?></h4>

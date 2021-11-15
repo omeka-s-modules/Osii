@@ -188,4 +188,50 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
         return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
     }
+
+    public function snapshotStatus()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $snapshotCompleted = $this->snapshotCompleted();
+        if ($snapshotJob) {
+            return $snapshotJob->status();
+        } elseif ($snapshotCompleted) {
+            $status = Job::STATUS_STOPPED;
+        } else {
+            $status = 'no_snapshot';
+        }
+        return $status;
+    }
+
+    public function snapshotStatusLabel()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $snapshotStatus = $this->snapshotStatus();
+        switch ($snapshotStatus) {
+            case 'no_snapshot':
+                $label = 'Not taken'; // @translate
+                break;
+            case Job::STATUS_STARTING:
+                $label = 'Starting'; // @translate
+                break;
+            case Job::STATUS_STOPPING:
+                $label = 'Stopping'; // @translate
+                break;
+            case Job::STATUS_IN_PROGRESS:
+                $label = 'In progress'; // @translate
+                break;
+            case Job::STATUS_COMPLETED:
+                $label = 'Completed'; // @translate
+                break;
+            case Job::STATUS_STOPPED:
+                $label = 'Stopped'; // @translate
+                break;
+            case Job::STATUS_ERROR:
+                $label = 'Error'; // @translate
+                break;
+            default:
+                $label = 'Unknown'; // @translate
+        }
+        return $label;
+    }
 }
