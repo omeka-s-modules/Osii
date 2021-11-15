@@ -5,8 +5,13 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <?php echo $this->pageTitle($this->translate('Manage import'), 1, $this->translate('Omeka S Item Importer'), $import->label()); ?>
 
+<?php echo $this->form()->openTag($form); ?>
+
 <div id="page-actions">
     <?php echo $import->link($this->translate('Edit import'), 'edit', ['class' => 'button']); ?>
+    <?php if ($import->canPrepareImport()): ?>
+    <input type="submit" value="<?php echo $this->escapeHtml($this->translate('Submit')); ?>">
+    <?php endif; ?>
 </div>
 
 <div class="breadcrumbs">
@@ -49,7 +54,11 @@ echo $this->sectionNav([
                 </td>
                 <td><?php echo $remoteDataType['count']; ?></td>
                 <td>
-                    <?php $localDataTypeSelect->setName(sprintf('data_type_map[%s][local]', $index)); ?>
+                    <?php
+                    $localDataTypeSelect->setName(sprintf('data_type_map[%s][local]', $index));
+                    $localDataType = $import->dataTypeMap()[$remoteDataTypeId] ?? null;
+                    $localDataTypeSelect->setValue($localDataType);
+                    ?>
                     <?php echo $this->formElement($localDataTypeSelect); ?>
                 </td>
             </tr>
@@ -125,6 +134,9 @@ echo $this->sectionNav([
 <p><?php echo $this->translate('Prepare import is not available.'); ?></p>
 <?php endif; ?>
 
+<?php echo $this->formHidden($form->get('csrf')); ?>
+<?php echo $this->form()->closeTag(); ?>
+
 <div id="import-metadata" class="sidebar always-open">
     <h3><?php echo $this->translate('Actions'); ?></h3>
     <div class="meta-group">
@@ -159,7 +171,7 @@ echo $this->sectionNav([
         <h4><?php echo $this->translate('Import'); ?></h4>
         <div class="value">
             <?php if ($import->canDoImport()): ?>
-                <?php echo $this->hyperlink($this->translate('Import'), '#', [
+                <?php echo $this->hyperlink($this->translate('Import snapshot'), '#', [
                 'class' => 'sidebar-content',
                 'style' => 'color: green;',
                 'data-sidebar-selector' => '#do-import',

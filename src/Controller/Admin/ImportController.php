@@ -92,7 +92,25 @@ class ImportController extends AbstractActionController
 
     public function showAction()
     {
-        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        $importId = $this->params('import-id');
+        $import = $this->api()->read('osii_imports', $importId)->getContent();
+        $form = $this->getForm(OsiiForm\PrepareImportForm::class, ['import' => $import]);
+
+        if ($this->getRequest()->isPost()) {
+            $postData = $this->params()->fromPost();
+            $form->setData($postData);
+            if ($form->isValid()) {
+                $dataTypeMap = [];
+                foreach ($postData['data_type_map'] as $dataTypes) {
+                    $dataTypeMap[$dataTypes['remote']] = $dataTypes['local'];
+                }
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $importEntity->setDataTypeMap($dataTypeMap);
+                $this->entityManager->flush();
+                $this->messenger()->addSuccess('Import successfully prepared.');
+                return $this->redirect()->toRoute(null, [], true);
+            }
+        }
 
         $formDoSnapshot = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
         $formDoSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-snapshot'], true));
@@ -109,6 +127,7 @@ class ImportController extends AbstractActionController
 
         $view = new ViewModel;
         $view->setVariable('import', $import);
+        $view->setVariable('form', $form);
         $view->setVariable('formDoSnapshot', $formDoSnapshot);
         $view->setVariable('formStopSnapshot', $formStopSnapshot);
         $view->setVariable('formDoImport', $formDoImport);
@@ -120,62 +139,53 @@ class ImportController extends AbstractActionController
 
     public function doSnapshotAction()
     {
-        $importId = $this->params('import-id');
-        $import = $this->api()->read('osii_imports', $importId)->getContent();
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
         if ($this->getRequest()->isPost()) {
             $form = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
-                $job = $this->jobDispatcher()->dispatch(
-                    Job\DoSnapshot::class,
-                    ['import_id' => $import->id()]
-                );
-                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $job = $this->jobDispatcher()->dispatch(Job\DoSnapshot::class, ['import_id' => $import->id()]);
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $import->id());
                 $importEntity->setSnapshotJob($job);
                 $this->entityManager->flush();
                 $this->messenger()->addSuccess('Taking snapshot. This may take a while.'); // @translate
             }
         }
-        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+        return $this->redirect()->toRoute(null, ['action' => 'show'], true);
     }
 
     public function stopSnapshotAction()
     {
-        $importId = $this->params('import-id');
-        $import = $this->api()->read('osii_imports', $importId)->getContent();
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
         if ($this->getRequest()->isPost()) {
             $form = $this->getForm(OsiiForm\StopSnapshotForm::class, ['import' => $import]);
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
                 $this->jobDispatcher()->stop($import->snapshotJob()->id());
-                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $import->id());
                 $importEntity->setSnapshotJob(null);
                 $this->entityManager->flush();
                 $this->messenger()->addSuccess('Stopping snapshot.'); // @translate
             }
         }
-        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+        return $this->redirect()->toRoute(null, ['action' => 'show'], true);
     }
 
     public function doImportAction()
     {
-        $importId = $this->params('import-id');
-        $import = $this->api()->read('osii_imports', $importId)->getContent();
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
         if ($this->getRequest()->isPost()) {
             $form = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
-                $job = $this->jobDispatcher()->dispatch(
-                    DoImport::class,
-                    ['import_id' => $import->id()]
-                );
-                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $importId);
+                $job = $this->jobDispatcher()->dispatch(Job\DoImport::class, ['import_id' => $import->id()]);
+                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $import->id());
                 $importEntity->setImportJob($importJob);
                 $this->entityManager->flush();
                 $this->messenger()->addSuccess('Importing. This may take a while.'); // @translate
             }
         }
-        return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+        return $this->redirect()->toRoute(null, ['action' => 'show'], true);
     }
 
     public function deleteAction()

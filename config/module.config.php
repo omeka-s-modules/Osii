@@ -57,6 +57,7 @@ return [
     'form_elements' => [
         'factories' => [
             'Osii\Form\ImportForm' => Service\Form\ImportFormFactory::class,
+            'Osii\Form\PrepareImportForm' => Service\Form\PrepareImportFormFactory::class,
         ],
     ],
     'navigation' => [
