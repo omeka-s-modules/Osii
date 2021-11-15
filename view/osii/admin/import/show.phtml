@@ -128,7 +128,16 @@ echo $this->sectionNav([
 <div id="import-metadata" class="sidebar always-open">
     <h3><?php echo $this->translate('Actions'); ?></h3>
     <div class="meta-group">
-        <h4><?php echo sprintf($this->translate('Snapshot status: %s'), $import->snapshotStatusLabel()); ?></h4>
+        <h4><?php echo $this->translate('Snapshot'); ?></h4>
+        <div class="value">
+            <?php echo sprintf('Status: %s', $this->translate($import->snapshotStatusLabel())); ?>
+            <?php if ($import->canStopSnapshot()): ?>
+            <?php echo $this->hyperlink($this->translate('Refresh'), $this->url(null, [], true), ['class' => 'button']); ?>
+            <?php endif; ?>
+        </div>
+        <div class="value">
+            <?php echo sprintf($this->translate('Last completed: %s'), $import->snapshotCompleted() ? $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'medium') : $this->translate('[n/a]')); ?>
+        </div>
         <div class="value">
             <?php if ($import->canDoSnapshot()): ?>
                 <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
@@ -143,15 +152,18 @@ echo $this->sectionNav([
                 'style' => 'color: red;',
                 'data-sidebar-selector' => '#stop-snapshot',
             ]); ?>
-            <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true), ['class' => 'button']); ?>
             <?php endif; ?>
         </div>
-        <h4><?php echo sprintf($this->translate('Import status: %s'), $import->importJob() ?  $import->importJob()->status() : $this->translate('[n/a]')); ?></h4>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Import'); ?></h4>
         <div class="value">
             <?php if ($import->canDoImport()): ?>
-            <a href="#" class="button sidebar-content" style="width: 100%" data-sidebar-selector="#do-import"><?php echo $this->translate('Import available'); ?></a>
-            <?php else: ?>
-            <button type="button" style="width: 100%;" disabled><?php echo $this->translate('Import not available'); ?></button>
+                <?php echo $this->hyperlink($this->translate('Import'), '#', [
+                'class' => 'sidebar-content',
+                'style' => 'color: green;',
+                'data-sidebar-selector' => '#do-import',
+            ]); ?>
             <?php endif; ?>
         </div>
     </div>
