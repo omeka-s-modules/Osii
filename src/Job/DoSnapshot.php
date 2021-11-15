@@ -65,7 +65,10 @@ class DoSnapshot extends AbstractJob
                 // Save snapshots of remote items.
                 $osiiItemEntity = $entityManager
                     ->getRepository(OsiiEntity\OsiiItem::class)
-                    ->findOneBy(['remoteItemId' => $item['o:id']]);
+                    ->findOneBy([
+                        'import' => $this->importEntity,
+                        'remoteItemId' => $item['o:id'],
+                    ]);
                 if (null === $osiiItemEntity) {
                     // This is a new remote item.
                     $osiiItemEntity = new OsiiEntity\OsiiItem;

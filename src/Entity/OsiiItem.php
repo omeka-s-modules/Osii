@@ -9,7 +9,17 @@ use Omeka\Entity\Item;
 /**
  * @Entity
  * @HasLifecycleCallbacks
- */
+ * @Table(
+ *     uniqueConstraints={
+ *         @UniqueConstraint(
+ *             columns={"import_id", "remote_item_id"}
+ *         ),
+ *         @UniqueConstraint(
+ *             columns={"import_id", "local_item_id"}
+ *         )
+ *     }
+ * )
+*/
 class OsiiItem extends AbstractEntity
 {
     /**
