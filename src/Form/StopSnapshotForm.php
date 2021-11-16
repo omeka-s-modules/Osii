@@ -11,7 +11,7 @@ class StopSnapshotForm extends Form
             'type' => 'submit',
             'name' => 'submit',
             'attributes' => [
-                'value' => 'Stop snapshot', // @translate
+                'value' => 'Confirm stop snapshot', // @translate
             ],
         ]);
 

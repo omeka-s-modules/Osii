@@ -15,6 +15,8 @@ class DoSnapshot extends AbstractJob
     protected $allClasses = [];
     protected $allVocabularies = [];
 
+    protected $snapshotItems = [];
+
     protected $usedDataTypes = [];
     protected $usedProperties = [];
     protected $usedClasses = [];
@@ -62,6 +64,8 @@ class DoSnapshot extends AbstractJob
                 break; // No more items.
             }
             foreach ($items as $item) {
+                // Cache all remote item IDs gathered during this snapshot.
+                $this->snapshotItems[] = $item['o:id'];
                 // Save snapshots of remote items.
                 $osiiItemEntity = $entityManager
                     ->getRepository(OsiiEntity\OsiiItem::class)
@@ -147,6 +151,7 @@ class DoSnapshot extends AbstractJob
         $this->importEntity->setSnapshotClasses($this->snapshotClasses);
         $this->importEntity->setSnapshotVocabularies($this->snapshotVocabularies);
 
+        $this->importEntity->setSnapshotItems($this->snapshotItems);
         $this->importEntity->setSnapshotCompleted(new DateTime('now'));
         $entityManager->flush();
     }

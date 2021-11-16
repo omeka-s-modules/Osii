@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted'];
     }
 
     /**
@@ -387,6 +387,28 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRemoteQuery', []);
 
         return parent::getRemoteQuery();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSnapshotItems(?array $snapshotItems): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotItems', [$snapshotItems]);
+
+        parent::setSnapshotItems($snapshotItems);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSnapshotItems(): ?array
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotItems', []);
+
+        return parent::getSnapshotItems();
     }
 
     /**
