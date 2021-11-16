@@ -162,9 +162,6 @@ class ImportController extends AbstractActionController
             $form->setData($this->getRequest()->getPost());
             if ($form->isValid()) {
                 $this->jobDispatcher()->stop($import->snapshotJob()->id());
-                $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $import->id());
-                $importEntity->setSnapshotJob(null);
-                $this->entityManager->flush();
                 $this->messenger()->addSuccess('Stopping snapshot.'); // @translate
             }
         }

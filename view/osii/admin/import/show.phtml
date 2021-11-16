@@ -142,9 +142,12 @@ echo $this->sectionNav([
     <div class="meta-group">
         <h4><?php echo $this->translate('Snapshot'); ?></h4>
         <div class="value">
-            <?php echo sprintf('Status: %s', $this->translate($import->snapshotStatusLabel())); ?>
-            <?php if ($import->canStopSnapshot()): ?>
-            <?php echo $this->hyperlink($this->translate('Refresh'), $this->url(null, [], true), ['class' => 'button']); ?>
+            <?php echo sprintf($this->translate('Status: %s'), $this->translate($import->snapshotStatusLabel())); ?>
+            <?php if ($import->canRefreshSnapshotStatus()): ?>
+            | <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true)); ?>
+            <?php endif; ?>
+            <?php if ($import->canViewSnapshotJob()): ?>
+            | <?php echo $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->snapshotJob()->id()])); ?>
             <?php endif; ?>
         </div>
         <div class="value">
@@ -153,15 +156,15 @@ echo $this->sectionNav([
         <div class="value">
             <?php if ($import->canDoSnapshot()): ?>
                 <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'style' => 'color: green;',
+                'class' => 'sidebar-content button',
+                'style' => 'background-color: green;',
                 'data-sidebar-selector' => '#do-snapshot',
             ]); ?>
             <?php endif; ?>
             <?php if ($import->canStopSnapshot()): ?>
             <?php echo $this->hyperlink($this->translate('Stop snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'style' => 'color: red;',
+                'class' => 'sidebar-content button',
+                'style' => 'background-color: red;',
                 'data-sidebar-selector' => '#stop-snapshot',
             ]); ?>
             <?php endif; ?>
@@ -172,8 +175,8 @@ echo $this->sectionNav([
         <div class="value">
             <?php if ($import->canDoImport()): ?>
                 <?php echo $this->hyperlink($this->translate('Import snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'style' => 'color: green;',
+                'class' => 'sidebar-content button',
+                'style' => 'background-color: green;',
                 'data-sidebar-selector' => '#do-import',
             ]); ?>
             <?php endif; ?>
