@@ -224,6 +224,8 @@ class DoSnapshot extends AbstractJob
     {
         $client = $this->getServiceLocator()->get('Omeka\HttpClient');
         $client->setUri($endpoint);
+        // Increase connection timeout.
+        $client->setOptions(['timeout' => 30]);
         return $client;
     }
 
