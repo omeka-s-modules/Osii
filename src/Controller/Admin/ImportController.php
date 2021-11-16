@@ -177,7 +177,7 @@ class ImportController extends AbstractActionController
             if ($form->isValid()) {
                 $job = $this->jobDispatcher()->dispatch(Job\DoImport::class, ['import_id' => $import->id()]);
                 $importEntity = $this->entityManager->find(Entity\OsiiImport::class, $import->id());
-                $importEntity->setImportJob($importJob);
+                $importEntity->setImportJob($job);
                 $this->entityManager->flush();
                 $this->messenger()->addSuccess('Importing. This may take a while.'); // @translate
             }

@@ -23,6 +23,10 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 <?php if ($import->canPrepareImport()): ?>
 
 <p><?php echo $this->translate('Prepare the import below.'); ?></p>
+<ul>
+    <li><?php echo sprintf($this->translate('Snapshot completed: %s'), $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'short')); ?></li>
+    <li><?php echo sprintf($this->translate('Snapshot item count: %s'), count($import->snapshotItems())); ?></li>
+</ul>
 
 <?php
 echo $this->sectionNav([
@@ -131,7 +135,7 @@ echo $this->sectionNav([
 </div>
 
 <?php else: ?>
-<p><?php echo $this->translate('Prepare import is not available.'); ?></p>
+<p><?php echo $this->translate('Prepare import is not available now.'); ?></p>
 <?php endif; ?>
 
 <?php echo $this->formHidden($form->get('csrf')); ?>
@@ -143,6 +147,20 @@ echo $this->sectionNav([
         <h4><?php echo $this->translate('Snapshot'); ?></h4>
         <div class="value">
             <?php echo sprintf($this->translate('Status: %s'), $this->translate($import->snapshotStatusLabel())); ?>
+        </div>
+        <div class="value">
+            <?php if ($import->canDoSnapshot()): ?>
+                <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
+                'class' => 'sidebar-content',
+                'data-sidebar-selector' => '#do-snapshot',
+            ]); ?>
+            <?php endif; ?>
+            <?php if ($import->canStopSnapshot()): ?>
+            <?php echo $this->hyperlink($this->translate('Stop snapshot'), '#', [
+                'class' => 'sidebar-content',
+                'data-sidebar-selector' => '#stop-snapshot',
+            ]); ?>
+            <?php endif; ?>
             <?php if ($import->canRefreshSnapshotStatus()): ?>
             | <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true)); ?>
             <?php endif; ?>
@@ -150,33 +168,16 @@ echo $this->sectionNav([
             | <?php echo $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->snapshotJob()->id()])); ?>
             <?php endif; ?>
         </div>
-        <div class="value">
-            <?php echo sprintf($this->translate('Last completed: %s'), $import->snapshotCompleted() ? $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'medium') : $this->translate('[n/a]')); ?>
-        </div>
-        <div class="value">
-            <?php if ($import->canDoSnapshot()): ?>
-                <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
-                'class' => 'sidebar-content button',
-                'style' => 'background-color: green;',
-                'data-sidebar-selector' => '#do-snapshot',
-            ]); ?>
-            <?php endif; ?>
-            <?php if ($import->canStopSnapshot()): ?>
-            <?php echo $this->hyperlink($this->translate('Stop snapshot'), '#', [
-                'class' => 'sidebar-content button',
-                'style' => 'background-color: red;',
-                'data-sidebar-selector' => '#stop-snapshot',
-            ]); ?>
-            <?php endif; ?>
-        </div>
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Import'); ?></h4>
         <div class="value">
+            <?php echo sprintf($this->translate('Status: %s'), $this->translate($import->importStatusLabel())); ?>
+        </div>
+        <div class="value">
             <?php if ($import->canDoImport()): ?>
                 <?php echo $this->hyperlink($this->translate('Import snapshot'), '#', [
-                'class' => 'sidebar-content button',
-                'style' => 'background-color: green;',
+                'class' => 'sidebar-content',
                 'data-sidebar-selector' => '#do-import',
             ]); ?>
             <?php endif; ?>

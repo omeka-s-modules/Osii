@@ -220,10 +220,23 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $snapshotJob ? $snapshotJob->status() : 'no_snapshot';
     }
 
+    public function importStatus()
+    {
+        $importJob = $this->importJob();
+        return $importJob ? $importJob->status() : 'no_import';
+    }
+
     public function snapshotStatusLabel()
     {
         return 'no_snapshot' === $this->snapshotStatus()
             ? 'Not taken' // @translate
             : $this->snapshotJob()->statusLabel();
+    }
+
+    public function importStatusLabel()
+    {
+        return 'no_import' === $this->importStatus()
+            ? 'Not imported' // @translate
+            : $this->importJob()->statusLabel();
     }
 }
