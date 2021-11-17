@@ -11,16 +11,7 @@ class DoSnapshot extends AbstractJob
 {
     protected $importEntity;
 
-    protected $allProperties = [];
-    protected $allClasses = [];
-    protected $allVocabularies = [];
-
     protected $snapshotItems = [];
-
-    protected $usedDataTypes = [];
-    protected $usedProperties = [];
-    protected $usedClasses = [];
-
     protected $snapshotDataTypes = [];
     protected $snapshotProperties = [];
     protected $snapshotClasses = [];
@@ -39,12 +30,12 @@ class DoSnapshot extends AbstractJob
         $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
         $this->importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
 
-        // Cache all remote properties, classes, and vocabularies.
-        $this->cacheAllProperties();
-        $this->cacheAllClasses();
-        $this->cacheAllVocabularies();
+        // Set snapshot properties, classes, and vocabularies.
+        $this->setSnapshotProperties();
+        $this->setSnapshotClasses();
+        $this->setSnapshotVocabularies();
 
-        // Iterate remote items. Cache used data types, properties, and classes.
+        // Iterate remote items.
         $endpoint = sprintf('%s/items', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         parse_str($this->importEntity->getRemoteQuery(), $query);
@@ -82,17 +73,24 @@ class DoSnapshot extends AbstractJob
                     $osiiItemEntity->setModified(new DateTime('now'));
                 }
                 $osiiItemEntity->setSnapshotItem($item);
-                // Cache all remote item IDs.
+
+                // Set metadata about the snapshot.
                 $this->snapshotItems[] = $item['o:id'];
-                // Cache used data types and properties.
-                $values = $this->getValuesFromResource($item);
-                foreach ($values as $value) {
-                    $this->usedDataTypes[] = $value['type'];
-                    $this->usedProperties[] = $value['property_id'];
-                }
-                // Cache used classes.
                 if (isset($item['o:resource_class'])) {
-                    $this->usedClasses[] = $item['o:resource_class']['o:id'];
+                    $classId = $item['o:resource_class']['o:id'];
+                    ++$this->snapshotClasses[$classId]['count'];
+                }
+                foreach ($this->getValuesFromResource($item) as $value) {
+                    $dataTypeId = $value['type'];
+                    $propertyId = $value['property_id'];
+                    if (!isset($this->snapshotDataTypes[$dataTypeId])) {
+                        $this->snapshotDataTypes[$dataTypeId] = [
+                            'label' => null, // Placeholder until data_types resource is available
+                            'count' => 0,
+                        ];
+                    }
+                    ++$this->snapshotDataTypes[$dataTypeId]['count'];
+                    ++$this->snapshotProperties[$propertyId]['count'];
                 }
             }
             // Save memory by flushing and clearing the entity manager at the
@@ -105,23 +103,18 @@ class DoSnapshot extends AbstractJob
             $query['page']++;
         }
 
-        // Prepare the used data type, property, and class data.
-        $this->usedDataTypes = array_count_values($this->usedDataTypes);
-        $this->usedProperties = array_count_values($this->usedProperties);
-        $this->usedClasses = array_count_values($this->usedClasses);
-        arsort($this->usedDataTypes, SORT_NUMERIC);
-        arsort($this->usedProperties, SORT_NUMERIC);
-        arsort($this->usedClasses, SORT_NUMERIC);
-
-        // Cache the snapshot data types, properties, classes, and vocabularies.
-        $this->cacheSnapshotDataTypes();
-        $this->cacheSnapshotPropertiesAndVocabularies();
-        $this->cacheSnapshotClassesAndVocabularies();
+        // Remove extraneous properties and classes.
+        $snapshotProperties = array_filter($this->snapshotProperties, function ($property) {
+            return $property['count'];
+        });
+        $snapshotClasses = array_filter($this->snapshotClasses, function ($class) {
+            return $class['count'];
+        });
 
         // Set the snapshot data to the import entity.
         $this->importEntity->setSnapshotDataTypes($this->snapshotDataTypes);
-        $this->importEntity->setSnapshotProperties($this->snapshotProperties);
-        $this->importEntity->setSnapshotClasses($this->snapshotClasses);
+        $this->importEntity->setSnapshotProperties($snapshotProperties);
+        $this->importEntity->setSnapshotClasses($snapshotClasses);
         $this->importEntity->setSnapshotVocabularies($this->snapshotVocabularies);
         $this->importEntity->setSnapshotItems($this->snapshotItems);
         $this->importEntity->setSnapshotCompleted(new DateTime('now'));
@@ -130,30 +123,9 @@ class DoSnapshot extends AbstractJob
     }
 
     /**
-     * Cache all remote vocabularies.
+     * Set all remote properties.
      */
-    protected function cacheAllVocabularies()
-    {
-        $endpoint = sprintf('%s/vocabularies', $this->importEntity->getRootEndpoint());
-        $client = $this->getApiClient($endpoint);
-        $query['per_page'] = 50;
-        $query['page'] = 1;
-        while (true) {
-            $vocabularies = $this->getApiOutput($client, $query);
-            if (!$vocabularies) {
-                break; // No more vocabularies.
-            }
-            foreach ($vocabularies as $vocabulary) {
-                $this->allVocabularies[$vocabulary['o:id']] = $vocabulary;
-            }
-            $query['page']++;
-        }
-    }
-
-    /**
-     * Cache all remote properties.
-     */
-    protected function cacheAllProperties()
+    protected function setSnapshotProperties()
     {
         $endpoint = sprintf('%s/properties', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
@@ -165,16 +137,21 @@ class DoSnapshot extends AbstractJob
                 break; // No more properties.
             }
             foreach ($properties as $property) {
-                $this->allProperties[$property['o:id']] = $property;
+                $this->snapshotProperties[$property['o:id']] = [
+                    'vocabulary_id' => $property['o:vocabulary']['o:id'],
+                    'local_name' => $property['o:local_name'],
+                    'label' => $property['o:label'],
+                    'count' => 0,
+                ];
             }
             $query['page']++;
         }
     }
 
     /**
-     * Cache all remote classes.
+     * Set all remote classes.
      */
-    protected function cacheAllClasses()
+    protected function setSnapshotClasses()
     {
         $endpoint = sprintf('%s/resource_classes', $this->importEntity->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
@@ -186,60 +163,38 @@ class DoSnapshot extends AbstractJob
                 break; // No more classes.
             }
             foreach ($classes as $class) {
-                $this->allClasses[$class['o:id']] = $class;
+                $this->snapshotClasses[$class['o:id']] = [
+                    'vocabulary_id' => $class['o:vocabulary']['o:id'],
+                    'local_name' => $class['o:local_name'],
+                    'label' => $class['o:label'],
+                    'count' => 0,
+                ];
             }
             $query['page']++;
         }
     }
 
     /**
-     * Cache the snapshot data types.
+     * Set all remote vocabularies.
      */
-    protected function cacheSnapshotDataTypes()
+    protected function setSnapshotVocabularies()
     {
-        foreach ($this->usedDataTypes as $dataTypeId => $count) {
-            $this->snapshotDataTypes[$dataTypeId] = [
-                'label' => null, // Placeholder until data_types resource is available
-                'count' => $count,
-            ];
-        }
-    }
-
-    /**
-     * Cache the snapshot properties (and vocabularies).
-     */
-    protected function cacheSnapshotPropertiesAndVocabularies()
-    {
-        foreach ($this->usedProperties as $propertyId => $count) {
-            $property = $this->allProperties[$propertyId];
-            $vocabulary = $this->allVocabularies[$property['o:vocabulary']['o:id']];
-            $this->snapshotProperties[$vocabulary['o:namespace_uri']][$propertyId] = [
-                'label' => $property['o:label'],
-                'local_name' => $property['o:local_name'],
-                'count' => $count,
-            ];
-            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
-                'label' => $vocabulary['o:label'],
-            ];
-        }
-    }
-
-    /**
-     * Cache the snapshot classes (and vocabularies).
-     */
-    protected function cacheSnapshotClassesAndVocabularies()
-    {
-        foreach ($this->usedClasses as $classId => $count) {
-            $class = $this->allClasses[$classId];
-            $vocabulary = $this->allVocabularies[$class['o:vocabulary']['o:id']];
-            $this->snapshotClasses[$vocabulary['o:namespace_uri']][$classId] = [
-                'label' => $class['o:label'],
-                'local_name' => $class['o:local_name'],
-                'count' => $count,
-            ];
-            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
-                'label' => $vocabulary['o:label'],
-            ];
+        $endpoint = sprintf('%s/vocabularies', $this->importEntity->getRootEndpoint());
+        $client = $this->getApiClient($endpoint);
+        $query['per_page'] = 50;
+        $query['page'] = 1;
+        while (true) {
+            $vocabularies = $this->getApiOutput($client, $query);
+            if (!$vocabularies) {
+                break; // No more vocabularies.
+            }
+            foreach ($vocabularies as $vocabulary) {
+                $this->snapshotVocabularies[$vocabulary['o:id']] = [
+                    'namespace_uri' => $vocabulary['o:namespace_uri'],
+                    'label' => $vocabulary['o:label'],
+                ];
+            }
+            $query['page']++;
         }
     }
 

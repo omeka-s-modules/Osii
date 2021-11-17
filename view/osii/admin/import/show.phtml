@@ -48,7 +48,7 @@ echo $this->sectionNav([
         </thead>
         <tbody>
         <?php $index = 0; ?>
-        <?php foreach ($import->snapshotDataTypes() as $remoteDataTypeId => $remoteDataType): ?>
+        <?php foreach ($remoteDataTypes as $remoteDataTypeId => $remoteDataType): ?>
             <tr>
                 <td>
                     <?php echo $remoteDataTypeId; ?>
@@ -74,10 +74,11 @@ echo $this->sectionNav([
 
 <div id="remote-properties" class="section">
     <h3><?php echo $this->translate('Remote properties'); ?></h3>
-    <?php foreach ($import->snapshotProperties() as $remoteVocabNamespaceUri => $remoteProperties): ?>
+    <?php foreach ($remoteProperties as $vocabularyId => $properties): ?>
+    <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
     <ul>
-        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $import->snapshotVocabularies()[$remoteVocabNamespaceUri]['label']); ?></li>
-        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $remoteVocabNamespaceUri); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $vocabulary['label']); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $vocabulary['namespace_uri']); ?></li>
     </ul>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
@@ -89,12 +90,12 @@ echo $this->sectionNav([
             </tr>
         </thead>
         <tbody>
-        <?php foreach ($remoteProperties as $remotePropertyId => $remoteProperty): ?>
-            <?php $propertyUri = sprintf('%s%s', $remoteVocabNamespaceUri, $remoteProperty['local_name']); ?>
+        <?php foreach ($properties as $propertyId => $property): ?>
+            <?php $propertyUri = sprintf('%s%s', $vocabulary['namespace_uri'], $property['local_name']); ?>
             <tr>
-                <td><?php echo $remoteProperty['local_name']; ?></td>
-                <td><?php echo $remoteProperty['label']; ?></td>
-                <td><?php echo $remoteProperty['count']; ?></td>
+                <td><?php echo $property['local_name']; ?></td>
+                <td><?php echo $property['label']; ?></td>
+                <td><?php echo $property['count']; ?></td>
                 <td><?php echo in_array($propertyUri, $localProperties) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
         <?php endforeach; ?>
@@ -105,10 +106,11 @@ echo $this->sectionNav([
 
 <div id="remote-classes" class="section">
     <h3><?php echo $this->translate('Remote classes'); ?></h3>
-    <?php foreach ($import->snapshotClasses() as $remoteVocabNamespaceUri => $remoteClasses): ?>
+    <?php foreach ($remoteClasses as $vocabularyId => $classes): ?>
+    <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
     <ul>
-        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $import->snapshotVocabularies()[$remoteVocabNamespaceUri]['label']); ?></li>
-        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $remoteVocabNamespaceUri); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary label: %s'), $vocabulary['label']); ?></li>
+        <li><?php echo sprintf($this->translate('Vocabulary namespace URI: %s'), $vocabulary['namespace_uri']); ?></li>
     </ul>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
@@ -120,12 +122,12 @@ echo $this->sectionNav([
             </tr>
         </thead>
         <tbody>
-        <?php foreach ($remoteClasses as $remoteClassId => $remoteClass): ?>
-            <?php $classUri = sprintf('%s%s', $remoteVocabNamespaceUri, $remoteClass['local_name']); ?>
+        <?php foreach ($classes as $classId => $class): ?>
+            <?php $classUri = sprintf('%s%s', $vocabulary['namespace_uri'], $class['local_name']); ?>
             <tr>
-                <td><?php echo $remoteClass['local_name']; ?></td>
-                <td><?php echo $remoteClass['label']; ?></td>
-                <td><?php echo $remoteClass['count']; ?></td>
+                <td><?php echo $class['local_name']; ?></td>
+                <td><?php echo $class['label']; ?></td>
+                <td><?php echo $class['count']; ?></td>
                 <td><?php echo in_array($classUri, $localClasses) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
         <?php endforeach; ?>

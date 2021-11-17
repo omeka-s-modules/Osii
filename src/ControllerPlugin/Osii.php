@@ -75,4 +75,36 @@ class Osii extends AbstractPlugin
         $query = $entityManager->createQuery($dql);
         return array_column($query->getResult(), 'uri');
     }
+
+    /**
+     * Prepare snapshot data types for display.
+     *
+     * @param array $snapshotDataTypes
+     * @return array
+     */
+    public function getPreparedSnapshotDataTypes(array $snapshotDataTypes)
+    {
+        $countColumn = array_column($snapshotDataTypes, 'count');
+        array_multisort($countColumn, SORT_DESC, $snapshotDataTypes);
+        return $snapshotDataTypes;
+    }
+
+    /**
+     * Prepare snapshot members (properties and classes) for display.
+     *
+     * @param array $snapshotMembers
+     * @return array
+     */
+    public function getPreparedSnapshotMembers(array $snapshotMembers)
+    {
+        $preparedSnapshotMembers = [];
+        foreach ($snapshotMembers as $memberId => $member) {
+            $preparedSnapshotMembers[$member['vocabulary_id']][$memberId] = $member;
+        }
+        foreach ($preparedSnapshotMembers as $namespaceUri => $members) {
+            $countColumn = array_column($members, 'count');
+            array_multisort($countColumn, SORT_DESC, $preparedSnapshotMembers[$namespaceUri]);
+        }
+        return $preparedSnapshotMembers;
+    }
 }
