@@ -64,8 +64,6 @@ class DoSnapshot extends AbstractJob
                 break; // No more items.
             }
             foreach ($items as $item) {
-                // Cache all remote item IDs gathered during this snapshot.
-                $this->snapshotItems[] = $item['o:id'];
                 // Save snapshots of remote items.
                 $osiiItemEntity = $entityManager
                     ->getRepository(OsiiEntity\OsiiItem::class)
@@ -84,6 +82,8 @@ class DoSnapshot extends AbstractJob
                     $osiiItemEntity->setModified(new DateTime('now'));
                 }
                 $osiiItemEntity->setSnapshotItem($item);
+                // Cache all remote item IDs.
+                $this->snapshotItems[] = $item['o:id'];
                 // Cache used data types and properties.
                 $values = $this->getValuesFromResource($item);
                 foreach ($values as $value) {
@@ -105,6 +105,7 @@ class DoSnapshot extends AbstractJob
             $query['page']++;
         }
 
+        // Prepare the used data type, property, and class data.
         $this->usedDataTypes = array_count_values($this->usedDataTypes);
         $this->usedProperties = array_count_values($this->usedProperties);
         $this->usedClasses = array_count_values($this->usedClasses);
@@ -112,47 +113,19 @@ class DoSnapshot extends AbstractJob
         arsort($this->usedProperties, SORT_NUMERIC);
         arsort($this->usedClasses, SORT_NUMERIC);
 
-        // Cache the snapshot data types.
-        foreach ($this->usedDataTypes as $dataTypeId => $count) {
-            $this->snapshotDataTypes[$dataTypeId] = [
-                'label' => null, // Placeholder until data_types resource is available
-                'count' => $count,
-            ];
-        }
-        // Cache the snapshot properties (and vocabularies).
-        foreach ($this->usedProperties as $propertyId => $count) {
-            $property = $this->allProperties[$propertyId];
-            $vocabulary = $this->allVocabularies[$property['o:vocabulary']['o:id']];
-            $this->snapshotProperties[$vocabulary['o:namespace_uri']][$propertyId] = [
-                'label' => $property['o:label'],
-                'local_name' => $property['o:local_name'],
-                'count' => $count,
-            ];
-            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
-                'label' => $vocabulary['o:label'],
-            ];
-        }
-        // Cache the snapshot classes (and vocabularies).
-        foreach ($this->usedClasses as $classId => $count) {
-            $class = $this->allClasses[$classId];
-            $vocabulary = $this->allVocabularies[$class['o:vocabulary']['o:id']];
-            $this->snapshotClasses[$vocabulary['o:namespace_uri']][$classId] = [
-                'label' => $class['o:label'],
-                'local_name' => $class['o:local_name'],
-                'count' => $count,
-            ];
-            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
-                'label' => $vocabulary['o:label'],
-            ];
-        }
+        // Cache the snapshot data types, properties, classes, and vocabularies.
+        $this->cacheSnapshotDataTypes();
+        $this->cacheSnapshotPropertiesAndVocabularies();
+        $this->cacheSnapshotClassesAndVocabularies();
 
+        // Set the snapshot data to the import entity.
         $this->importEntity->setSnapshotDataTypes($this->snapshotDataTypes);
         $this->importEntity->setSnapshotProperties($this->snapshotProperties);
         $this->importEntity->setSnapshotClasses($this->snapshotClasses);
         $this->importEntity->setSnapshotVocabularies($this->snapshotVocabularies);
-
         $this->importEntity->setSnapshotItems($this->snapshotItems);
         $this->importEntity->setSnapshotCompleted(new DateTime('now'));
+
         $entityManager->flush();
     }
 
@@ -216,6 +189,57 @@ class DoSnapshot extends AbstractJob
                 $this->allClasses[$class['o:id']] = $class;
             }
             $query['page']++;
+        }
+    }
+
+    /**
+     * Cache the snapshot data types.
+     */
+    protected function cacheSnapshotDataTypes()
+    {
+        foreach ($this->usedDataTypes as $dataTypeId => $count) {
+            $this->snapshotDataTypes[$dataTypeId] = [
+                'label' => null, // Placeholder until data_types resource is available
+                'count' => $count,
+            ];
+        }
+    }
+
+    /**
+     * Cache the snapshot properties (and vocabularies).
+     */
+    protected function cacheSnapshotPropertiesAndVocabularies()
+    {
+        foreach ($this->usedProperties as $propertyId => $count) {
+            $property = $this->allProperties[$propertyId];
+            $vocabulary = $this->allVocabularies[$property['o:vocabulary']['o:id']];
+            $this->snapshotProperties[$vocabulary['o:namespace_uri']][$propertyId] = [
+                'label' => $property['o:label'],
+                'local_name' => $property['o:local_name'],
+                'count' => $count,
+            ];
+            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
+                'label' => $vocabulary['o:label'],
+            ];
+        }
+    }
+
+    /**
+     * Cache the snapshot classes (and vocabularies).
+     */
+    protected function cacheSnapshotClassesAndVocabularies()
+    {
+        foreach ($this->usedClasses as $classId => $count) {
+            $class = $this->allClasses[$classId];
+            $vocabulary = $this->allVocabularies[$class['o:vocabulary']['o:id']];
+            $this->snapshotClasses[$vocabulary['o:namespace_uri']][$classId] = [
+                'label' => $class['o:label'],
+                'local_name' => $class['o:local_name'],
+                'count' => $count,
+            ];
+            $this->snapshotVocabularies[$vocabulary['o:namespace_uri']] = [
+                'label' => $vocabulary['o:label'],
+            ];
         }
     }
 
