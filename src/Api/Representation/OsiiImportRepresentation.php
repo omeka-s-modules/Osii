@@ -210,7 +210,14 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
         $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
-        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        $importStatus = $importJob
+            ? in_array($importJob->status(), [
+                Job::STATUS_COMPLETED,
+                Job::STATUS_STOPPING,
+                Job::STATUS_STOPPED,
+                Job::STATUS_ERROR,
+            ]
+            ) : true;
         return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
     }
 
