@@ -2,7 +2,9 @@
 namespace Osii;
 
 use Omeka\Module\AbstractModule;
+use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class Module extends AbstractModule
@@ -10,6 +12,16 @@ class Module extends AbstractModule
     public function getConfig()
     {
         return include sprintf('%s/config/module.config.php', __DIR__);
+    }
+
+    public function onBootstrap(MvcEvent $event)
+    {
+        parent::onBootstrap($event);
+
+        // Set the corresponding visibility rules on OSII items.
+        $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+        $filter = $entityManager->getFilters()->getFilter('resource_visibility');
+        $filter->addRelatedEntity('Osii\Entity\OsiiItem', 'local_item_id');
     }
 
     public function install(ServiceLocatorInterface $services)
@@ -41,5 +53,10 @@ SQL;
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
+        $sharedEventManager->attach('*', 'api.context', function (Event $event) {
+            $context = $event->getParam('context');
+            $context['o-module-osii'] = 'http://omeka.org/s/vocabs/module/osii#';
+            $event->setParam('context', $context);
+        });
     }
 }

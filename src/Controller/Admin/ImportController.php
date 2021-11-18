@@ -5,7 +5,6 @@ use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Omeka\Form as OmekaForm;
-use Omeka\Stdlib\Message;
 use Osii\Entity;
 use Osii\Form as OsiiForm;
 use Osii\Job;

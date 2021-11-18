@@ -34,6 +34,7 @@ return [
     'api_adapters' => [
         'invokables' => [
             'osii_imports' => Api\Adapter\OsiiImportAdapter::class,
+            'osii_items' => Api\Adapter\OsiiItemAdapter::class,
         ],
     ],
     'controllers' => [

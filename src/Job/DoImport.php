@@ -1,7 +1,6 @@
 <?php
 namespace Osii\Job;
 
-use DateTime;
 use Omeka\Job\AbstractJob;
 use Osii\Entity as OsiiEntity;
 
@@ -23,9 +22,11 @@ class DoImport extends AbstractJob
         $importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
 
         // Items from a previous snapshot may have been removed before the
-        // current snapshot. These must be deleted locally. Here we get these
-        // removed items and delete them. Not all OSII items will have related
-        // Omeka items becuase snapshots can change without a subsequent import.
+        // current snapshot was taken. These must be removed locally so that the
+        // local items are in sync with the remote ones. Here we get these
+        // removed items and delete them. Note that not all OSII items will have
+        // related Omeka items becuase snapshots can change without a subsequent
+        // import.
         $dql = '
         SELECT i.id AS osii_item, IDENTITY(i.localItem) as local_item
         FROM Osii\Entity\OsiiItem i
@@ -34,17 +35,13 @@ class DoImport extends AbstractJob
         $query = $entityManager->createQuery($dql)
             ->setParameters([
                 'import' => $importEntity,
-                'snapshotItems' => $importEntity->getSnapshotItems()
+                'snapshotItems' => $importEntity->getSnapshotItems(),
             ]);
         $itemsToDelete = $query->getResult();
-        $query = $entityManager
-            ->createQuery('DELETE Osii\Entity\OsiiItem i WHERE i.id IN (:osiiItems)')
-            ->setParameter('osiiItems', array_column($itemsToDelete, 'osii_item'));
-        $query->execute();
-        $query = $entityManager
-            ->createQuery('DELETE Omeka\Entity\Item i WHERE i.id IN (:localItems)')
-            ->setParameter('localItems', array_column($itemsToDelete, 'local_item'));
-        $query->execute();
+        $osiiItemsToDelete = array_filter(array_column($itemsToDelete, 'osii_item'));
+        $apiManager->batchDelete('osii_items', $osiiItemsToDelete);
+        $localItemsToDelete = array_filter(array_column($itemsToDelete, 'local_item'));
+        $apiManager->batchDelete('items', $localItemsToDelete);
 
         // @todo: create an item for every `osii_item` row that doesn't have a
         // `local_item_id`. Set that new item ID to `local_item_id`.

@@ -19,7 +19,7 @@ use Omeka\Entity\Item;
  *         )
  *     }
  * )
-*/
+ */
 class OsiiItem extends AbstractEntity
 {
     /**
