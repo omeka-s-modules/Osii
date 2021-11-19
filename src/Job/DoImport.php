@@ -112,22 +112,28 @@ class DoImport extends AbstractJob
             }
         }
 
-        /*
-        Then, for each row in `osii_item`:
-            - Extract the values in `snapshot_item` and transform them as
-            necessary, using the `osii_import`.`data_type_map` (for type), the
-            remote/local item ID map (for value_resource_id), and the local
-            vocabulary data (for property_id).
-            - Extract the resource class in `snapshot_item` and transform it
-            using the local vocabulary data (for o:id).
-            - Set the item set o:id to the one configured in `osii_import`
-            .`local_item_set_id`
-            - Add remote item's API URL to dcterms:source (URI type).
-            - Add o:is_public
-            - Add o:title ???
-            - Use the API manager to update the existing Omeka item using the
-            transformed JSON-LD.
+        $dql = 'SELECT i
+        FROM Osii\Entity\OsiiItem i
+        WHERE i.import = :import';
+        $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
+        foreach ($query->toIterable() as $osiiItem) {
+            $snapshotItem = $osiiItem->getSnapshotItem();
 
-        */
+            // @todo: Build JSON-LD for each item, according to the following:
+
+            // @todo: Extract values and do necessary transformations for type, property_id, and value_resource_id.
+
+            // @todo: Extract the class and do necessary transformations for o:id.
+
+            // @todo: Set the item set to the one configured for the import.
+
+            // @todo: Set the dcterms:source to remote API URL, uri type.
+
+            // @todo: Set o:is_public
+
+            // @todo: Set o:title ???
+
+            // @todo: Use API manager to update each item using the JSON-LD.
+        }
     }
 }
