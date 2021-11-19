@@ -23,11 +23,11 @@ class DoImport extends AbstractJob
         // Set the import entity.
         $importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
 
-        // Remote items may have been deleted or removed since the previous
-        // snapshot. These must be removed locally so that the local items are
-        // in sync with the remote ones. Here we get these removed items and
-        // delete them. Note that not all OSII items will have related Omeka
-        // items becuase snapshots can change without a subsequent import.
+        // Remote items may have been deleted (or simply removed) since the
+        // previous snapshot. These must be deleted locally so that the local
+        // items are in sync with the remote ones. Here we get these removed
+        // items and delete them. Note that not all OSII items will have related
+        // Omeka items becuase snapshots can change without a subsequent import.
         $dql = 'SELECT i.id AS osii_item, IDENTITY(i.localItem) AS local_item
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import
@@ -50,8 +50,7 @@ class DoImport extends AbstractJob
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import
         AND i.localItem IS NULL';
-        $query = $entityManager->createQuery($dql)
-            ->setParameter('import', $importEntity);
+        $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
         $i = 1;
         $batchSize = 50;
         foreach ($query->toIterable() as $osiiItem) {
@@ -68,8 +67,50 @@ class DoImport extends AbstractJob
         $entityManager->flush();
         $entityManager->clear();
 
-        // @todo: cache the `remote_item_id` => `local_item_id` map and the
-        // local vocabulary data (properties and classes).
+        // Get the remote/local ID maps. Keys are remote IDs; values are local
+        // IDs. Here we're mapping the remote items, properties, and classes to
+        // the local items, properties, and classes.
+        $dql = 'SELECT i.remoteItemId AS remote_item, IDENTITY(i.localItem) AS local_item
+        FROM Osii\Entity\OsiiItem i
+        WHERE i.import = :import';
+        $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
+        $itemsMap = array_column($query->getResult(), 'local_item', 'remote_item');
+
+        $dql = 'SELECT p.id AS property_id, CONCAT(v.namespaceUri, p.localName) AS uri
+        FROM Omeka\Entity\Property p
+        JOIN p.vocabulary v';
+        $query = $entityManager->createQuery($dql);
+        $localProperties = array_column($query->getResult(), 'property_id', 'uri');
+
+        $dql = 'SELECT c.id AS class_id, CONCAT(v.namespaceUri, c.localName) AS uri
+        FROM Omeka\Entity\ResourceClass c
+        JOIN c.vocabulary v';
+        $query = $entityManager->createQuery($dql);
+        $localClasses = array_column($query->getResult(), 'class_id', 'uri');
+
+        $snapshotVocabularies = $importEntity->getSnapshotVocabularies();
+        $snapshotProperties = $importEntity->getSnapshotProperties();
+        $snapshotClasses = $importEntity->getSnapshotClasses();
+
+        $propertiesMap = [];
+        foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
+            $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
+            $localName = $remoteProperty['local_name'];
+            $uri = sprintf('%s%s', $namespaceUri, $localName);
+            if (isset($localProperties[$uri])) {
+                $propertiesMap[$remotePropertyId] = $localProperties[$uri];
+            }
+        }
+
+        $classesMap = [];
+        foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
+            $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
+            $localName = $remoteClass['local_name'];
+            $uri = sprintf('%s%s', $namespaceUri, $localName);
+            if (isset($localClasses[$uri])) {
+                $classesMap[$remoteClassId] = $localClasses[$uri];
+            }
+        }
 
         /*
         Then, for each row in `osii_item`:
