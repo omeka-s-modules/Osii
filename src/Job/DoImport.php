@@ -1,6 +1,8 @@
 <?php
 namespace Osii\Job;
 
+use DateTime;
+use Omeka\Entity as OmekaEntity;
 use Omeka\Job\AbstractJob;
 use Osii\Entity as OsiiEntity;
 
@@ -21,14 +23,12 @@ class DoImport extends AbstractJob
         // Set the import entity.
         $importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
 
-        // Items from a previous snapshot may have been removed before the
-        // current snapshot was taken. These must be removed locally so that the
-        // local items are in sync with the remote ones. Here we get these
-        // removed items and delete them. Note that not all OSII items will have
-        // related Omeka items becuase snapshots can change without a subsequent
-        // import.
-        $dql = '
-        SELECT i.id AS osii_item, IDENTITY(i.localItem) as local_item
+        // Remote items may have been deleted or removed since the previous
+        // snapshot. These must be removed locally so that the local items are
+        // in sync with the remote ones. Here we get these removed items and
+        // delete them. Note that not all OSII items will have related Omeka
+        // items becuase snapshots can change without a subsequent import.
+        $dql = 'SELECT i.id AS osii_item, IDENTITY(i.localItem) AS local_item
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import
         AND i.remoteItemId NOT IN (:snapshotItems)';
@@ -39,12 +39,34 @@ class DoImport extends AbstractJob
             ]);
         $itemsToDelete = $query->getResult();
         $osiiItemsToDelete = array_filter(array_column($itemsToDelete, 'osii_item'));
-        $apiManager->batchDelete('osii_items', $osiiItemsToDelete);
         $localItemsToDelete = array_filter(array_column($itemsToDelete, 'local_item'));
+        $apiManager->batchDelete('osii_items', $osiiItemsToDelete);
         $apiManager->batchDelete('items', $localItemsToDelete);
 
-        // @todo: create an item for every `osii_item` row that doesn't have a
-        // `local_item_id`. Set that new item ID to `local_item_id`.
+        // Remote items may have been created since the previous snapshot. These
+        // must be created locally. Here we create these new items and assign
+        // them to their related OSII items.
+        $dql = 'SELECT i
+        FROM Osii\Entity\OsiiItem i
+        WHERE i.import = :import
+        AND i.localItem IS NULL';
+        $query = $entityManager->createQuery($dql)
+            ->setParameter('import', $importEntity);
+        $i = 1;
+        $batchSize = 50;
+        foreach ($query->toIterable() as $osiiItem) {
+            $localItem = new OmekaEntity\Item;
+            $localItem->setCreated(new DateTime('now'));
+            $entityManager->persist($localItem);
+            $osiiItem->setLocalItem($localItem);
+            if (0 === ($i % $batchSize)) {
+                $entityManager->flush();
+                $entityManager->clear();
+            }
+            $i++;
+        }
+        $entityManager->flush();
+        $entityManager->clear();
 
         // @todo: cache the `remote_item_id` => `local_item_id` map and the
         // local vocabulary data (properties and classes).
