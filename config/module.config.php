@@ -26,11 +26,6 @@ return [
             sprintf('%s/../data/doctrine-proxies', __DIR__),
         ],
     ],
-    'service_manager' => [
-        'factories' => [
-            'Osii' => Service\OsiiFactory::class,
-        ],
-    ],
     'api_adapters' => [
         'invokables' => [
             'osii_imports' => Api\Adapter\OsiiImportAdapter::class,

@@ -3,10 +3,9 @@ namespace Osii\Job;
 
 use DateTime;
 use Omeka\Entity as OmekaEntity;
-use Omeka\Job\AbstractJob;
 use Osii\Entity as OsiiEntity;
 
-class DoImport extends AbstractJob
+class DoImport extends AbstractOsiiJob
 {
     /**
      * Sync a dataset with its item set.
@@ -112,18 +111,25 @@ class DoImport extends AbstractJob
             }
         }
 
+        // Import items from their snapshot.
         $dql = 'SELECT i
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import';
         $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
         foreach ($query->toIterable() as $osiiItem) {
-            $snapshotItem = $osiiItem->getSnapshotItem();
+            $localItem = [];
+            $remoteItem = $osiiItem->getSnapshotItem();
 
             // @todo: Build JSON-LD for each item, according to the following:
 
             // @todo: Extract values and do necessary transformations for type, property_id, and value_resource_id.
+            foreach ($this->getValuesFromResource($remoteItem) as $remoteValue) {
+            }
 
             // @todo: Extract the class and do necessary transformations for o:id.
+            if (isset($item['o:resource_class'])) {
+                $remoteClassId = $item['o:resource_class']['o:id'];
+            }
 
             // @todo: Set the item set to the one configured for the import.
 

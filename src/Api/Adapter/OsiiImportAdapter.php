@@ -94,9 +94,8 @@ class OsiiImportAdapter extends AbstractEntityAdapter
      */
     protected function rootEndpointIsValid($rootEndpoint)
     {
-        $importer = $this->getServiceLocator()->get('Osii');
         $endpoint = sprintf('%s/items', $rootEndpoint);
-        return (bool) $importer->doApiRequest($endpoint);
+        return (bool) $this->doApiRequest($endpoint);
     }
 
     /**
@@ -113,8 +112,43 @@ class OsiiImportAdapter extends AbstractEntityAdapter
             // No authentication to validate.
             return true;
         }
-        $importer = $this->getServiceLocator()->get('Osii');
         $endpoint = sprintf('%s/modules', $rootEndpoint);
-        return (bool) $importer->doApiRequest($endpoint, $keyIdentity, $keyCredential);
+        return (bool) $this->doApiRequest($endpoint, $keyIdentity, $keyCredential);
+    }
+
+    /**
+     * Do an Omeka S API request and return the JSON-LD output.
+     *
+     * Returns false if not a valid URL, does not resolve, or does not have the
+     * Omeka-S-Version header.
+     *
+     * @param string $endpoint
+     * @param string|null $keyIdentity
+     * @param string|null $keyCredential
+     * @return array|false
+     */
+    public function doApiRequest($endpoint, $keyIdentity = null, $keyCredential = null)
+    {
+        $client = $this->getServiceLocator()->get('Omeka\HttpClient');
+        $client->setUri($endpoint);
+        $client->setParameterGet([
+            'key_identity' => $keyIdentity,
+            'key_credential' => $keyCredential,
+        ]);
+        try {
+            $response = $client->send();
+        } catch (Exception $e) {
+            // Must be a valid URL.
+            return false;
+        }
+        if (!$response->isSuccess()) {
+            // Must successfully resolve.
+            return false;
+        }
+        if (!$response->getHeaders()->get('omeka-s-version')) {
+            // Must have the Omeka-S-Version header.
+            return false;
+        }
+        return json_decode($response->getBody(), true);
     }
 }
