@@ -73,7 +73,7 @@ class DoImport extends AbstractOsiiJob
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import';
         $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
-        $itemsMap = array_column($query->getResult(), 'local_item', 'remote_item');
+        $itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
 
         $dql = 'SELECT p.id AS property_id, CONCAT(v.namespaceUri, p.localName) AS uri
         FROM Omeka\Entity\Property p
@@ -91,25 +91,27 @@ class DoImport extends AbstractOsiiJob
         $snapshotProperties = $importEntity->getSnapshotProperties();
         $snapshotClasses = $importEntity->getSnapshotClasses();
 
-        $propertiesMap = [];
+        $propertyMap = [];
         foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
             $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
             $localName = $remoteProperty['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localProperties[$uri])) {
-                $propertiesMap[$remotePropertyId] = $localProperties[$uri];
+                $propertyMap[$remotePropertyId] = $localProperties[$uri];
             }
         }
 
-        $classesMap = [];
+        $classMap = [];
         foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
             $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
             $localName = $remoteClass['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localClasses[$uri])) {
-                $classesMap[$remoteClassId] = $localClasses[$uri];
+                $classMap[$remoteClassId] = $localClasses[$uri];
             }
         }
+
+        $dataTypeMap = $importEntity->getDataTypeMap();
 
         // Import items from their snapshot.
         $dql = 'SELECT i
@@ -117,27 +119,46 @@ class DoImport extends AbstractOsiiJob
         WHERE i.import = :import';
         $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
         foreach ($query->toIterable() as $osiiItem) {
-            $localItem = [];
-            $remoteItem = $osiiItem->getSnapshotItem();
-
-            // @todo: Build JSON-LD for each item, according to the following:
-
-            // @todo: Extract values and do necessary transformations for type, property_id, and value_resource_id.
-            foreach ($this->getValuesFromResource($remoteItem) as $remoteValue) {
+            $remoteJsonLd = $osiiItem->getSnapshotItem();
+            $localJsonLd = ['o:is_public' => $remoteJsonLd['o:is_public']];
+            // Set the item set.
+            $localItemSet = $importEntity->getLocalItemSet();
+            if ($localItemSet) {
+                $localJsonLd['o:item_set'][] = ['o:id' => $localItemSet->getId()];
             }
-
-            // @todo: Extract the class and do necessary transformations for o:id.
-            if (isset($item['o:resource_class'])) {
-                $remoteClassId = $item['o:resource_class']['o:id'];
+            // Set the class.
+            if (isset($remoteJsonLd['o:resource_class'])) {
+                $localJsonLd['o:resource_class']['o:id'] = $remoteJsonLd['o:resource_class']['o:id'];
             }
-
-            // @todo: Set the item set to the one configured for the import.
+            // Set the values.
+            foreach ($this->getValuesFromResource($remoteJsonLd) as $remoteValue) {
+                if (!isset($dataTypeMap[$remoteValue['type']])) {
+                    // Data type is not on local installation. Ignore value.
+                    continue;
+                }
+                if (!isset($propertyMap[$remoteValue['property_id']])) {
+                    // Property is not on local installation. Ignore value.
+                    continue;
+                }
+                if (isset($remoteValue['value_resource_id'])) {
+                    if (!isset($itemMap[$remoteValue['value_resource_id']])) {
+                        // Item is not on local installation. Ignore value.
+                        continue;
+                    }
+                    $remoteValue['value_resource_id'] = $itemMap[$remoteValue['value_resource_id']];
+                }
+                $dataType = $dataTypeMap[$remoteValue['type']];
+                $propertyId = $propertyMap[$remoteValue['property_id']];
+                $remoteValue['type'] = $dataType;
+                $remoteValue['property_id'] = $propertyId;
+                if (!isset($localJsonLd[$propertyId])) {
+                    $localJsonLd[$propertyId] = [];
+                }
+                $localJsonLd[$propertyId][] = $remoteValue;
+            }
+            print_r($localJsonLd);
 
             // @todo: Set the dcterms:source to remote API URL, uri type.
-
-            // @todo: Set o:is_public
-
-            // @todo: Set o:title ???
 
             // @todo: Use API manager to update each item using the JSON-LD.
         }

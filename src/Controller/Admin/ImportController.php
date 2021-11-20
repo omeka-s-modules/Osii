@@ -120,6 +120,10 @@ class ImportController extends AbstractActionController
         $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
         $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
 
+        $snapshotDataTypes = $import->snapshotDataTypes() ?? [];
+        $snapshotProperties = $import->snapshotProperties() ?? [];
+        $snapshotClasses = $import->snapshotClasses() ?? [];
+
         $view = new ViewModel;
         $view->setVariable('import', $import);
         $view->setVariable('form', $form);
@@ -129,9 +133,9 @@ class ImportController extends AbstractActionController
         $view->setVariable('localDataTypeSelect', $this->osii()->getLocalDataTypeSelect());
         $view->setVariable('localProperties', $this->osii()->getLocalProperties());
         $view->setVariable('localClasses', $this->osii()->getLocalClasses());
-        $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotDataTypes($import->snapshotDataTypes()));
-        $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($import->snapshotProperties()));
-        $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($import->snapshotClasses()));
+        $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotDataTypes($snapshotDataTypes));
+        $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($snapshotProperties));
+        $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($snapshotClasses));
         return $view;
     }
 
