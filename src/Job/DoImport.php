@@ -52,11 +52,11 @@ class DoImport extends AbstractOsiiJob
         $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
         $i = 1;
         $batchSize = 50;
-        foreach ($query->toIterable() as $osiiItem) {
+        foreach ($query->toIterable() as $osiiItemEntity) {
             $localItem = new OmekaEntity\Item;
             $localItem->setCreated(new DateTime('now'));
             $entityManager->persist($localItem);
-            $osiiItem->setLocalItem($localItem);
+            $osiiItemEntity->setLocalItem($localItem);
             if (0 === ($i % $batchSize)) {
                 $entityManager->flush();
                 $entityManager->clear();
@@ -118,20 +118,31 @@ class DoImport extends AbstractOsiiJob
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import';
         $query = $entityManager->createQuery($dql)->setParameter('import', $importEntity);
-        foreach ($query->toIterable() as $osiiItem) {
-            $remoteJsonLd = $osiiItem->getSnapshotItem();
-            $localJsonLd = ['o:is_public' => $remoteJsonLd['o:is_public']];
+        $i = 1;
+        $batchSize = 50;
+        foreach ($query->toIterable() as $osiiItemEntity) {
+            $localItemEntity = $osiiItemEntity->getLocalItem();
+            $remoteItem = $osiiItemEntity->getSnapshotItem();
+            $localItem = [];
+            // @todo: Set the dcterms:source to remote API URL, uri type.
+
+            // @todo: Use API manager to update each item using the JSON-LD.
+
+            // Set the owner.
+            $localItem['o:owner']['o:id'] = $this->job->getOwner()->getId();
+            // Set the visibility.
+            $localItem['o:is_public'] = $remoteItem['o:is_public'];
             // Set the item set.
             $localItemSet = $importEntity->getLocalItemSet();
             if ($localItemSet) {
-                $localJsonLd['o:item_set'][] = ['o:id' => $localItemSet->getId()];
+                $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
             }
             // Set the class.
-            if (isset($remoteJsonLd['o:resource_class'])) {
-                $localJsonLd['o:resource_class']['o:id'] = $remoteJsonLd['o:resource_class']['o:id'];
+            if (isset($remoteItem['o:resource_class']) && isset($classMap[$remoteItem['o:resource_class']['o:id']])) {
+                $localItem['o:resource_class']['o:id'] = $classMap[$remoteItem['o:resource_class']['o:id']];
             }
             // Set the values.
-            foreach ($this->getValuesFromResource($remoteJsonLd) as $remoteValue) {
+            foreach ($this->getValuesFromResource($remoteItem) as $remoteValue) {
                 if (!isset($dataTypeMap[$remoteValue['type']])) {
                     // Data type is not on local installation. Ignore value.
                     continue;
@@ -151,16 +162,23 @@ class DoImport extends AbstractOsiiJob
                 $propertyId = $propertyMap[$remoteValue['property_id']];
                 $remoteValue['type'] = $dataType;
                 $remoteValue['property_id'] = $propertyId;
-                if (!isset($localJsonLd[$propertyId])) {
-                    $localJsonLd[$propertyId] = [];
+                if (!isset($localItem[$propertyId])) {
+                    $localItem[$propertyId] = [];
                 }
-                $localJsonLd[$propertyId][] = $remoteValue;
+                $localItem[$propertyId][] = $remoteValue;
             }
-            print_r($localJsonLd);
-
-            // @todo: Set the dcterms:source to remote API URL, uri type.
-
-            // @todo: Use API manager to update each item using the JSON-LD.
+            $updateOptions = [
+                'flushEntityManager' => false, // Flush (and clear) only once per batch.
+                'responseContent' => 'resource', // Avoid the overhead of composing the representation.
+            ];
+            $apiManager->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
+            if (0 === ($i % $batchSize)) {
+                $entityManager->flush();
+                $entityManager->clear();
+            }
+            $i++;
         }
+        $entityManager->flush();
+        $entityManager->clear();
     }
 }
