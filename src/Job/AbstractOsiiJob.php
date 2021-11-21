@@ -2,6 +2,7 @@
 namespace Osii\Job;
 
 use Omeka\Job\AbstractJob;
+use Omeka\Log\Writer\Job as JobWriter;
 use Osii\Entity as OsiiEntity;
 
 abstract class AbstractOsiiJob extends AbstractJob
@@ -11,6 +12,8 @@ abstract class AbstractOsiiJob extends AbstractJob
     protected $entityManager;
 
     protected $importEntity;
+
+    protected $logger;
 
     /**
      * Get the API manager.
@@ -56,6 +59,20 @@ abstract class AbstractOsiiJob extends AbstractJob
         }
         // Preemptively merge the entity in the event that it was detached.
         return $this->getEntityManager()->merge($this->importEntity);
+    }
+
+    /**
+     * Get the job logger.
+     *
+     * @return
+     */
+    protected function getLogger()
+    {
+        if (null === $this->logger) {
+            $this->logger = $this->getServiceLocator()->get('Omeka\Logger');
+            $this->logger->addWriter(new JobWriter($this->job));
+        }
+        return $this->logger;
     }
 
     /**
