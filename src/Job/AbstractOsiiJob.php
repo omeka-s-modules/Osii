@@ -2,9 +2,62 @@
 namespace Osii\Job;
 
 use Omeka\Job\AbstractJob;
+use Osii\Entity as OsiiEntity;
 
 abstract class AbstractOsiiJob extends AbstractJob
 {
+    protected $apiManager;
+
+    protected $entityManager;
+
+    protected $importEntity;
+
+    /**
+     * Get the API manager.
+     *
+     * @return Omeka\Api\Manager
+     */
+    protected function getApiManager()
+    {
+        if (null === $this->apiManager) {
+            // Set the API manager if not already set.
+            $this->apiManager = $this->getServiceLocator()->get('Omeka\ApiManager');
+        }
+        return $this->apiManager;
+    }
+
+    /**
+     * Get the entity manager.
+     *
+     * @return Doctrine\ORM\EntityManager
+     */
+    protected function getEntityManager()
+    {
+        if (null === $this->entityManager) {
+            // Set the entity manager if not already set.
+            $this->entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
+        }
+        return $this->entityManager;
+    }
+
+    /**
+     * Get the OSII import entity.
+     *
+     * @return Osii\Entity\OsiiEntity
+     */
+    protected function getImportEntity()
+    {
+        if (null === $this->importEntity) {
+            // Set the entity if not already set.
+            $this->importEntity = $this->getEntityManager()->find(
+                OsiiEntity\OsiiImport::class,
+                $this->getArg('import_id')
+            );
+        }
+        // Preemptively merge the entity in the event that it was detached.
+        return $this->getEntityManager()->merge($this->importEntity);
+    }
+
     /**
      * Get values from resource JSON-LD.
      *

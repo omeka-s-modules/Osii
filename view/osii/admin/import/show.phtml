@@ -20,14 +20,16 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
     <?php echo $this->translate('Manage'); ?>
 </div>
 
+<ul>
+    <li><?php echo sprintf($this->translate('Snapshot last completed: %s'), $import->snapshotCompleted() ? $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'short') : $this->translate('[n/a]')); ?></li>
+    <li><?php echo sprintf($this->translate('Snapshot item count: %s'), $import->snapshotCompleted() ? count($import->snapshotItems()) : $this->translate('[n/a]')); ?></li>
+    <li><?php echo sprintf($this->translate('Import last completed: %s'), $import->importCompleted() ? $this->i18n()->dateFormat($import->importCompleted(), 'medium', 'short') : $this->translate('[n/a]')); ?></li>
+    <li><?php echo sprintf($this->translate('Import item count: %s'), $import->importCompleted() ? $import->osiiItemsCount() : $this->translate('[n/a]')); ?></li>
+</ul>
+
 <?php if ($import->canPrepareImport()): ?>
 
 <p><?php echo $this->translate('Prepare the import below.'); ?></p>
-<ul>
-    <li><?php echo sprintf($this->translate('Snapshot completed: %s'), $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'short')); ?></li>
-    <li><?php echo sprintf($this->translate('Snapshot item count: %s'), count($import->snapshotItems())); ?></li>
-    <li><?php echo sprintf($this->translate('Import item count: %s'), $import->osiiItemsCount()); ?></li>
-</ul>
 
 <?php
 echo $this->sectionNav([

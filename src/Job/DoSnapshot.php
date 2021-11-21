@@ -8,32 +8,24 @@ use Osii\Entity as OsiiEntity;
 
 class DoSnapshot extends AbstractOsiiJob
 {
-    /**
-     * Sync a dataset with its item set.
-     */
     public function perform()
     {
         ini_set('memory_limit', '500M'); // Set a high memory limit.
 
-        $importId = $this->getArg('import_id');
-
-        // Set the import entity.
-        $entityManager = $this->getServiceLocator()->get('Omeka\EntityManager');
-        $importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
-
         // Set initial snapshot data.
         $snapshotItems = [];
         $snapshotDataTypes = [];
-        $snapshotProperties = $this->getSnapshotProperties($importEntity->getRootEndpoint());
-        $snapshotClasses = $this->getSnapshotClasses($importEntity->getRootEndpoint());
-        $snapshotVocabularies = $this->getSnapshotVocabularies($importEntity->getRootEndpoint());
+        $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
+        $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
+        $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
+        $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
 
         // Iterate remote items.
-        $endpoint = sprintf('%s/items', $importEntity->getRootEndpoint());
+        $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
-        parse_str($importEntity->getRemoteQuery(), $query);
-        $query['key_identity'] = $importEntity->getKeyIdentity();
-        $query['key_credential'] = $importEntity->getKeyCredential();
+        parse_str($this->getImportEntity()->getRemoteQuery(), $query);
+        $query['key_identity'] = $this->getImportEntity()->getKeyIdentity();
+        $query['key_credential'] = $this->getImportEntity()->getKeyCredential();
         $query['sort_by'] = 'id';
         $query['sort_order'] = 'asc';
         $query['per_page'] = 50;
@@ -48,18 +40,18 @@ class DoSnapshot extends AbstractOsiiJob
             }
             foreach ($items as $item) {
                 // Save snapshots of remote items.
-                $osiiItemEntity = $entityManager
+                $osiiItemEntity = $this->getEntityManager()
                     ->getRepository(OsiiEntity\OsiiItem::class)
                     ->findOneBy([
-                        'import' => $importEntity,
+                        'import' => $this->getImportEntity(),
                         'remoteItemId' => $item['o:id'],
                     ]);
                 if (null === $osiiItemEntity) {
                     // This is a new remote item.
                     $osiiItemEntity = new OsiiEntity\OsiiItem;
-                    $osiiItemEntity->setImport($importEntity);
+                    $osiiItemEntity->setImport($this->getImportEntity());
                     $osiiItemEntity->setRemoteItemId($item['o:id']);
-                    $entityManager->persist($osiiItemEntity);
+                    $this->getEntityManager()->persist($osiiItemEntity);
                 } else {
                     // This is an existing remote item.
                     $osiiItemEntity->setModified(new DateTime('now'));
@@ -86,11 +78,9 @@ class DoSnapshot extends AbstractOsiiJob
                 }
             }
             // Save memory by flushing and clearing the entity manager at the
-            // end of every iteration. We must re-load the import entity to
-            // avoid a "A new entity was found" error.
-            $entityManager->flush();
-            $entityManager->clear();
-            $importEntity = $entityManager->find(OsiiEntity\OsiiImport::class, $importId);
+            // end of every iteration.
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->clear();
             // Increment the page.
             $query['page']++;
         }
@@ -104,14 +94,14 @@ class DoSnapshot extends AbstractOsiiJob
         });
 
         // Set the snapshot data to the import entity.
-        $importEntity->setSnapshotItems($snapshotItems);
-        $importEntity->setSnapshotDataTypes($snapshotDataTypes);
-        $importEntity->setSnapshotProperties($snapshotProperties);
-        $importEntity->setSnapshotClasses($snapshotClasses);
-        $importEntity->setSnapshotVocabularies($snapshotVocabularies);
-        $importEntity->setSnapshotCompleted(new DateTime('now'));
+        $this->getImportEntity()->setSnapshotItems($snapshotItems);
+        $this->getImportEntity()->setSnapshotDataTypes($snapshotDataTypes);
+        $this->getImportEntity()->setSnapshotProperties($snapshotProperties);
+        $this->getImportEntity()->setSnapshotClasses($snapshotClasses);
+        $this->getImportEntity()->setSnapshotVocabularies($snapshotVocabularies);
+        $this->getImportEntity()->setSnapshotCompleted(new DateTime('now'));
 
-        $entityManager->flush();
+        $this->getEntityManager()->flush();
     }
 
     /**
