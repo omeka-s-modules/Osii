@@ -58,7 +58,8 @@ abstract class AbstractOsiiJob extends AbstractJob
             );
         }
         // Preemptively merge the entity in the event that it was detached.
-        return $this->getEntityManager()->merge($this->importEntity);
+        $this->importEntity = $this->getEntityManager()->merge($this->importEntity);
+        return $this->importEntity;
     }
 
     /**
