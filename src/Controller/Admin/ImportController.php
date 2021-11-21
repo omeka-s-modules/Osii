@@ -120,6 +120,9 @@ class ImportController extends AbstractActionController
         $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
         $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
 
+        $formStopImport = $this->getForm(OsiiForm\StopImportForm::class, ['import' => $import]);
+        $formStopImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'stop-import'], true));
+
         $snapshotDataTypes = $import->snapshotDataTypes() ?? [];
         $snapshotProperties = $import->snapshotProperties() ?? [];
         $snapshotClasses = $import->snapshotClasses() ?? [];
@@ -130,6 +133,7 @@ class ImportController extends AbstractActionController
         $view->setVariable('formDoSnapshot', $formDoSnapshot);
         $view->setVariable('formStopSnapshot', $formStopSnapshot);
         $view->setVariable('formDoImport', $formDoImport);
+        $view->setVariable('formStopImport', $formStopImport);
         $view->setVariable('localDataTypeSelect', $this->osii()->getLocalDataTypeSelect());
         $view->setVariable('localProperties', $this->osii()->getLocalProperties());
         $view->setVariable('localClasses', $this->osii()->getLocalClasses());
@@ -182,6 +186,20 @@ class ImportController extends AbstractActionController
                 $importEntity->setImportJob($job);
                 $this->entityManager->flush();
                 $this->messenger()->addSuccess('Importing. This may take a while.'); // @translate
+            }
+        }
+        return $this->redirect()->toRoute(null, ['action' => 'show'], true);
+    }
+
+    public function stopImportAction()
+    {
+        $import = $this->api()->read('osii_imports', $this->params('import-id'))->getContent();
+        if ($this->getRequest()->isPost()) {
+            $form = $this->getForm(OsiiForm\StopImportForm::class, ['import' => $import]);
+            $form->setData($this->getRequest()->getPost());
+            if ($form->isValid()) {
+                $this->jobDispatcher()->stop($import->importJob()->id());
+                $this->messenger()->addSuccess('Stopping import.'); // @translate
             }
         }
         return $this->redirect()->toRoute(null, ['action' => 'show'], true);

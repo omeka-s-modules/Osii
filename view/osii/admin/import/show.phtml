@@ -184,6 +184,18 @@ echo $this->sectionNav([
                 'data-sidebar-selector' => '#do-import',
             ]); ?>
             <?php endif; ?>
+            <?php if ($import->canStopImport()): ?>
+            <?php echo $this->hyperlink($this->translate('Stop import'), '#', [
+                'class' => 'sidebar-content',
+                'data-sidebar-selector' => '#stop-import',
+            ]); ?>
+            <?php endif; ?>
+            <?php if ($import->canRefreshImportStatus()): ?>
+            | <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true)); ?>
+            <?php endif; ?>
+            <?php if ($import->canViewImportJob()): ?>
+            | <?php echo $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->importJob()->id()])); ?>
+            <?php endif; ?>
         </div>
     </div>
     <h3><?php echo $this->translate('Import metadata'); ?></h3>
@@ -233,4 +245,11 @@ echo $this->sectionNav([
     <h3><?php echo $this->translate('Import'); ?></h3>
     <p><?php echo $this->translate('Import the current snapshot. This will add new items and update existing items.'); ?></p>
     <?php echo $this->form($formDoImport); ?>
+</div>
+
+<div id="stop-import" class="sidebar">
+    <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
+    <h3><?php echo $this->translate('Import'); ?></h3>
+    <p><?php echo $this->translate('Stop the currently running import.'); ?></p>
+    <?php echo $this->form($formStopImport); ?>
 </div>

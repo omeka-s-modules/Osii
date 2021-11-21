@@ -170,6 +170,9 @@ class DoImport extends AbstractOsiiJob
             ];
             $apiManager->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
             if (0 === ($i % $batchSize)) {
+                if ($this->shouldStop()) {
+                    return;
+                }
                 $entityManager->flush();
                 $entityManager->clear();
             }
