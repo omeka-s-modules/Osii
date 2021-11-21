@@ -124,9 +124,6 @@ class DoImport extends AbstractOsiiJob
             $localItemEntity = $osiiItemEntity->getLocalItem();
             $remoteItem = $osiiItemEntity->getSnapshotItem();
             $localItem = [];
-            // @todo: Set the dcterms:source to remote API URL, uri type.
-
-            // @todo: Use API manager to update each item using the JSON-LD.
 
             // Set the owner.
             $localItem['o:owner']['o:id'] = $this->job->getOwner()->getId();

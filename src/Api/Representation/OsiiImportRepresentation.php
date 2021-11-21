@@ -138,6 +138,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getImportCompleted();
     }
 
+    public function osiiItemsCount()
+    {
+        return $this->resource->getOsiiItemsCount();
+    }
+
     public function canRefreshSnapshotStatus()
     {
         $snapshotJob = $this->snapshotJob();

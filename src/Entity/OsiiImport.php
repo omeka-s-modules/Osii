@@ -2,6 +2,7 @@
 namespace Osii\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Omeka\Entity\AbstractEntity;
 use Omeka\Entity\ItemSet;
@@ -14,6 +15,11 @@ use Omeka\Entity\User;
  */
 class OsiiImport extends AbstractEntity
 {
+    public function __construct()
+    {
+        $this->osiiItems = new ArrayCollection;
+    }
+
     /**
      * @Id
      * @Column(
@@ -389,6 +395,20 @@ class OsiiImport extends AbstractEntity
     public function getImportCompleted() : ?DateTime
     {
         return $this->importCompleted;
+    }
+
+    /**
+     * @OneToMany(
+     *     targetEntity="OsiiItem",
+     *     mappedBy="import",
+     *     fetch="EXTRA_LAZY"
+     * )
+     */
+    protected $osiiItems;
+
+    public function getOsiiItemsCount()
+    {
+        return $this->osiiItems->count();
     }
 
     /**

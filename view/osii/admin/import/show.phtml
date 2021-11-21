@@ -26,6 +26,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 <ul>
     <li><?php echo sprintf($this->translate('Snapshot completed: %s'), $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'short')); ?></li>
     <li><?php echo sprintf($this->translate('Snapshot item count: %s'), count($import->snapshotItems())); ?></li>
+    <li><?php echo sprintf($this->translate('Import item count: %s'), $import->osiiItemsCount()); ?></li>
 </ul>
 
 <?php
