@@ -138,11 +138,6 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getImportCompleted();
     }
 
-    public function osiiItemsCount()
-    {
-        return $this->resource->getOsiiItemsCount();
-    }
-
     public function canDoSnapshot()
     {
         $snapshotJob = $this->snapshotJob();
@@ -186,16 +181,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
 
     public function canViewSnapshotJob()
     {
-        $snapshotJob = $this->snapshotJob();
-        $snapshotStatus = $snapshotJob
-            ? in_array($snapshotJob->status(), [
-                Job::STATUS_STOPPING,
-                Job::STATUS_STARTING,
-                Job::STATUS_IN_PROGRESS,
-                Job::STATUS_ERROR,
-            ]
-            ) : false;
-        return $snapshotStatus;
+        return (bool) $this->snapshotJob();
     }
 
     public function canPrepareImport()
@@ -250,16 +236,23 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
 
     public function canViewImportJob()
     {
+        return (bool) $this->importJob();
+    }
+
+    public function canViewItems()
+    {
+        $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
         $importStatus = $importJob
             ? in_array($importJob->status(), [
+                Job::STATUS_COMPLETED,
                 Job::STATUS_STOPPING,
-                Job::STATUS_STARTING,
-                Job::STATUS_IN_PROGRESS,
+                Job::STATUS_STOPPED,
                 Job::STATUS_ERROR,
             ]
-            ) : false;
-        return $importStatus;
+            ) : true;
+        return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
     }
 
     public function snapshotStatus()

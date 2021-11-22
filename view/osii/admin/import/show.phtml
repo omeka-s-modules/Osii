@@ -24,6 +24,10 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <p><?php echo $this->translate('Prepare the import below.'); ?></p>
 
+<ul>
+    <li><?php echo sprintf($this->translate('Items in snapshot: %s'), count($import->snapshotItems())); ?></li>
+</ul>
+
 <?php
 echo $this->sectionNav([
     'map-data-types' => $this->translate('Map data types'),
@@ -150,27 +154,28 @@ echo $this->sectionNav([
             <?php echo sprintf($this->translate('Last completed: %s'), $import->snapshotCompleted() ? $this->i18n()->dateFormat($import->snapshotCompleted(), 'medium', 'short') : $this->translate('[n/a]')); ?>
         </div>
         <div class="value">
-            <?php echo sprintf($this->translate('Item count: %s'), $import->snapshotCompleted() ? count($import->snapshotItems()) : $this->translate('[n/a]')); ?>
-        </div>
-        <div class="value">
-            <?php if ($import->canDoSnapshot()): ?>
-                <?php echo $this->hyperlink($this->translate('Take snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'data-sidebar-selector' => '#do-snapshot',
-            ]); ?>
-            <?php endif; ?>
-            <?php if ($import->canStopSnapshot()): ?>
-            <?php echo $this->hyperlink($this->translate('Stop snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'data-sidebar-selector' => '#stop-snapshot',
-            ]); ?>
-            <?php endif; ?>
-            <?php if ($import->canRefreshSnapshotStatus()): ?>
-            | <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true)); ?>
-            <?php endif; ?>
-            <?php if ($import->canViewSnapshotJob()): ?>
-            | <?php echo $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->snapshotJob()->id()])); ?>
-            <?php endif; ?>
+            <?php
+            $actionsMarkup = [];
+            if ($import->canDoSnapshot()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Take snapshot'), '#', [
+                    'class' => 'sidebar-content',
+                    'data-sidebar-selector' => '#do-snapshot',
+                ]);
+            }
+            if ($import->canStopSnapshot()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Stop snapshot'), '#', [
+                    'class' => 'sidebar-content',
+                    'data-sidebar-selector' => '#stop-snapshot',
+                ]);
+            }
+            if ($import->canRefreshSnapshotStatus()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true));
+            }
+            if ($import->canViewSnapshotJob()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->snapshotJob()->id()]));
+            }
+            ?>
+            <?php echo implode(' | ', $actionsMarkup); ?>
         </div>
     </div>
     <div class="meta-group">
@@ -182,27 +187,31 @@ echo $this->sectionNav([
             <?php echo sprintf($this->translate('Last completed: %s'), $import->importCompleted() ? $this->i18n()->dateFormat($import->importCompleted(), 'medium', 'short') : $this->translate('[n/a]')); ?>
         </div>
         <div class="value">
-            <?php echo sprintf($this->translate('Item count: %s'), $import->importCompleted() ? $import->osiiItemsCount() : $this->translate('[n/a]')); ?>
-        </div>
-        <div class="value">
-            <?php if ($import->canDoImport()): ?>
-                <?php echo $this->hyperlink($this->translate('Import snapshot'), '#', [
-                'class' => 'sidebar-content',
-                'data-sidebar-selector' => '#do-import',
-            ]); ?>
-            <?php endif; ?>
-            <?php if ($import->canStopImport()): ?>
-            <?php echo $this->hyperlink($this->translate('Stop import'), '#', [
-                'class' => 'sidebar-content',
-                'data-sidebar-selector' => '#stop-import',
-            ]); ?>
-            <?php endif; ?>
-            <?php if ($import->canRefreshImportStatus()): ?>
-            | <?php echo $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true)); ?>
-            <?php endif; ?>
-            <?php if ($import->canViewImportJob()): ?>
-            | <?php echo $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->importJob()->id()])); ?>
-            <?php endif; ?>
+            <?php
+            $actionsMarkup = [];
+            if ($import->canDoImport()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Import snapshot'), '#', [
+                    'class' => 'sidebar-content',
+                    'data-sidebar-selector' => '#do-import',
+                ]);
+            }
+            if ($import->canStopImport()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Stop import'), '#', [
+                    'class' => 'sidebar-content',
+                    'data-sidebar-selector' => '#stop-import',
+                ]);
+            }
+            if ($import->canRefreshImportStatus()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('Refresh status'), $this->url(null, [], true));
+            }
+            if ($import->canViewImportJob()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->importJob()->id()]));
+            }
+            if ($import->canViewItems()) {
+                $actionsMarkup[] = $this->hyperlink($this->translate('View items'), $this->url('admin/default', ['controller' => 'item', 'action' => 'browse'], ['query' => ['osii_import_id' => $import->id()]]));
+            }
+            ?>
+            <?php echo implode(' | ', $actionsMarkup); ?>
         </div>
     </div>
     <h3><?php echo $this->translate('Import metadata'); ?></h3>

@@ -406,9 +406,9 @@ class OsiiImport extends AbstractEntity
      */
     protected $osiiItems;
 
-    public function getOsiiItemsCount()
+    public function getOsiiItems()
     {
-        return $this->osiiItems->count();
+        return $this->osiiItems;
     }
 
     /**

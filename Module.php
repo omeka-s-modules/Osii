@@ -53,10 +53,35 @@ SQL;
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
-        $sharedEventManager->attach('*', 'api.context', function (Event $event) {
-            $context = $event->getParam('context');
-            $context['o-module-osii'] = 'http://omeka.org/s/vocabs/module/osii#';
-            $event->setParam('context', $context);
-        });
+        $sharedEventManager->attach(
+            '*',
+            'api.context',
+            function (Event $event) {
+                $context = $event->getParam('context');
+                $context['o-module-osii'] = 'http://omeka.org/s/vocabs/module/osii#';
+                $event->setParam('context', $context);
+            }
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.search.query',
+            function (Event $event) {
+                $request = $event->getParam('request');
+                if (!$request->getValue('osii_import_id')) {
+                    return;
+                }
+                $adapter = $event->getTarget();
+                $alias = $adapter->createAlias();
+                $queryBuilder = $event->getParam('queryBuilder');
+                $queryBuilder->innerJoin(
+                    'Osii\Entity\OsiiItem', $alias,
+                    'WITH', sprintf('omeka_root.id = %s.localItem', $alias)
+                );
+                $queryBuilder->andWhere($queryBuilder->expr()->eq(
+                    sprintf('%s.import', $alias),
+                    $adapter->createNamedParameter($queryBuilder, $request->getValue('osii_import_id'))
+                ));
+            }
+        );
     }
 }
