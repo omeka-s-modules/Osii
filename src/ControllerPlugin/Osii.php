@@ -40,7 +40,7 @@ class Osii extends AbstractPlugin
         $element = new LaminasElement\Select('local_data_type');
         $element->setEmptyOption('[Not mapped]'); // @translate
         $element->setValueOptions($localDataTypes);
-        $element->setAttribute('class', 'local-data-type-select');
+        $element->setAttribute('class', 'local-data-type-select chosen-select');
         return $element;
     }
 
