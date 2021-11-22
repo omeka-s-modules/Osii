@@ -12,6 +12,7 @@ class StopSnapshotForm extends Form
             'name' => 'submit',
             'attributes' => [
                 'value' => 'Confirm stop snapshot', // @translate
+                'style' => 'color: #fff; background-color: #a91919;',
             ],
         ]);
 

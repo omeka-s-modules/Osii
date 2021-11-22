@@ -11,7 +11,7 @@ class DoImportForm extends Form
             'type' => 'submit',
             'name' => 'submit',
             'attributes' => [
-                'value' => 'Confirm import', // @translate
+                'value' => 'Confirm import snapshot', // @translate
             ],
         ]);
 

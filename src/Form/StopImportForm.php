@@ -11,7 +11,8 @@ class StopImportForm extends Form
             'type' => 'submit',
             'name' => 'submit',
             'attributes' => [
-                'value' => 'Confirm stop import', // @translate
+                'value' => 'Confirm stop import snapshot', // @translate
+                'style' => 'color: #fff; background-color: #a91919;',
             ],
         ]);
 
