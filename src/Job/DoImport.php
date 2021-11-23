@@ -117,7 +117,10 @@ class DoImport extends AbstractOsiiJob
             $localItem['o:owner']['o:id'] = $this->job->getOwner()->getId();
             // Set the visibility.
             $localItem['o:is_public'] = $remoteItem['o:is_public'];
-            // Set the item set.
+            // Set the item set. Preserve any existing item set associations.
+            foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
+                $localItem['o:item_set'][] = ['o:id' => $itemSetId];
+            }
             $localItemSet = $this->getImportEntity()->getLocalItemSet();
             if ($localItemSet) {
                 $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
