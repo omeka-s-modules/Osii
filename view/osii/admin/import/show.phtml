@@ -224,16 +224,16 @@ echo $this->sectionNav([
         <div class="value"><?php echo $import->rootEndpoint(); ?></div>
     </div>
     <div class="meta-group">
+        <h4><?php echo $this->translate('Remote query'); ?></h4>
+        <div class="value"><?php echo $import->remoteQuery() ?: $this->translate('[n/a]'); ?></div>
+    </div>
+    <div class="meta-group">
         <h4><?php echo $this->translate('Key identity'); ?></h4>
         <div class="value"><?php echo $import->keyIdentity() ?: $this->translate('[n/a]'); ?></div>
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Key credential'); ?></h4>
         <div class="value"><?php echo $import->keyCredential() ?: $this->translate('[n/a]'); ?></div>
-    </div>
-    <div class="meta-group">
-        <h4><?php echo $this->translate('Remote query'); ?></h4>
-        <div class="value"><?php echo $import->remoteQuery() ?: $this->translate('[n/a]'); ?></div>
     </div>
     <div class="meta-group">
         <?php $localItemSet = $import->localItemSet(); ?>

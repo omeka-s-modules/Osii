@@ -35,8 +35,6 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import browse');
             <th><?php echo $this->translate('Import'); ?></th>
             <th><?php echo $this->translate('Root endpoint'); ?></th>
             <th><?php echo $this->translate('Owner'); ?></th>
-            <th><?php echo $this->translate('Snapshot status'); ?></th>
-            <th><?php echo $this->translate('Import status'); ?></th>
         </tr>
     </thead>
     <tbody>
@@ -51,8 +49,6 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import browse');
             </td>
             <td><?php echo $import->rootEndpoint(); ?></td>
             <td><?php echo $owner ? $owner->link($owner->name()) : ''; ?></td>
-            <td></td>
-            <td></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

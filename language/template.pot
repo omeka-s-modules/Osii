@@ -1,0 +1,316 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-24 10:32-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: view/osii/admin/import/browse.phtml:6
+msgid "Browse imports"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:6 view/osii/admin/import/form.phtml:12
+#: view/osii/admin/import/form.phtml:14 view/osii/admin/import/show.phtml:6
+msgid "Omeka S Item Importer"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:9 view/osii/admin/import/form.phtml:14
+msgid "Add import"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:13 view/osii/admin/import/form.phtml:30
+#: view/osii/admin/import/show.phtml:18
+msgid "Imports"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:20
+msgid "Date created"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:36 view/osii/admin/import/show.phtml:223
+msgid "Root endpoint"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:64
+#, php-format
+msgid "No imports found. %s"
+msgstr ""
+
+#: view/osii/admin/import/browse.phtml:65
+msgid "Add a new import."
+msgstr ""
+
+#: view/osii/admin/import/form.phtml:12 view/osii/admin/import/show.phtml:11
+msgid "Edit import"
+msgstr ""
+
+#: view/osii/admin/import/form.phtml:33 view/osii/admin/import/show.phtml:20
+msgid "Manage"
+msgstr ""
+
+#: view/osii/admin/import/form.phtml:52
+msgid "import"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:6
+msgid "Manage import"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:25
+msgid "Prepare the import below."
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:28
+#, php-format
+msgid "Items in snapshot: %s"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:33 view/osii/admin/import/show.phtml:40
+msgid "Map data types"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:34 view/osii/admin/import/show.phtml:76
+msgid "Remote properties"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:35 view/osii/admin/import/show.phtml:108
+msgid "Remote classes"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:44
+msgid "Remote data type"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:45 view/osii/admin/import/show.phtml:88
+msgid "Remote value count"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:46
+msgid "Local data type"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:80 view/osii/admin/import/show.phtml:112
+#, php-format
+msgid "Vocabulary label: %s"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:81 view/osii/admin/import/show.phtml:113
+#, php-format
+msgid "Vocabulary namespace URI: %s"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:86 view/osii/admin/import/show.phtml:118
+msgid "Remote local name"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:87 view/osii/admin/import/show.phtml:119
+msgid "Remote label"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:89 view/osii/admin/import/show.phtml:121
+msgid "On local install?"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:120
+msgid "Remote item count"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:140
+msgid "Prepare import is not available now."
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:147
+msgid "Actions"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:149 view/osii/admin/import/show.phtml:247
+#: view/osii/admin/import/show.phtml:254
+msgid "Snapshot"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:154 view/osii/admin/import/show.phtml:187
+#, php-format
+msgid "Last completed: %s"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:154 view/osii/admin/import/show.phtml:187
+#: view/osii/admin/import/show.phtml:228 view/osii/admin/import/show.phtml:232
+#: view/osii/admin/import/show.phtml:236 view/osii/admin/import/show.phtml:241
+msgid "[n/a]"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:160
+msgid "Take snapshot"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:166
+msgid "Stop snapshot"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:172 view/osii/admin/import/show.phtml:205
+msgid "Refresh status"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:175 view/osii/admin/import/show.phtml:208
+msgid "View job"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:193
+msgid "Import snapshot"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:199
+msgid "Stop import"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:217
+msgid "Import metadata"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:227
+msgid "Remote query"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:231
+msgid "Key identity"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:235
+msgid "Key credential"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:240
+msgid "Local item set"
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:248
+msgid ""
+"Take a snapshot of the remote items in their current state. This will gather "
+"the data needed to import the items and reconcile the local installation "
+"with the remote one."
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:255
+msgid "Stop the currently running snapshot."
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:262
+msgid ""
+"Import the current snapshot. This will add new items and update existing "
+"items."
+msgstr ""
+
+#: view/osii/admin/import/show.phtml:269
+msgid "Stop the currently running import."
+msgstr ""
+
+#: src/Api/Representation/OsiiImportRepresentation.php:273
+msgid "Not taken"
+msgstr ""
+
+#: src/Api/Representation/OsiiImportRepresentation.php:280
+msgid "Not imported"
+msgstr ""
+
+#: src/Api/Adapter/OsiiImportAdapter.php:37
+msgid "Invalid local item set format passed in request."
+msgstr ""
+
+#: src/Api/Adapter/OsiiImportAdapter.php:76
+msgid "An import must have a label"
+msgstr ""
+
+#: src/Api/Adapter/OsiiImportAdapter.php:79
+msgid "An import must have a valid root endpoint"
+msgstr ""
+
+#: src/Api/Adapter/OsiiImportAdapter.php:82
+#: src/Api/Adapter/OsiiImportAdapter.php:83
+msgid "An import must have valid authentication"
+msgstr ""
+
+#: src/ControllerPlugin/Osii.php:41
+msgid "[Not mapped]"
+msgstr ""
+
+#: src/Form/DoImportForm.php:14
+msgid "Confirm import snapshot"
+msgstr ""
+
+#: src/Form/StopImportForm.php:14
+msgid "Confirm stop import snapshot"
+msgstr ""
+
+#: src/Form/DoSnapshotForm.php:14
+msgid "Confirm take snapshot"
+msgstr ""
+
+#: src/Form/StopSnapshotForm.php:14
+msgid "Confirm stop snapshot"
+msgstr ""
+
+#: src/Form/ImportForm.php:19
+msgid "Enter the label of this import."
+msgstr ""
+
+#: src/Form/ImportForm.php:30
+msgid "Enter the root endpoint of the API."
+msgstr ""
+
+#: src/Form/ImportForm.php:41
+msgid ""
+"Enter the remote query used to filter the items to be imported. If no query "
+"is entered, all available items will be imported."
+msgstr ""
+
+#: src/Form/ImportForm.php:52
+msgid "Enter the key_identity used to authenticate the API user."
+msgstr ""
+
+#: src/Form/ImportForm.php:63
+msgid "Enter the key_credential used to authenticate the API user."
+msgstr ""
+
+#: src/Form/ImportForm.php:74
+msgid "Select the local item set to which imported items will be assigned."
+msgstr ""
+
+#: src/Form/ImportForm.php:75
+msgid "Select an item set"
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:47
+msgid "Import successfully added."
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:157
+msgid "Taking snapshot. This may take a while."
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:171
+msgid "Stopping snapshot."
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:188
+msgid "Importing. This may take a while."
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:202
+msgid "Stopping import."
+msgstr ""
+
+#: src/Controller/Admin/ImportController.php:217
+msgid "Import successfully deleted."
+msgstr ""

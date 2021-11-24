@@ -35,6 +35,17 @@ class ImportForm extends Form
         ]);
         $this->add([
             'type' => LaminasElement\Text::class,
+            'name' => 'o-module-osii:remote_query',
+            'options' => [
+                'label' => 'Remote query', // @translate
+                'info' => 'Enter the remote query used to filter the items to be imported. If no query is entered, all available items will be imported.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Text::class,
             'name' => 'o-module-osii:key_identity',
             'options' => [
                 'label' => 'Key identity', // @translate
@@ -50,17 +61,6 @@ class ImportForm extends Form
             'options' => [
                 'label' => 'Key credential', // @translate
                 'info' => 'Enter the key_credential used to authenticate the API user.', // @translate
-            ],
-            'attributes' => [
-                'required' => false,
-            ],
-        ]);
-        $this->add([
-            'type' => LaminasElement\Text::class,
-            'name' => 'o-module-osii:remote_query',
-            'options' => [
-                'label' => 'Remote query', // @translate
-                'info' => 'Enter the remote query used to filter the items to be imported. If no query is entered, all available items will be imported.', // @translate
             ],
             'attributes' => [
                 'required' => false,
