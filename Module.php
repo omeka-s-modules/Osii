@@ -53,6 +53,7 @@ SQL;
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
+        // Add the module namespace to the JSON-LD context.
         $sharedEventManager->attach(
             '*',
             'api.context',
@@ -62,6 +63,7 @@ SQL;
                 $event->setParam('context', $context);
             }
         );
+        // Enable searching items by OSII import ID (using osii_import_id).
         $sharedEventManager->attach(
             'Omeka\Api\Adapter\ItemAdapter',
             'api.search.query',
