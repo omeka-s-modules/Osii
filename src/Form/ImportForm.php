@@ -79,6 +79,17 @@ class ImportForm extends Form
                 'class' => 'chosen-select',
             ],
         ]);
+        $this->add([
+            'type' => LaminasElement\Checkbox::class,
+            'name' => 'o-module-osii:delete_removed_items',
+            'options' => [
+                'label' => 'Delete removed items', // @translate
+                'info' => 'Check this if you want to delete local items that were removed from the remote snapshot. If not checked, removed items will remain but will no longer be managed by this import.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
 
         $inputFilter = $this->getInputFilter();
         $inputFilter->add([

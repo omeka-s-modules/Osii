@@ -24,6 +24,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
             'o-module-osii:key_identity' => $this->keyIdentity(),
             'o-module-osii:key_credential' => $this->keyCredential(),
             'o-module-osii:remote_query' => $this->remoteQuery(),
+            'o-module-osii:delete_removed_items' => $this->deleteRemovedItems(),
             'o:created' => $this->getDateTime($this->created()),
             'o:modified' => $modified ? $this->getDateTime($modified) : null,
         ];
@@ -136,6 +137,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     public function importCompleted()
     {
         return $this->resource->getImportCompleted();
+    }
+
+    public function deleteRemovedItems()
+    {
+        return $this->resource->getDeleteRemovedItems();
     }
 
     public function canDoSnapshot()

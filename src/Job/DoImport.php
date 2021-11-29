@@ -28,7 +28,9 @@ class DoImport extends AbstractOsiiJob
         $osiiItemsToDelete = array_filter(array_column($itemsToDelete, 'osii_item'));
         $localItemsToDelete = array_filter(array_column($itemsToDelete, 'local_item'));
         $this->getApiManager()->batchDelete('osii_items', $osiiItemsToDelete);
-        $this->getApiManager()->batchDelete('items', $localItemsToDelete);
+        if ($this->getImportEntity()->getDeleteRemovedItems()) {
+            $this->getApiManager()->batchDelete('items', $localItemsToDelete);
+        }
 
         // Remote items may have been created since the previous snapshot. These
         // must be created locally. Here we create these new items and assign

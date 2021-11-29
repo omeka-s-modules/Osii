@@ -240,6 +240,10 @@ echo $this->sectionNav([
         <h4><?php echo $this->translate('Local item set'); ?></h4>
         <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
     </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Delete removed items'); ?></h4>
+        <div class="value"><?php echo $import->deleteRemovedItems() ? $this->translate('Yes') : $this->translate('No'); ?></div>
+    </div>
 </div>
 
 <div id="do-snapshot" class="sidebar">

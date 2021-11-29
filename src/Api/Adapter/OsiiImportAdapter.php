@@ -68,6 +68,9 @@ class OsiiImportAdapter extends AbstractEntityAdapter
                 : null
             );
         }
+        if ($this->shouldHydrate($request, 'o-module-osii:delete_removed_items')) {
+            $entity->setDeleteRemovedItems($request->getValue('o-module-osii:delete_removed_items'));
+        }
     }
 
     public function validateEntity(EntityInterface $entity, ErrorStore $errorStore)

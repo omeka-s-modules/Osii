@@ -398,6 +398,24 @@ class OsiiImport extends AbstractEntity
     }
 
     /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $deleteRemovedItems;
+
+    public function setDeleteRemovedItems($deleteRemovedItems) : void
+    {
+        $this->deleteRemovedItems = (bool) $deleteRemovedItems;
+    }
+
+    public function getDeleteRemovedItems() : bool
+    {
+        return $this->deleteRemovedItems;
+    }
+
+    /**
      * @OneToMany(
      *     targetEntity="OsiiItem",
      *     mappedBy="import",

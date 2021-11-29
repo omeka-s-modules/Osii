@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'osiiItems'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'osiiItems'];
     }
 
     /**
@@ -612,12 +612,34 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
-    public function getOsiiItemsCount()
+    public function setDeleteRemovedItems($deleteRemovedItems): void
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOsiiItemsCount', []);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeleteRemovedItems', [$deleteRemovedItems]);
 
-        return parent::getOsiiItemsCount();
+        parent::setDeleteRemovedItems($deleteRemovedItems);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDeleteRemovedItems(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedItems', []);
+
+        return parent::getDeleteRemovedItems();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOsiiItems()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOsiiItems', []);
+
+        return parent::getOsiiItems();
     }
 
     /**

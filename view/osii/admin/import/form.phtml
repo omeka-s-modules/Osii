@@ -43,6 +43,7 @@ $form->prepare();
     <?php echo $this->formRow($form->get('o-module-osii:key_identity')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:key_credential')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:local_item_set')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:delete_removed_items')); ?>
 </fieldset>
 
 <?php echo $this->formHidden($form->get('csrf')); ?>
