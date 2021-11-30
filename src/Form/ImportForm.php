@@ -23,7 +23,7 @@ class ImportForm extends Form
             ],
         ]);
         $this->add([
-            'type' => LaminasElement\Text::class,
+            'type' => LaminasElement\Url::class,
             'name' => 'o-module-osii:root_endpoint',
             'options' => [
                 'label' => 'Root endpoint', // @translate
@@ -85,6 +85,28 @@ class ImportForm extends Form
             'options' => [
                 'label' => 'Delete removed items', // @translate
                 'info' => 'Check this if you want to delete local items that were removed from the remote snapshot. If not checked, removed items will remain but will no longer be managed by this import.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Checkbox::class,
+            'name' => 'o-module-osii:add_source_item',
+            'options' => [
+                'label' => 'Add remote item URL', // @translate
+                'info' => 'Check this if you want to add the remote items\'s canonical URL to every imported item (saved as osii:source_item).', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Url::class,
+            'name' => 'o-module-osii:source_site',
+            'options' => [
+                'label' => 'Remote site URL', // @translate
+                'info' => 'Enter the URL to the site from which the imported items are derived. If entered, this will be added to every imported item (saved as osii:source_site).', // @translate
             ],
             'attributes' => [
                 'required' => false,

@@ -403,7 +403,7 @@ class OsiiImport extends AbstractEntity
      *     nullable=false
      * )
      */
-    protected $deleteRemovedItems;
+    protected $deleteRemovedItems = false;
 
     public function setDeleteRemovedItems($deleteRemovedItems) : void
     {
@@ -413,6 +413,44 @@ class OsiiImport extends AbstractEntity
     public function getDeleteRemovedItems() : bool
     {
         return $this->deleteRemovedItems;
+    }
+
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $addSourceItem = false;
+
+    public function setAddSourceItem($addSourceItem) : void
+    {
+        $this->addSourceItem = (bool) $addSourceItem;
+    }
+
+    public function getAddSourceItem() : bool
+    {
+        return $this->addSourceItem;
+    }
+
+    /**
+     * @Column(
+     *     type="text",
+     *     nullable=true
+     * )
+     */
+    protected $sourceSite;
+
+    public function setSourceSite(string $sourceSite) : void
+    {
+        $sourceSite = trim($sourceSite);
+        $this->sourceSite = $sourceSite ?: null;
+
+    }
+
+    public function getSourceSite() : string
+    {
+        return $this->sourceSite;
     }
 
     /**

@@ -244,6 +244,14 @@ echo $this->sectionNav([
         <h4><?php echo $this->translate('Delete removed items'); ?></h4>
         <div class="value"><?php echo $import->deleteRemovedItems() ? $this->translate('Yes') : $this->translate('No'); ?></div>
     </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Add remote item URL'); ?></h4>
+        <div class="value"><?php echo $import->addSourceItem() ? $this->translate('Yes') : $this->translate('No'); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Remote site URL'); ?></h4>
+        <div class="value"><?php echo $import->sourceSite() ?: $this->translate('[n/a]'); ?></div>
+    </div>
 </div>
 
 <div id="do-snapshot" class="sidebar">

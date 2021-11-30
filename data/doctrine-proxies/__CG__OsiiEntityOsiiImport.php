@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'osiiItems'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'addSourceItem', 'sourceSite', 'osiiItems'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'osiiItems'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'addSourceItem', 'sourceSite', 'osiiItems'];
     }
 
     /**
@@ -629,6 +629,50 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedItems', []);
 
         return parent::getDeleteRemovedItems();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAddSourceItem($addSourceItem): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAddSourceItem', [$addSourceItem]);
+
+        parent::setAddSourceItem($addSourceItem);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAddSourceItem(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddSourceItem', []);
+
+        return parent::getAddSourceItem();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSourceSite(string $sourceSite): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSourceSite', [$sourceSite]);
+
+        parent::setSourceSite($sourceSite);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSourceSite(): string
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSourceSite', []);
+
+        return parent::getSourceSite();
     }
 
     /**

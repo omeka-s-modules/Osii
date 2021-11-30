@@ -1,0 +1,14 @@
+@prefix : <http://omeka.org/s/vocabs/o-module-osii#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:source_item a rdf:Property ;
+    rdfs:label "source item"@en ;
+    rdfs:comment "The URL to the source item."@en ;
+    rdfs:subPropertyOf dcterms:source .
+
+:source_site a rdf:Property ;
+    rdfs:label "source site"@en ;
+    rdfs:comment "The URL to the site from which this resource was derived."@en ;
+    rdfs:subPropertyOf dcterms:source .

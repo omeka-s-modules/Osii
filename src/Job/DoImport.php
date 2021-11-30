@@ -103,6 +103,9 @@ class DoImport extends AbstractOsiiJob
 
         $dataTypeMap = $this->getImportEntity()->getDataTypeMap();
 
+        $sourceItemPropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_item'] ?? null;
+        $sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
+
         // Import items from their snapshot.
         $dql = 'SELECT i
         FROM Osii\Entity\OsiiItem i
@@ -156,6 +159,26 @@ class DoImport extends AbstractOsiiJob
                     $localItem[$propertyId] = [];
                 }
                 $localItem[$propertyId][] = $remoteValue;
+            }
+            // Add the source item value.
+            if ($sourceItemPropertyId && $this->getImportEntity()->getAddSourceItem()) {
+                $localItem[$sourceItemPropertyId][] = [
+                    'type' => 'uri',
+                    'property_id' => $sourceItemPropertyId,
+                    '@id' => sprintf(
+                        '%s/items/%s',
+                        $this->getImportEntity()->getRootEndpoint(),
+                        $osiiItemEntity->getRemoteItemId()
+                    ),
+                ];
+            }
+            // Add the source site value.
+            if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
+                $localItem[$sourceSitePropertyId][] = [
+                    'type' => 'uri',
+                    'property_id' => $sourceSitePropertyId,
+                    '@id' => $this->getImportEntity()->getSourceSite(),
+                ];
             }
             $updateOptions = [
                 'flushEntityManager' => false, // Flush (and clear) only once per batch.
