@@ -15,7 +15,7 @@ class ImportForm extends Form
             'type' => LaminasElement\Text::class,
             'name' => 'o:label',
             'options' => [
-                'label' => 'Label', // @translate
+                'label' => 'Import label', // @translate
                 'info' => 'Enter the label of this import.', // @translate
             ],
             'attributes' => [
@@ -37,8 +37,8 @@ class ImportForm extends Form
             'type' => LaminasElement\Text::class,
             'name' => 'o-module-osii:remote_query',
             'options' => [
-                'label' => 'Remote query', // @translate
-                'info' => 'Enter the remote query used to filter the items to be imported. If no query is entered, all available items will be imported.', // @translate
+                'label' => 'Query', // @translate
+                'info' => 'Enter the query used to filter the items to be imported. If no query is entered, all available items will be imported.', // @translate
             ],
             'attributes' => [
                 'required' => false,
@@ -70,8 +70,8 @@ class ImportForm extends Form
             'type' => OmekaElement\ItemSetSelect::class,
             'name' => 'o-module-osii:local_item_set',
             'options' => [
-                'label' => 'Local item set', // @translate
-                'info' => 'Select the local item set to which imported items will be assigned.', // @translate
+                'label' => 'Item set', // @translate
+                'info' => 'Select the item set to which imported items will be assigned.', // @translate
                 'empty_option' => 'Select an item set', // @translate
             ],
             'attributes' => [
@@ -95,7 +95,8 @@ class ImportForm extends Form
             'name' => 'o-module-osii:add_source_item',
             'options' => [
                 'label' => 'Add remote item URL', // @translate
-                'info' => 'Check this if you want to add the remote items\'s canonical URL to every imported item (saved as osii:source_item).', // @translate
+                'info' => 'Check this if you want to add the remote items\'s canonical URL to every imported item, saved as a value using property <code>osii:source_item</code>.', // @translate
+                'escape_info' => false,
             ],
             'attributes' => [
                 'required' => false,
@@ -105,8 +106,9 @@ class ImportForm extends Form
             'type' => LaminasElement\Url::class,
             'name' => 'o-module-osii:source_site',
             'options' => [
-                'label' => 'Remote site URL', // @translate
-                'info' => 'Enter the URL to the site from which the imported items are derived. If entered, this will be added to every imported item (saved as osii:source_site).', // @translate
+                'label' => 'Add remote site URL', // @translate
+                'info' => 'Enter the URL to the site from which the imported items are derived. If entered, this will be added to every imported item, saved as a value using property <code>osii:source_site</code>.', // @translate
+                'escape_info' => false,
             ],
             'attributes' => [
                 'required' => false,
