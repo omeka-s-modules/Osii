@@ -30,14 +30,15 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <?php
 echo $this->sectionNav([
-    'map-data-types' => $this->translate('Map data types'),
-    'remote-properties' => $this->translate('Remote properties'),
-    'remote-classes' => $this->translate('Remote classes'),
+    'snapshot-data-types' => $this->translate('Snapshot data types'),
+    'snapshot-properties' => $this->translate('Snapshot properties'),
+    'snapshot-classes' => $this->translate('Snapshot classes'),
 ]);
 ?>
 
-<div id="map-data-types" class="section active">
-    <h3><?php echo $this->translate('Map data types'); ?></h3>
+<div id="snapshot-data-types" class="section active">
+    <h3><?php echo $this->translate('Snapshot data types'); ?></h3>
+    <?php if ($remoteDataTypes): ?>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
             <tr>
@@ -70,10 +71,16 @@ echo $this->sectionNav([
         <?php endforeach; ?>
         <tbody>
     </table>
+    <?php else: ?>
+    <div class="no-resources">
+        <p><?php echo $this->translate('No data types in snapshot.'); ?></p>
+    </div>
+    <?php endif; ?>
 </div>
 
-<div id="remote-properties" class="section">
-    <h3><?php echo $this->translate('Remote properties'); ?></h3>
+<div id="snapshot-properties" class="section">
+    <h3><?php echo $this->translate('Snapshot properties'); ?></h3>
+    <?php if ($remoteProperties): ?>
     <?php foreach ($remoteProperties as $vocabularyId => $properties): ?>
     <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
     <ul>
@@ -102,10 +109,16 @@ echo $this->sectionNav([
         <tbody>
     </table>
     <?php endforeach; ?>
+    <?php else: ?>
+    <div class="no-resources">
+        <p><?php echo $this->translate('No properties in snapshot.'); ?></p>
+    </div>
+    <?php endif; ?>
 </div>
 
-<div id="remote-classes" class="section">
-    <h3><?php echo $this->translate('Remote classes'); ?></h3>
+<div id="snapshot-classes" class="section">
+    <h3><?php echo $this->translate('Snapshot classes'); ?></h3>
+    <?php if ($remoteClasses): ?>
     <?php foreach ($remoteClasses as $vocabularyId => $classes): ?>
     <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
     <ul>
@@ -134,6 +147,11 @@ echo $this->sectionNav([
         <tbody>
     </table>
     <?php endforeach; ?>
+    <?php else: ?>
+    <div class="no-resources">
+        <p><?php echo $this->translate('No classes in snapshot.'); ?></p>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?php else: ?>
