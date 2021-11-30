@@ -120,5 +120,9 @@ class ImportForm extends Form
             'name' => 'o-module-osii:local_item_set',
             'allow_empty' => true,
         ]);
+        $inputFilter->add([
+            'name' => 'o-module-osii:source_site',
+            'allow_empty' => true,
+        ]);
     }
 }

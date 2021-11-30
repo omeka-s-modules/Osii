@@ -84,10 +84,10 @@ class OsiiImportAdapter extends AbstractEntityAdapter
         if (!is_string($entity->getLabel()) || '' === $entity->getLabel()) {
             $errorStore->addError('o:label', 'An import must have a label'); // @translate
         }
-        if (!$this->rootEndpointIsValid($entity->getRootEndpoint())) {
+        if (false === $this->rootEndpointIsValid($entity->getRootEndpoint())) {
             $errorStore->addError('o-module-osii:root_endpoint', 'An import must have a valid root endpoint'); // @translate
         }
-        if (!$this->authenticationIsValid($entity->getRootEndpoint(), $entity->getKeyIdentity(), $entity->getKeyCredential())) {
+        if (false === $this->authenticationIsValid($entity->getRootEndpoint(), $entity->getKeyIdentity(), $entity->getKeyCredential())) {
             $errorStore->addError('o-module-osii:key_identity', 'An import must have valid authentication'); // @translate
             $errorStore->addError('o-module-osii:key_credential', 'An import must have valid authentication'); // @translate
         }
@@ -104,7 +104,7 @@ class OsiiImportAdapter extends AbstractEntityAdapter
     protected function rootEndpointIsValid($rootEndpoint)
     {
         $endpoint = sprintf('%s/items', $rootEndpoint);
-        return (bool) $this->doApiRequest($endpoint);
+        return $this->doApiRequest($endpoint);
     }
 
     /**
@@ -122,7 +122,7 @@ class OsiiImportAdapter extends AbstractEntityAdapter
             return true;
         }
         $endpoint = sprintf('%s/modules', $rootEndpoint);
-        return (bool) $this->doApiRequest($endpoint, $keyIdentity, $keyCredential);
+        return $this->doApiRequest($endpoint, $keyIdentity, $keyCredential);
     }
 
     /**

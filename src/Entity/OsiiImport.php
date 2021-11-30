@@ -448,7 +448,7 @@ class OsiiImport extends AbstractEntity
 
     }
 
-    public function getSourceSite() : string
+    public function getSourceSite() : ?string
     {
         return $this->sourceSite;
     }
