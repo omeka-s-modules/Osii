@@ -241,6 +241,24 @@ class OsiiImport extends AbstractEntity
      *     nullable=true
      * )
      */
+    protected $snapshotMedia;
+
+    public function setSnapshotMedia(?array $snapshotMedia) : void
+    {
+        $this->snapshotMedia = $snapshotMedia;
+    }
+
+    public function getSnapshotMedia() : ?array
+    {
+        return $this->snapshotMedia;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
     protected $snapshotDataTypes;
 
     public function setSnapshotDataTypes(?array $snapshotDataTypes) : void
@@ -251,6 +269,42 @@ class OsiiImport extends AbstractEntity
     public function getSnapshotDataTypes() : ?array
     {
         return $this->snapshotDataTypes;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
+    protected $snapshotMediaIngesters;
+
+    public function setSnapshotMediaIngesters(?array $snapshotMediaIngesters) : void
+    {
+        $this->snapshotMediaIngesters = $snapshotMediaIngesters;
+    }
+
+    public function getSnapshotMediaIngesters() : ?array
+    {
+        return $this->snapshotMediaIngesters;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
+    protected $snapshotMediaRenderers;
+
+    public function setSnapshotMediaRenderers(?array $snapshotMediaRenderers) : void
+    {
+        $this->snapshotMediaRenderers = $snapshotMediaRenderers;
+    }
+
+    public function getSnapshotMediaRenderers() : ?array
+    {
+        return $this->snapshotMediaRenderers;
     }
 
     /**
@@ -445,7 +499,6 @@ class OsiiImport extends AbstractEntity
     {
         $sourceSite = trim($sourceSite);
         $this->sourceSite = $sourceSite ?: null;
-
     }
 
     public function getSourceSite() : ?string

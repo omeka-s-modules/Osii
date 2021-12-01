@@ -16,7 +16,7 @@ class OsiiItemRepresentation extends AbstractEntityRepresentation
         $modified = $this->modified();
         return [
             'o-module-osii:import' => $this->import()->getReference(),
-            'o-module-osii:local_item' => $localItem ? $$localItem->getReference() : null,
+            'o-module-osii:local_item' => $localItem ? $localItem->getReference() : null,
             'o-module-osii:remote_item_id' => $this->remoteItemId(),
             'o:created' => $this->getDateTime($this->created()),
             'o:modified' => $modified ? $this->getDateTime($modified) : null,

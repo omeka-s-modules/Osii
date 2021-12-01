@@ -14,11 +14,16 @@ class DoSnapshot extends AbstractOsiiJob
 
         // Set initial snapshot data.
         $snapshotItems = [];
+        $snapshotMedia = [];
         $snapshotDataTypes = [];
+        $snapshotMediaIngesters = [];
+        $snapshotMediaRenderers = [];
         $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
         $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
         $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
         $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
+
+        $remoteItemsWithMedia = [];
 
         // Iterate remote items.
         $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
@@ -60,6 +65,9 @@ class DoSnapshot extends AbstractOsiiJob
 
                 // Set metadata about the snapshot.
                 $snapshotItems[] = $item['o:id'];
+                if (!empty($item['o:media'])) {
+                    $remoteItemsWithMedia[] = $item['o:id'];
+                }
                 if (isset($item['o:resource_class'])) {
                     $classId = $item['o:resource_class']['o:id'];
                     ++$snapshotClasses[$classId]['count'];
@@ -85,6 +93,80 @@ class DoSnapshot extends AbstractOsiiJob
             $query['page']++;
         }
 
+        // Iterate remote media.
+        $endpoint = sprintf('%s/media', $this->getImportEntity()->getRootEndpoint());
+        $client = $this->getApiClient($endpoint);
+        $query = [
+            'key_identity' => $this->getImportEntity()->getKeyIdentity(),
+            'key_credential' => $this->getImportEntity()->getKeyCredential(),
+            'sort_by' => 'id',
+            'sort_order' => 'asc',
+            'per_page' => 50,
+            'page' => 1,
+        ];
+        foreach ($remoteItemsWithMedia as $remoteItemId) {
+            $query['item_id'] = $remoteItemId;
+            $osiiItemEntity = $this->getEntityManager()
+                ->getRepository(OsiiEntity\OsiiItem::class)
+                ->findOneBy([
+                    'import' => $this->getImportEntity(),
+                    'remoteItemId' => $remoteItemId,
+                ]);
+            while (true) {
+                if ($this->shouldStop()) {
+                    return;
+                }
+                $medias = $this->getApiOutput($client, $query);
+                if (!$medias) {
+                    break; // No more media.
+                }
+                foreach ($medias as $media) {
+                    // Save snapshots of remote media.
+                    $osiiMediaEntity = $this->getEntityManager()
+                        ->getRepository(OsiiEntity\OsiiMedia::class)
+                        ->findOneBy([
+                            'osiiItem' => $osiiItemEntity,
+                            'remoteMediaId' => $media['o:id'],
+                        ]);
+                    if (null === $osiiMediaEntity) {
+                        // This is a new remote media.
+                        $osiiMediaEntity = new OsiiEntity\OsiiMedia;
+                        $osiiMediaEntity->setOsiiItem($osiiItemEntity);
+                        $osiiMediaEntity->setRemoteMediaId($media['o:id']);
+                        $this->getEntityManager()->persist($osiiMediaEntity);
+                    } else {
+                        // This is an existing remote media.
+                        $osiiMediaEntity->setModified(new DateTime('now'));
+                    }
+                    $osiiMediaEntity->setSnapshotMedia($media);
+                    // Set metadata about the snapshot.
+                    $snapshotMedia[] = $media['o:id'];
+                    $snapshotMediaIngesters[] = $media['o:ingester'];
+                    $snapshotMediaRenderers[] = $media['o:renderer'];
+                    if (isset($media['o:resource_class'])) {
+                        $classId = $media['o:resource_class']['o:id'];
+                        ++$snapshotClasses[$classId]['count'];
+                    }
+                    foreach ($this->getValuesFromResource($media) as $value) {
+                        $dataTypeId = $value['type'];
+                        $propertyId = $value['property_id'];
+                        if (!isset($snapshotDataTypes[$dataTypeId])) {
+                            $snapshotDataTypes[$dataTypeId] = [
+                                'label' => null, // Placeholder until data_types resource is available
+                                'count' => 0,
+                            ];
+                        }
+                        ++$snapshotDataTypes[$dataTypeId]['count'];
+                        ++$snapshotProperties[$propertyId]['count'];
+                    }
+                }
+                $this->getEntityManager()->flush();
+                $this->getEntityManager()->clear();
+                // Increment the page.
+                $query['page']++;
+            }
+        }
+
         // Remove extraneous properties and classes.
         $snapshotProperties = array_filter($snapshotProperties, function ($property) {
             return $property['count'];
@@ -95,7 +177,10 @@ class DoSnapshot extends AbstractOsiiJob
 
         // Set the snapshot data to the import entity.
         $this->getImportEntity()->setSnapshotItems($snapshotItems);
+        $this->getImportEntity()->setSnapshotMedia($snapshotMedia);
         $this->getImportEntity()->setSnapshotDataTypes($snapshotDataTypes);
+        $this->getImportEntity()->setSnapshotMediaIngesters($snapshotMediaIngesters);
+        $this->getImportEntity()->setSnapshotMediaRenderers($snapshotMediaRenderers);
         $this->getImportEntity()->setSnapshotProperties($snapshotProperties);
         $this->getImportEntity()->setSnapshotClasses($snapshotClasses);
         $this->getImportEntity()->setSnapshotVocabularies($snapshotVocabularies);
