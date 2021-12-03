@@ -260,15 +260,19 @@ echo $this->sectionNav([
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Delete removed items'); ?></h4>
-        <div class="value"><?php echo $import->deleteRemovedItems() ? $this->translate('Yes') : $this->translate('No'); ?></div>
+        <div class="value"><?php echo $import->deleteRemovedItems() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Delete removed media'); ?></h4>
+        <div class="value"><?php echo $import->deleteRemovedMedia() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Add remote site URL'); ?></h4>
-        <div class="value"><?php echo $import->sourceSite() ?: $this->translate('[n/a]'); ?></div>
+        <div class="value"><?php echo $import->sourceSite() ?: $this->translate('[no]'); ?></div>
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Add remote item URL'); ?></h4>
-        <div class="value"><?php echo $import->addSourceItem() ? $this->translate('Yes') : $this->translate('No'); ?></div>
+        <div class="value"><?php echo $import->addSourceItem() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
     </div>
 </div>
 

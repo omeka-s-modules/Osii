@@ -6,15 +6,21 @@ use Omeka\Entity as OmekaEntity;
 
 class DoImport extends AbstractOsiiJob
 {
+    protected $itemMap;
+    protected $propertyMap;
+    protected $classMap;
+    protected $dataTypeMap;
+
     public function perform()
     {
         ini_set('memory_limit', '500M'); // Set a high memory limit.
 
-        // Remote items may have been deleted (or simply removed) since the
+        // Remote resources may have been deleted (or simply removed) since the
         // previous snapshot. These must be deleted locally so that the local
-        // items are in sync with the remote ones. Here we get these removed
-        // items and delete them. Note that not all OSII items will have related
-        // Omeka items becuase snapshots can change without a subsequent import.
+        // resources are in sync with the remote ones. Here we get these removed
+        // resources and delete them. Note that not all OSII resources will have
+        // related Omeka resources becuase snapshots can change without a
+        // subsequent import.
         $dql = 'SELECT i.id AS osii_item, IDENTITY(i.localItem) AS local_item
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import
@@ -30,6 +36,24 @@ class DoImport extends AbstractOsiiJob
         $this->getApiManager()->batchDelete('osii_items', $osiiItemsToDelete);
         if ($this->getImportEntity()->getDeleteRemovedItems()) {
             $this->getApiManager()->batchDelete('items', $localItemsToDelete);
+        }
+
+        $dql = 'SELECT m.id AS osii_media, IDENTITY(m.localMedia) as local_media
+        FROM Osii\Entity\OsiiMedia m
+        JOIN m.osiiItem i
+        WHERE i.import = :import
+        AND m.remoteMediaId NOT IN (:snapshotMedia)';
+        $query = $this->getEntityManager()->createQuery($dql)
+        ->setParameters([
+            'import' => $this->getImportEntity(),
+            'snapshotMedia' => $this->getImportEntity()->getSnapshotMedia(),
+        ]);
+        $mediaToDelete = $query->getResult();
+        $osiiMediaToDelete = array_filter(array_column($mediaToDelete, 'osii_media'));
+        $localMediaToDelete = array_filter(array_column($mediaToDelete, 'local_media'));
+        $this->getApiManager()->batchDelete('osii_media', $osiiMediaToDelete);
+        if ($this->getImportEntity()->getDeleteRemovedMedia()) {
+            $this->getApiManager()->batchDelete('media', $localMediaToDelete);
         }
 
         // Remote items may have been created since the previous snapshot. These
@@ -63,7 +87,7 @@ class DoImport extends AbstractOsiiJob
         FROM Osii\Entity\OsiiItem i
         WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
-        $itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
+        $this->itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
 
         $dql = 'SELECT p.id AS property_id, CONCAT(v.namespaceUri, p.localName) AS uri
         FROM Omeka\Entity\Property p
@@ -81,27 +105,27 @@ class DoImport extends AbstractOsiiJob
         $snapshotProperties = $this->getImportEntity()->getSnapshotProperties();
         $snapshotClasses = $this->getImportEntity()->getSnapshotClasses();
 
-        $propertyMap = [];
+        $this->propertyMap = [];
         foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
             $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
             $localName = $remoteProperty['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localProperties[$uri])) {
-                $propertyMap[$remotePropertyId] = $localProperties[$uri];
+                $this->propertyMap[$remotePropertyId] = $localProperties[$uri];
             }
         }
 
-        $classMap = [];
+        $this->classMap = [];
         foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
             $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
             $localName = $remoteClass['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localClasses[$uri])) {
-                $classMap[$remoteClassId] = $localClasses[$uri];
+                $this->classMap[$remoteClassId] = $localClasses[$uri];
             }
         }
 
-        $dataTypeMap = $this->getImportEntity()->getDataTypeMap();
+        $this->dataTypeMap = $this->getImportEntity()->getDataTypeMap();
 
         $sourceItemPropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_item'] ?? null;
         $sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
@@ -117,11 +141,10 @@ class DoImport extends AbstractOsiiJob
             $localItemEntity = $osiiItemEntity->getLocalItem();
             $remoteItem = $osiiItemEntity->getSnapshotItem();
             $localItem = [];
-
-            // Set the owner.
-            $localItem['o:owner']['o:id'] = $this->job->getOwner()->getId();
-            // Set the visibility.
-            $localItem['o:is_public'] = $remoteItem['o:is_public'];
+            $localItem = $this->setLocalOwner($localItem);
+            $localItem = $this->setLocalVisibility($localItem, $remoteItem);
+            $localItem = $this->setLocalClass($localItem, $remoteItem);
+            $localItem = $this->setLocalValues($localItem, $remoteItem);
             // Set the item set. Preserve any existing item set associations.
             foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
                 $localItem['o:item_set'][] = ['o:id' => $itemSetId];
@@ -129,36 +152,6 @@ class DoImport extends AbstractOsiiJob
             $localItemSet = $this->getImportEntity()->getLocalItemSet();
             if ($localItemSet) {
                 $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
-            }
-            // Set the class.
-            if (isset($remoteItem['o:resource_class']) && isset($classMap[$remoteItem['o:resource_class']['o:id']])) {
-                $localItem['o:resource_class']['o:id'] = $classMap[$remoteItem['o:resource_class']['o:id']];
-            }
-            // Set the values.
-            foreach ($this->getValuesFromResource($remoteItem) as $remoteValue) {
-                if (!isset($dataTypeMap[$remoteValue['type']])) {
-                    // Data type is not on local installation. Ignore value.
-                    continue;
-                }
-                if (!isset($propertyMap[$remoteValue['property_id']])) {
-                    // Property is not on local installation. Ignore value.
-                    continue;
-                }
-                if (isset($remoteValue['value_resource_id'])) {
-                    if (!isset($itemMap[$remoteValue['value_resource_id']])) {
-                        // Item is not on local installation. Ignore value.
-                        continue;
-                    }
-                    $remoteValue['value_resource_id'] = $itemMap[$remoteValue['value_resource_id']];
-                }
-                $dataType = $dataTypeMap[$remoteValue['type']];
-                $propertyId = $propertyMap[$remoteValue['property_id']];
-                $remoteValue['type'] = $dataType;
-                $remoteValue['property_id'] = $propertyId;
-                if (!isset($localItem[$propertyId])) {
-                    $localItem[$propertyId] = [];
-                }
-                $localItem[$propertyId][] = $remoteValue;
             }
             // Add the source item value.
             if ($sourceItemPropertyId && $this->getImportEntity()->getAddSourceItem()) {
@@ -194,8 +187,82 @@ class DoImport extends AbstractOsiiJob
             }
             $i++;
         }
-        $this->getImportEntity()->setImportCompleted(new DateTime('now'));
         $this->getEntityManager()->flush();
         $this->getEntityManager()->clear();
+
+        // Import media from their snapshot.
+        $dql = 'SELECT m
+        FROM Osii\Entity\OsiiMedia m
+        JOIN m.osiiItem i
+        WHERE i.import = :import';
+        $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
+        foreach ($query->toIterable() as $osiiMediaEntity) {
+            $localMediaEntity = $osiiMediaEntity->getLocalMedia();
+            $localItemEntity = $osiiMediaEntity->getOsiiItem()->getLocalItem();
+            $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
+            $localMedia = [];
+            $localMedia = $this->setLocalOwner($localMedia);
+            $localMedia = $this->setLocalVisibility($localMedia, $remoteMedia);
+            $localMedia = $this->setLocalClass($localMedia, $remoteMedia);
+            $localMedia = $this->setLocalValues($localMedia, $remoteMedia);
+            if (!$localMediaEntity) {
+                $this->getApiManager()->create('media', $localMedia, []);
+            } else {
+                $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
+            }
+        }
+
+        $this->getImportEntity()->setImportCompleted(new DateTime('now'));
+        $this->getEntityManager()->flush();
+    }
+
+    protected function setLocalOwner(array $localResource)
+    {
+        $localResource['o:owner']['o:id'] = $this->job->getOwner()->getId();
+        return $localResource;
+    }
+
+    protected function setLocalVisibility(array $localResource, array $remoteResource)
+    {
+        $localResource['o:is_public'] = $remoteResource['o:is_public'];
+        return $localResource;
+    }
+
+    protected function setLocalClass(array $localResource, array $remoteResource)
+    {
+        if (isset($remoteResource['o:resource_class']) && isset($this->classMap[$remoteResource['o:resource_class']['o:id']])) {
+            $localResource['o:resource_class']['o:id'] = $this->classMap[$remoteResource['o:resource_class']['o:id']];
+        }
+        return $localResource;
+    }
+
+    protected function setLocalValues(array $localResource, array $remoteResource)
+    {
+        foreach ($this->getValuesFromResource($remoteResource) as $remoteValue) {
+            if (!isset($this->dataTypeMap[$remoteValue['type']])) {
+                // Data type is not on local installation. Ignore value.
+                continue;
+            }
+            if (!isset($this->propertyMap[$remoteValue['property_id']])) {
+                // Property is not on local installation. Ignore value.
+                continue;
+            }
+            if (isset($remoteValue['value_resource_id'])) {
+                if (!isset($this->itemMap[$remoteValue['value_resource_id']])) {
+                    // Item is not on local installation. Ignore value.
+                    continue;
+                }
+                $remoteValue['value_resource_id'] = $this->itemMap[$remoteValue['value_resource_id']];
+            }
+            $dataType = $this->dataTypeMap[$remoteValue['type']];
+            $propertyId = $this->propertyMap[$remoteValue['property_id']];
+            $remoteValue['type'] = $dataType;
+            $remoteValue['property_id'] = $propertyId;
+            if (!isset($localResource[$propertyId])) {
+                $localResource[$propertyId] = [];
+            }
+            $localResource[$propertyId][] = $remoteValue;
+        }
+        return $localResource;
     }
 }

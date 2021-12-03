@@ -219,6 +219,78 @@ class OsiiImport extends AbstractEntity
 
     /**
      * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $deleteRemovedItems = false;
+
+    public function setDeleteRemovedItems($deleteRemovedItems) : void
+    {
+        $this->deleteRemovedItems = (bool) $deleteRemovedItems;
+    }
+
+    public function getDeleteRemovedItems() : bool
+    {
+        return $this->deleteRemovedItems;
+    }
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $deleteRemovedMedia = false;
+
+    public function setDeleteRemovedMedia($deleteRemovedMedia) : void
+    {
+        $this->deleteRemovedMedia = (bool) $deleteRemovedMedia;
+    }
+
+    public function getDeleteRemovedMedia() : bool
+    {
+        return $this->deleteRemovedMedia;
+    }
+
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $addSourceItem = false;
+
+    public function setAddSourceItem($addSourceItem) : void
+    {
+        $this->addSourceItem = (bool) $addSourceItem;
+    }
+
+    public function getAddSourceItem() : bool
+    {
+        return $this->addSourceItem;
+    }
+
+    /**
+     * @Column(
+     *     type="text",
+     *     nullable=true
+     * )
+     */
+    protected $sourceSite;
+
+    public function setSourceSite(string $sourceSite) : void
+    {
+        $sourceSite = trim($sourceSite);
+        $this->sourceSite = $sourceSite ?: null;
+    }
+
+    public function getSourceSite() : ?string
+    {
+        return $this->sourceSite;
+    }
+
+    /**
+     * @Column(
      *     type="json",
      *     nullable=true
      * )
@@ -449,61 +521,6 @@ class OsiiImport extends AbstractEntity
     public function getImportCompleted() : ?DateTime
     {
         return $this->importCompleted;
-    }
-
-    /**
-     * @Column(
-     *     type="boolean",
-     *     nullable=false
-     * )
-     */
-    protected $deleteRemovedItems = false;
-
-    public function setDeleteRemovedItems($deleteRemovedItems) : void
-    {
-        $this->deleteRemovedItems = (bool) $deleteRemovedItems;
-    }
-
-    public function getDeleteRemovedItems() : bool
-    {
-        return $this->deleteRemovedItems;
-    }
-
-    /**
-     * @Column(
-     *     type="boolean",
-     *     nullable=false
-     * )
-     */
-    protected $addSourceItem = false;
-
-    public function setAddSourceItem($addSourceItem) : void
-    {
-        $this->addSourceItem = (bool) $addSourceItem;
-    }
-
-    public function getAddSourceItem() : bool
-    {
-        return $this->addSourceItem;
-    }
-
-    /**
-     * @Column(
-     *     type="text",
-     *     nullable=true
-     * )
-     */
-    protected $sourceSite;
-
-    public function setSourceSite(string $sourceSite) : void
-    {
-        $sourceSite = trim($sourceSite);
-        $this->sourceSite = $sourceSite ?: null;
-    }
-
-    public function getSourceSite() : ?string
-    {
-        return $this->sourceSite;
     }
 
     /**
