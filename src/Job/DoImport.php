@@ -177,6 +177,7 @@ class DoImport extends AbstractOsiiJob
             $updateOptions = [
                 'flushEntityManager' => false, // Flush (and clear) only once per batch.
                 'responseContent' => 'resource', // Avoid the overhead of composing the representation.
+                'isPartial' => true, // Declare a partial (PATCH) update so media is not deleted.
             ];
             $this->getApiManager()->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
             if (0 === ($i % $batchSize)) {
@@ -218,7 +219,12 @@ class DoImport extends AbstractOsiiJob
                 $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
             } else {
                 $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
-                $this->getApiManager()->create('media', $localMedia, []);
+                $createOptions = [
+                    'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
+                ];
+                $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
+                $osiiMediaEntity->setLocalMedia($localMediaEntity);
+                $this->getEntityManager()->flush();
             }
         }
 
