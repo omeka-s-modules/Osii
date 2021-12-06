@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotMedia', 'snapshotDataTypes', 'snapshotMediaIngesters', 'snapshotMediaRenderers', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'deleteRemovedMedia', 'addSourceItem', 'sourceSite', 'osiiItems'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'deleteRemovedItems', 'deleteRemovedMedia', 'addSourceItem', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotDataTypes', 'snapshotMediaIngesters', 'snapshotMediaRenderers', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'snapshotItems', 'snapshotMedia', 'snapshotDataTypes', 'snapshotMediaIngesters', 'snapshotMediaRenderers', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'deleteRemovedItems', 'deleteRemovedMedia', 'addSourceItem', 'sourceSite', 'osiiItems'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'deleteRemovedItems', 'deleteRemovedMedia', 'addSourceItem', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotDataTypes', 'snapshotMediaIngesters', 'snapshotMediaRenderers', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems'];
     }
 
     /**
@@ -392,6 +392,94 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
+    public function setDeleteRemovedItems($deleteRemovedItems): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeleteRemovedItems', [$deleteRemovedItems]);
+
+        parent::setDeleteRemovedItems($deleteRemovedItems);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDeleteRemovedItems(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedItems', []);
+
+        return parent::getDeleteRemovedItems();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDeleteRemovedMedia($deleteRemovedMedia): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeleteRemovedMedia', [$deleteRemovedMedia]);
+
+        parent::setDeleteRemovedMedia($deleteRemovedMedia);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDeleteRemovedMedia(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedMedia', []);
+
+        return parent::getDeleteRemovedMedia();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAddSourceItem($addSourceItem): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAddSourceItem', [$addSourceItem]);
+
+        parent::setAddSourceItem($addSourceItem);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAddSourceItem(): bool
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddSourceItem', []);
+
+        return parent::getAddSourceItem();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSourceSite(string $sourceSite): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSourceSite', [$sourceSite]);
+
+        parent::setSourceSite($sourceSite);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSourceSite(): ?string
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSourceSite', []);
+
+        return parent::getSourceSite();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setSnapshotItems(?array $snapshotItems): void
     {
 
@@ -673,94 +761,6 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getImportCompleted', []);
 
         return parent::getImportCompleted();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setDeleteRemovedItems($deleteRemovedItems): void
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeleteRemovedItems', [$deleteRemovedItems]);
-
-        parent::setDeleteRemovedItems($deleteRemovedItems);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDeleteRemovedItems(): bool
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedItems', []);
-
-        return parent::getDeleteRemovedItems();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setDeleteRemovedMedia($deleteRemovedMedia): void
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeleteRemovedMedia', [$deleteRemovedMedia]);
-
-        parent::setDeleteRemovedMedia($deleteRemovedMedia);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDeleteRemovedMedia(): bool
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeleteRemovedMedia', []);
-
-        return parent::getDeleteRemovedMedia();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setAddSourceItem($addSourceItem): void
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAddSourceItem', [$addSourceItem]);
-
-        parent::setAddSourceItem($addSourceItem);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAddSourceItem(): bool
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddSourceItem', []);
-
-        return parent::getAddSourceItem();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setSourceSite(string $sourceSite): void
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSourceSite', [$sourceSite]);
-
-        parent::setSourceSite($sourceSite);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getSourceSite(): ?string
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSourceSite', []);
-
-        return parent::getSourceSite();
     }
 
     /**
