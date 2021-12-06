@@ -101,16 +101,16 @@ class DoSnapshot extends AbstractOsiiJob
             'sort_by' => 'id',
             'sort_order' => 'asc',
             'per_page' => 50,
-            'page' => 1,
         ];
         foreach ($remoteItemsWithMedia as $remoteItemId) {
-            $query['item_id'] = $remoteItemId;
             $osiiItemEntity = $this->getEntityManager()
                 ->getRepository(OsiiEntity\OsiiItem::class)
                 ->findOneBy([
                     'import' => $this->getImportEntity(),
                     'remoteItemId' => $remoteItemId,
                 ]);
+            $query['item_id'] = $remoteItemId;
+            $query['page'] = 1;
             while (true) {
                 if ($this->shouldStop()) {
                     return;
