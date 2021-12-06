@@ -4,6 +4,16 @@ namespace Osii;
 use Laminas\Router\Http;
 
 return [
+    'osii_media_ingester_mappers' => [
+        'invokables' => [
+            'html' => MediaIngesterMapper\Html::class,
+            // 'iiif' => MediaIngesterMapper\Iiif::class,
+            // 'oembed' => MediaIngesterMapper\Oembed::class,
+            'upload' => MediaIngesterMapper\Upload::class,
+            'url' => MediaIngesterMapper\Url::class,
+            // 'youtube' => MediaIngesterMapper\Youtube::class,
+        ],
+    ],
     'translator' => [
         'translation_file_patterns' => [
             [
@@ -24,6 +34,11 @@ return [
         ],
         'proxy_paths' => [
             sprintf('%s/../data/doctrine-proxies', __DIR__),
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            'Osii\MediaIngesterMapperManager' => Service\MediaIngesterMapper\ManagerFactory::class,
         ],
     ],
     'api_adapters' => [

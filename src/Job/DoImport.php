@@ -2,6 +2,7 @@
 namespace Osii\Job;
 
 use DateTime;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Omeka\Entity as OmekaEntity;
 
 class DoImport extends AbstractOsiiJob
@@ -141,10 +142,10 @@ class DoImport extends AbstractOsiiJob
             $localItemEntity = $osiiItemEntity->getLocalItem();
             $remoteItem = $osiiItemEntity->getSnapshotItem();
             $localItem = [];
-            $localItem = $this->setLocalOwner($localItem);
-            $localItem = $this->setLocalVisibility($localItem, $remoteItem);
-            $localItem = $this->setLocalClass($localItem, $remoteItem);
-            $localItem = $this->setLocalValues($localItem, $remoteItem);
+            $localItem = $this->mapOwner($localItem, $remoteItem);
+            $localItem = $this->mapVisibility($localItem, $remoteItem);
+            $localItem = $this->mapClass($localItem, $remoteItem);
+            $localItem = $this->mapValues($localItem, $remoteItem);
             // Set the item set. Preserve any existing item set associations.
             foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
                 $localItem['o:item_set'][] = ['o:id' => $itemSetId];
@@ -196,19 +197,28 @@ class DoImport extends AbstractOsiiJob
         JOIN m.osiiItem i
         WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
+        $ingesterMapperManager = $this->getServiceLocator()->get('Osii\MediaIngesterMapperManager');
         foreach ($query->toIterable() as $osiiMediaEntity) {
             $localMediaEntity = $osiiMediaEntity->getLocalMedia();
             $localItemEntity = $osiiMediaEntity->getOsiiItem()->getLocalItem();
             $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
             $localMedia = [];
-            $localMedia = $this->setLocalOwner($localMedia);
-            $localMedia = $this->setLocalVisibility($localMedia, $remoteMedia);
-            $localMedia = $this->setLocalClass($localMedia, $remoteMedia);
-            $localMedia = $this->setLocalValues($localMedia, $remoteMedia);
-            if (!$localMediaEntity) {
-                $this->getApiManager()->create('media', $localMedia, []);
-            } else {
+            try {
+                $ingesterMapper = $ingesterMapperManager->get($remoteMedia['o:ingester']);
+            } catch (ServiceNotFoundException $e) {
+                // Ingester mapper is not on local installation. Ignore media.
+                continue;
+            }
+            $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
+            $localMedia = $this->mapOwner($localMedia, $remoteMedia);
+            $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
+            $localMedia = $this->mapClass($localMedia, $remoteMedia);
+            $localMedia = $this->mapValues($localMedia, $remoteMedia);
+            if ($localMediaEntity) {
                 $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
+            } else {
+                $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
+                $this->getApiManager()->create('media', $localMedia, []);
             }
         }
 
@@ -216,19 +226,19 @@ class DoImport extends AbstractOsiiJob
         $this->getEntityManager()->flush();
     }
 
-    protected function setLocalOwner(array $localResource)
+    protected function mapOwner(array $localResource, array $remoteResource)
     {
         $localResource['o:owner']['o:id'] = $this->job->getOwner()->getId();
         return $localResource;
     }
 
-    protected function setLocalVisibility(array $localResource, array $remoteResource)
+    protected function mapVisibility(array $localResource, array $remoteResource)
     {
         $localResource['o:is_public'] = $remoteResource['o:is_public'];
         return $localResource;
     }
 
-    protected function setLocalClass(array $localResource, array $remoteResource)
+    protected function mapClass(array $localResource, array $remoteResource)
     {
         if (isset($remoteResource['o:resource_class']) && isset($this->classMap[$remoteResource['o:resource_class']['o:id']])) {
             $localResource['o:resource_class']['o:id'] = $this->classMap[$remoteResource['o:resource_class']['o:id']];
@@ -236,7 +246,7 @@ class DoImport extends AbstractOsiiJob
         return $localResource;
     }
 
-    protected function setLocalValues(array $localResource, array $remoteResource)
+    protected function mapValues(array $localResource, array $remoteResource)
     {
         foreach ($this->getValuesFromResource($remoteResource) as $remoteValue) {
             if (!isset($this->dataTypeMap[$remoteValue['type']])) {
