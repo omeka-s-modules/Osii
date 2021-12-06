@@ -7,7 +7,7 @@ return [
     'osii_media_ingester_mappers' => [
         'invokables' => [
             'html' => MediaIngesterMapper\Html::class,
-            // 'iiif' => MediaIngesterMapper\Iiif::class,
+            'iiif' => MediaIngesterMapper\Iiif::class,
             'oembed' => MediaIngesterMapper\Oembed::class,
             'upload' => MediaIngesterMapper\Upload::class,
             'url' => MediaIngesterMapper\Url::class,
