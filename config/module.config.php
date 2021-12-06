@@ -8,10 +8,10 @@ return [
         'invokables' => [
             'html' => MediaIngesterMapper\Html::class,
             // 'iiif' => MediaIngesterMapper\Iiif::class,
-            // 'oembed' => MediaIngesterMapper\Oembed::class,
+            'oembed' => MediaIngesterMapper\Oembed::class,
             'upload' => MediaIngesterMapper\Upload::class,
             'url' => MediaIngesterMapper\Url::class,
-            // 'youtube' => MediaIngesterMapper\Youtube::class,
+            'youtube' => MediaIngesterMapper\Youtube::class,
         ],
     ],
     'translator' => [
