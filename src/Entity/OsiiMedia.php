@@ -41,6 +41,27 @@ class OsiiMedia extends AbstractEntity
 
     /**
      * @ManyToOne(
+     *     targetEntity="Osii\Entity\OsiiImport",
+     * )
+     * @JoinColumn(
+     *     nullable=false,
+     *     onDelete="CASCADE"
+     * )
+     */
+    protected $import;
+
+    public function setImport(OsiiImport $import) : void
+    {
+        $this->import = $import;
+    }
+
+    public function getImport() : OsiiImport
+    {
+        return $this->import;
+    }
+
+    /**
+     * @ManyToOne(
      *     targetEntity="Osii\Entity\OsiiItem",
      * )
      * @JoinColumn(

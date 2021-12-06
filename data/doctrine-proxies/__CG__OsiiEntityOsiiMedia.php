@@ -66,10 +66,10 @@ class OsiiMedia extends \Osii\Entity\OsiiMedia implements \Doctrine\ORM\Proxy\Pr
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
+            return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
         }
 
-        return ['__isInitialized__', 'id', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
+        return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
     }
 
     /**
@@ -189,6 +189,28 @@ class OsiiMedia extends \Osii\Entity\OsiiMedia implements \Doctrine\ORM\Proxy\Pr
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', []);
 
         return parent::getId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setImport(\Osii\Entity\OsiiImport $import): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setImport', [$import]);
+
+        parent::setImport($import);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getImport(): \Osii\Entity\OsiiImport
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getImport', []);
+
+        return parent::getImport();
     }
 
     /**

@@ -18,6 +18,7 @@ class OsiiImport extends AbstractEntity
     public function __construct()
     {
         $this->osiiItems = new ArrayCollection;
+        $this->osiiMedia = new ArrayCollection;
     }
 
     /**
@@ -349,42 +350,6 @@ class OsiiImport extends AbstractEntity
      *     nullable=true
      * )
      */
-    protected $snapshotMediaIngesters;
-
-    public function setSnapshotMediaIngesters(?array $snapshotMediaIngesters) : void
-    {
-        $this->snapshotMediaIngesters = $snapshotMediaIngesters;
-    }
-
-    public function getSnapshotMediaIngesters() : ?array
-    {
-        return $this->snapshotMediaIngesters;
-    }
-
-    /**
-     * @Column(
-     *     type="json",
-     *     nullable=true
-     * )
-     */
-    protected $snapshotMediaRenderers;
-
-    public function setSnapshotMediaRenderers(?array $snapshotMediaRenderers) : void
-    {
-        $this->snapshotMediaRenderers = $snapshotMediaRenderers;
-    }
-
-    public function getSnapshotMediaRenderers() : ?array
-    {
-        return $this->snapshotMediaRenderers;
-    }
-
-    /**
-     * @Column(
-     *     type="json",
-     *     nullable=true
-     * )
-     */
     protected $snapshotProperties;
 
     public function setSnapshotProperties(?array $snapshotProperties) : void
@@ -431,6 +396,24 @@ class OsiiImport extends AbstractEntity
     public function getSnapshotVocabularies() : ?array
     {
         return $this->snapshotVocabularies;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
+    protected $snapshotMediaIngesters;
+
+    public function setSnapshotMediaIngesters(?array $snapshotMediaIngesters) : void
+    {
+        $this->snapshotMediaIngesters = $snapshotMediaIngesters;
+    }
+
+    public function getSnapshotMediaIngesters() : ?array
+    {
+        return $this->snapshotMediaIngesters;
     }
 
     /**
@@ -535,6 +518,20 @@ class OsiiImport extends AbstractEntity
     public function getOsiiItems()
     {
         return $this->osiiItems;
+    }
+
+    /**
+     * @OneToMany(
+     *     targetEntity="OsiiMedia",
+     *     mappedBy="import",
+     *     fetch="EXTRA_LAZY"
+     * )
+     */
+    protected $osiiMedia;
+
+    public function getOsiiMedia()
+    {
+        return $this->osiiMedia;
     }
 
     /**

@@ -17,7 +17,6 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotMedia = [];
         $snapshotDataTypes = [];
         $snapshotMediaIngesters = [];
-        $snapshotMediaRenderers = [];
         $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
         $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
         $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
@@ -131,6 +130,7 @@ class DoSnapshot extends AbstractOsiiJob
                     if (null === $osiiMediaEntity) {
                         // This is a new remote media.
                         $osiiMediaEntity = new OsiiEntity\OsiiMedia;
+                        $osiiMediaEntity->setImport($this->getImportEntity());
                         $osiiMediaEntity->setOsiiItem($osiiItemEntity);
                         $osiiMediaEntity->setRemoteMediaId($media['o:id']);
                         $this->getEntityManager()->persist($osiiMediaEntity);
@@ -141,8 +141,6 @@ class DoSnapshot extends AbstractOsiiJob
                     $osiiMediaEntity->setSnapshotMedia($media);
                     // Set metadata about the snapshot.
                     $snapshotMedia[] = $media['o:id'];
-                    $snapshotMediaIngesters[] = $media['o:ingester'];
-                    $snapshotMediaRenderers[] = $media['o:renderer'];
                     if (isset($media['o:resource_class'])) {
                         $classId = $media['o:resource_class']['o:id'];
                         ++$snapshotClasses[$classId]['count'];
@@ -159,6 +157,13 @@ class DoSnapshot extends AbstractOsiiJob
                         ++$snapshotDataTypes[$dataTypeId]['count'];
                         ++$snapshotProperties[$propertyId]['count'];
                     }
+                    if (!isset($snapshotMediaIngesters[$media['o:ingester']])) {
+                        $snapshotMediaIngesters[$media['o:ingester']] = [
+                            'label' => null, // Placeholder until media_ingesters resource is available, if ever
+                            'count' => 0,
+                        ];
+                    }
+                    ++$snapshotMediaIngesters[$media['o:ingester']]['count'];
                 }
                 $this->getEntityManager()->flush();
                 $this->getEntityManager()->clear();
@@ -180,7 +185,6 @@ class DoSnapshot extends AbstractOsiiJob
         $this->getImportEntity()->setSnapshotMedia($snapshotMedia);
         $this->getImportEntity()->setSnapshotDataTypes($snapshotDataTypes);
         $this->getImportEntity()->setSnapshotMediaIngesters($snapshotMediaIngesters);
-        $this->getImportEntity()->setSnapshotMediaRenderers($snapshotMediaRenderers);
         $this->getImportEntity()->setSnapshotProperties($snapshotProperties);
         $this->getImportEntity()->setSnapshotClasses($snapshotClasses);
         $this->getImportEntity()->setSnapshotVocabularies($snapshotVocabularies);

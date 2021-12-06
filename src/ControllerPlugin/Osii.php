@@ -77,6 +77,16 @@ class Osii extends AbstractPlugin
     }
 
     /**
+     * Get all local media ingester mappers.
+     *
+     * @return array
+     */
+    public function getLocalMediaIngesterMappers()
+    {
+        return $this->services->get('Osii\MediaIngesterMapperManager')->getRegisteredNames();
+    }
+
+    /**
      * Prepare snapshot data types for display.
      *
      * @param array $snapshotDataTypes
@@ -87,6 +97,19 @@ class Osii extends AbstractPlugin
         $countColumn = array_column($snapshotDataTypes, 'count');
         array_multisort($countColumn, SORT_DESC, $snapshotDataTypes);
         return $snapshotDataTypes;
+    }
+
+    /**
+     * Prepare snapshot media ingesters for display.
+     *
+     * @param array $snapshotMediaIngesters
+     * @return array
+     */
+    public function getPreparedSnapshotMediaIngesters(array $snapshotMediaIngesters)
+    {
+        $countColumn = array_column($snapshotMediaIngesters, 'count');
+        array_multisort($countColumn, SORT_DESC, $snapshotMediaIngesters);
+        return $snapshotMediaIngesters;
     }
 
     /**

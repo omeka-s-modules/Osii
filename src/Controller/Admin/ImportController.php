@@ -126,6 +126,7 @@ class ImportController extends AbstractActionController
         $snapshotDataTypes = $import->snapshotDataTypes() ?? [];
         $snapshotProperties = $import->snapshotProperties() ?? [];
         $snapshotClasses = $import->snapshotClasses() ?? [];
+        $snapshotMediaIngesters = $import->snapshotMediaIngesters() ?? [];
 
         $view = new ViewModel;
         $view->setVariable('import', $import);
@@ -137,9 +138,11 @@ class ImportController extends AbstractActionController
         $view->setVariable('localDataTypeSelect', $this->osii()->getLocalDataTypeSelect());
         $view->setVariable('localProperties', $this->osii()->getLocalProperties());
         $view->setVariable('localClasses', $this->osii()->getLocalClasses());
+        $view->setVariable('localMediaIngesterMappers', $this->osii()->getLocalMediaIngesterMappers());
         $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotDataTypes($snapshotDataTypes));
         $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($snapshotProperties));
         $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($snapshotClasses));
+        $view->setVariable('remoteMediaIngesters', $this->osii()->getPreparedSnapshotMediaIngesters($snapshotMediaIngesters));
         return $view;
     }
 

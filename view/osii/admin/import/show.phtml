@@ -26,6 +26,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <ul>
     <li><?php echo sprintf($this->translate('Items in snapshot: %s'), count($import->snapshotItems())); ?></li>
+    <li><?php echo sprintf($this->translate('Media in snapshot: %s'), count($import->snapshotMedia())); ?></li>
 </ul>
 
 <?php
@@ -33,6 +34,7 @@ echo $this->sectionNav([
     'snapshot-data-types' => $this->translate('Snapshot data types'),
     'snapshot-properties' => $this->translate('Snapshot properties'),
     'snapshot-classes' => $this->translate('Snapshot classes'),
+    'snapshot-media-ingesters' => $this->translate('Snapshot media ingesters'),
 ]);
 ?>
 
@@ -150,6 +152,35 @@ echo $this->sectionNav([
     <?php else: ?>
     <div class="no-resources">
         <p><?php echo $this->translate('No classes in snapshot.'); ?></p>
+    </div>
+    <?php endif; ?>
+</div>
+
+<div id="snapshot-media-ingesters" class="section">
+    <h3><?php echo $this->translate('Snapshot media ingesters'); ?></h3>
+    <?php if ($remoteMediaIngesters): ?>
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+            <tr>
+                <th><?php echo $this->translate('Remote media ingester'); ?></th>
+                <th><?php echo $this->translate('Remote media count'); ?></th>
+                <th><?php echo $this->translate('Mapper available?'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($remoteMediaIngesters as $remoteMediaIngesterId => $remoteMediaIngester): ?>
+            <tr>
+                <td><?php echo $remoteMediaIngesterId; ?></td>
+                <td><?php echo $remoteMediaIngester['count']; ?></td>
+                <td><?php echo in_array($remoteMediaIngesterId, $localMediaIngesterMappers) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+            </tr>
+        <?php $index++; ?>
+        <?php endforeach; ?>
+        <tbody>
+    </table>
+    <?php else: ?>
+    <div class="no-resources">
+        <p><?php echo $this->translate('No data types in snapshot.'); ?></p>
     </div>
     <?php endif; ?>
 </div>
