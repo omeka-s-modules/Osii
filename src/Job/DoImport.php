@@ -214,7 +214,7 @@ class DoImport extends AbstractOsiiJob
             $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
             $localMedia = $this->mapClass($localMedia, $remoteMedia);
             $localMedia = $this->mapValues($localMedia, $remoteMedia);
-            $localMedia['o:position'] = $osiiMediaEntity->getPosition();
+            $localMedia['position'] = $osiiMediaEntity->getPosition();
             if ($localMediaEntity) {
                 $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
             } else {
