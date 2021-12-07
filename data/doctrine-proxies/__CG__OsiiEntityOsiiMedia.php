@@ -66,10 +66,10 @@ class OsiiMedia extends \Osii\Entity\OsiiMedia implements \Doctrine\ORM\Proxy\Pr
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
+            return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'position', 'created', 'modified'];
         }
 
-        return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'created', 'modified'];
+        return ['__isInitialized__', 'id', 'import', 'osiiItem', 'localMedia', 'snapshotMedia', 'remoteMediaId', 'position', 'created', 'modified'];
     }
 
     /**
@@ -299,6 +299,28 @@ class OsiiMedia extends \Osii\Entity\OsiiMedia implements \Doctrine\ORM\Proxy\Pr
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRemoteMediaId', []);
 
         return parent::getRemoteMediaId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPosition(int $position): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setPosition', [$position]);
+
+        parent::setPosition($position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPosition(): int
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getPosition', []);
+
+        return parent::getPosition();
     }
 
     /**

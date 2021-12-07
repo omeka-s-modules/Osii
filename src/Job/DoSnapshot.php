@@ -65,7 +65,9 @@ class DoSnapshot extends AbstractOsiiJob
                 // Set metadata about the snapshot.
                 $snapshotItems[] = $item['o:id'];
                 if (!empty($item['o:media'])) {
-                    $remoteItemsWithMedia[] = $item['o:id'];
+                    foreach ($item['o:media'] as $position => $media) {
+                        $remoteItemsWithMedia[$item['o:id']][$media['o:id']] = $position + 1;
+                    }
                 }
                 if (isset($item['o:resource_class'])) {
                     $classId = $item['o:resource_class']['o:id'];
@@ -102,7 +104,7 @@ class DoSnapshot extends AbstractOsiiJob
             'sort_order' => 'asc',
             'per_page' => 50,
         ];
-        foreach ($remoteItemsWithMedia as $remoteItemId) {
+        foreach ($remoteItemsWithMedia as $remoteItemId => $mediaPositions) {
             $osiiItemEntity = $this->getEntityManager()
                 ->getRepository(OsiiEntity\OsiiItem::class)
                 ->findOneBy([
@@ -139,6 +141,7 @@ class DoSnapshot extends AbstractOsiiJob
                         $osiiMediaEntity->setModified(new DateTime('now'));
                     }
                     $osiiMediaEntity->setSnapshotMedia($media);
+                    $osiiMediaEntity->setPosition($mediaPositions[$media['o:id']]);
                     // Set metadata about the snapshot.
                     $snapshotMedia[] = $media['o:id'];
                     if (isset($media['o:resource_class'])) {
