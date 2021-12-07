@@ -210,7 +210,6 @@ class DoImport extends AbstractOsiiJob
                 // Ingester mapper is not on local installation. Ignore media.
                 continue;
             }
-            $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
             $localMedia = $this->mapOwner($localMedia, $remoteMedia);
             $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
             $localMedia = $this->mapClass($localMedia, $remoteMedia);
@@ -219,13 +218,15 @@ class DoImport extends AbstractOsiiJob
                 $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
             } else {
                 $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
+                $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
                 $createOptions = [
                     'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
                 ];
                 $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
                 $osiiMediaEntity->setLocalMedia($localMediaEntity);
-                $this->getEntityManager()->flush();
             }
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->clear();
         }
 
         $this->getImportEntity()->setImportCompleted(new DateTime('now'));
