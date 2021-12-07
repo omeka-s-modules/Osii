@@ -174,7 +174,6 @@ echo $this->sectionNav([
                 <td><?php echo $remoteMediaIngester['count']; ?></td>
                 <td><?php echo in_array($remoteMediaIngesterId, $localMediaIngesterMappers) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
-        <?php $index++; ?>
         <?php endforeach; ?>
         <tbody>
     </table>
