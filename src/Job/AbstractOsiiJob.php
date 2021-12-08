@@ -71,7 +71,6 @@ abstract class AbstractOsiiJob extends AbstractJob
     {
         if (null === $this->logger) {
             $this->logger = $this->getServiceLocator()->get('Omeka\Logger');
-            $this->logger->addWriter(new JobWriter($this->job));
         }
         return $this->logger;
     }

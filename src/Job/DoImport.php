@@ -2,6 +2,7 @@
 namespace Osii\Job;
 
 use DateTime;
+use Exception;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Omeka\Entity as OmekaEntity;
 
@@ -219,7 +220,19 @@ class DoImport extends AbstractOsiiJob
                 $createOptions = [
                     'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
                 ];
-                $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
+                try {
+                    $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
+                } catch (Exception $e) {
+                    // There was an error when importing the media. Log the URL
+                    // to the remote media representation and continue to the
+                    // next media.
+                    $this->getLogger()->err(sprintf(
+                        'Cannot import remote media: %s/media/%s',
+                        $this->getImportEntity()->getRootEndpoint(),
+                        $osiiMediaEntity->getRemoteMediaId()
+                    ));
+                    continue;
+                }
                 $osiiMediaEntity->setLocalMedia($localMediaEntity);
             }
             $this->flushClear();
