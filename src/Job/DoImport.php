@@ -73,13 +73,11 @@ class DoImport extends AbstractOsiiJob
             $this->getEntityManager()->persist($localItem);
             $osiiItemEntity->setLocalItem($localItem);
             if (0 === ($i % $batchSize)) {
-                $this->getEntityManager()->flush();
-                $this->getEntityManager()->clear();
+                $this->flushClear();
             }
             $i++;
         }
-        $this->getEntityManager()->flush();
-        $this->getEntityManager()->clear();
+        $this->flushClear();
 
         // Get the remote/local ID maps. Keys are remote IDs; values are local
         // IDs. Here we're mapping the remote items, properties, and classes to
@@ -181,16 +179,14 @@ class DoImport extends AbstractOsiiJob
             ];
             $this->getApiManager()->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
             if (0 === ($i % $batchSize)) {
+                $this->flushClear();
                 if ($this->shouldStop()) {
                     return;
                 }
-                $this->getEntityManager()->flush();
-                $this->getEntityManager()->clear();
             }
             $i++;
         }
-        $this->getEntityManager()->flush();
-        $this->getEntityManager()->clear();
+        $this->flushClear();
 
         // Import media from their snapshot.
         $dql = 'SELECT m
@@ -226,12 +222,14 @@ class DoImport extends AbstractOsiiJob
                 $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
                 $osiiMediaEntity->setLocalMedia($localMediaEntity);
             }
-            $this->getEntityManager()->flush();
-            $this->getEntityManager()->clear();
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
+            }
         }
 
         $this->getImportEntity()->setImportCompleted(new DateTime('now'));
-        $this->getEntityManager()->flush();
+        $this->flushClear();
     }
 
     protected function mapOwner(array $localResource, array $remoteResource)

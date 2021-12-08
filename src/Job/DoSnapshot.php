@@ -35,9 +35,6 @@ class DoSnapshot extends AbstractOsiiJob
         $query['per_page'] = 50;
         $query['page'] = 1;
         while (true) {
-            if ($this->shouldStop()) {
-                return;
-            }
             $items = $this->getApiOutput($client, $query);
             if (!$items) {
                 break; // No more items.
@@ -86,15 +83,17 @@ class DoSnapshot extends AbstractOsiiJob
                     ++$snapshotProperties[$propertyId]['count'];
                 }
             }
-            // Save memory by flushing and clearing the entity manager at the
-            // end of every iteration.
-            $this->getEntityManager()->flush();
-            $this->getEntityManager()->clear();
-            // Increment the page.
             $query['page']++;
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
+            }
         }
 
-        // Iterate remote media.
+        // Iterate remote media. Ideally, the media adapter would have a way to
+        // get the media of multiple items using one query. That would make it
+        // much faster to gather media snapshots. Until that's added, we have to
+        // get the media one item at a time, which is slow.
         $endpoint = sprintf('%s/media', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query = [
@@ -114,9 +113,6 @@ class DoSnapshot extends AbstractOsiiJob
             $query['item_id'] = $remoteItemId;
             $query['page'] = 1;
             while (true) {
-                if ($this->shouldStop()) {
-                    return;
-                }
                 $medias = $this->getApiOutput($client, $query);
                 if (!$medias) {
                     break; // No more media.
@@ -168,10 +164,11 @@ class DoSnapshot extends AbstractOsiiJob
                     }
                     ++$snapshotMediaIngesters[$media['o:ingester']]['count'];
                 }
-                $this->getEntityManager()->flush();
-                $this->getEntityManager()->clear();
-                // Increment the page.
                 $query['page']++;
+                $this->flushClear();
+                if ($this->shouldStop()) {
+                    return;
+                }
             }
         }
 
@@ -193,7 +190,7 @@ class DoSnapshot extends AbstractOsiiJob
         $this->getImportEntity()->setSnapshotVocabularies($snapshotVocabularies);
         $this->getImportEntity()->setSnapshotCompleted(new DateTime('now'));
 
-        $this->getEntityManager()->flush();
+        $this->flushClear();
     }
 
     /**

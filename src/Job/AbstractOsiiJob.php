@@ -100,4 +100,15 @@ abstract class AbstractOsiiJob extends AbstractJob
         }
         return $resourceValues;
     }
+
+    /**
+     * Flush and clear the entity manager.
+     *
+     * Call this in iterations to save memory.
+     */
+    protected function flushClear()
+    {
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->clear();
+    }
 }
