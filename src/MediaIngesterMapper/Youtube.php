@@ -7,8 +7,8 @@ class Youtube implements MediaIngesterMapperInterface
     {
         $localResource['o:ingester'] = 'youtube';
         $localResource['o:source'] = $remoteResource['o:source'];
-        $localResource['start'] = $remoteResource['data']['start'];
-        $localResource['end'] = $remoteResource['data']['end'];
+        $localResource['start'] = $remoteResource['data']['start'] ?? null;
+        $localResource['end'] = $remoteResource['data']['end'] ?? null;
         return $localResource;
     }
 }
