@@ -58,46 +58,49 @@ class DoImport extends AbstractOsiiJob
             $this->getApiManager()->batchDelete('media', $localMediaToDelete);
         }
 
-        // Remote items may have been created since the previous snapshot. These
-        // must be created locally. Here we create these new items and assign
-        // them to their related OSII items.
+        // Create a local item for every remote item. We do this first so we can
+        // correctly map resource values when updating the item metadata.
+        $dql = 'SELECT i.id
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.import = :import
+            AND i.localItem IS NULL';
+        $query = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter('import', $this->getImportEntity());
+        $osiiItemIds = array_column($query->getResult(), 'id');
         $dql = 'SELECT i
-        FROM Osii\Entity\OsiiItem i
-        WHERE i.import = :import
-        AND i.localItem IS NULL';
-        $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
-        $i = 1;
-        $batchSize = 50;
-        foreach ($query->toIterable() as $osiiItemEntity) {
-            $localItem = new OmekaEntity\Item;
-            $localItem->setCreated(new DateTime('now'));
-            $this->getEntityManager()->persist($localItem);
-            $osiiItemEntity->setLocalItem($localItem);
-            if (0 === ($i % $batchSize)) {
-                $this->flushClear();
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.id IN (:osiiItemIds)';
+        $query = $this->getEntityManager()->createQuery($dql);
+        foreach (array_chunk($osiiItemIds, 100) as $osiiItemIdsChunk) {
+            $query->setParameter('osiiItemIds', $osiiItemIdsChunk);
+            foreach ($query->toIterable() as $osiiItemEntity) {
+                $localItem = new OmekaEntity\Item;
+                $localItem->setCreated(new DateTime('now'));
+                $this->getEntityManager()->persist($localItem);
+                $osiiItemEntity->setLocalItem($localItem);
             }
-            $i++;
+            $this->flushClear();
         }
-        $this->flushClear();
 
         // Get the remote/local ID maps. Keys are remote IDs; values are local
         // IDs. Here we're mapping the remote items, properties, and classes to
         // the local items, properties, and classes.
         $dql = 'SELECT i.remoteItemId AS remote_item, IDENTITY(i.localItem) AS local_item
-        FROM Osii\Entity\OsiiItem i
-        WHERE i.import = :import';
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
         $this->itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
 
         $dql = 'SELECT p.id AS property_id, CONCAT(v.namespaceUri, p.localName) AS uri
-        FROM Omeka\Entity\Property p
-        JOIN p.vocabulary v';
+            FROM Omeka\Entity\Property p
+            JOIN p.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
         $localProperties = array_column($query->getResult(), 'property_id', 'uri');
 
         $dql = 'SELECT c.id AS class_id, CONCAT(v.namespaceUri, c.localName) AS uri
-        FROM Omeka\Entity\ResourceClass c
-        JOIN c.vocabulary v';
+            FROM Omeka\Entity\ResourceClass c
+            JOIN c.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
         $localClasses = array_column($query->getResult(), 'class_id', 'uri');
 
@@ -131,63 +134,67 @@ class DoImport extends AbstractOsiiJob
         $sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
 
         // Import items from their snapshot.
+        $dql = 'SELECT i.id
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.import = :import';
+        $query = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter('import', $this->getImportEntity());
+        $osiiItemIds = array_column($query->getResult(), 'id');
         $dql = 'SELECT i
-        FROM Osii\Entity\OsiiItem i
-        WHERE i.import = :import';
-        $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
-        $i = 1;
-        $batchSize = 50;
-        foreach ($query->toIterable() as $osiiItemEntity) {
-            $localItemEntity = $osiiItemEntity->getLocalItem();
-            $remoteItem = $osiiItemEntity->getSnapshotItem();
-            $localItem = [];
-            $localItem = $this->mapOwner($localItem, $remoteItem);
-            $localItem = $this->mapVisibility($localItem, $remoteItem);
-            $localItem = $this->mapClass($localItem, $remoteItem);
-            $localItem = $this->mapValues($localItem, $remoteItem);
-            // Set the item set. Preserve any existing item set associations.
-            foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
-                $localItem['o:item_set'][] = ['o:id' => $itemSetId];
-            }
-            $localItemSet = $this->getImportEntity()->getLocalItemSet();
-            if ($localItemSet) {
-                $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
-            }
-            // Add the source item value.
-            if ($sourceItemPropertyId && $this->getImportEntity()->getAddSourceItem()) {
-                $localItem[$sourceItemPropertyId][] = [
-                    'type' => 'uri',
-                    'property_id' => $sourceItemPropertyId,
-                    '@id' => sprintf(
-                        '%s/items/%s',
-                        $this->getImportEntity()->getRootEndpoint(),
-                        $osiiItemEntity->getRemoteItemId()
-                    ),
-                ];
-            }
-            // Add the source site value.
-            if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
-                $localItem[$sourceSitePropertyId][] = [
-                    'type' => 'uri',
-                    'property_id' => $sourceSitePropertyId,
-                    '@id' => $this->getImportEntity()->getSourceSite(),
-                ];
-            }
-            $updateOptions = [
-                'flushEntityManager' => false, // Flush (and clear) only once per batch.
-                'responseContent' => 'resource', // Avoid the overhead of composing the representation.
-                'isPartial' => true, // Declare a partial (PATCH) update so media is not deleted.
-            ];
-            $this->getApiManager()->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
-            if (0 === ($i % $batchSize)) {
-                $this->flushClear();
-                if ($this->shouldStop()) {
-                    return;
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.id IN (:osiiItemIds)';
+        $query = $this->getEntityManager()->createQuery($dql);
+        foreach (array_chunk($osiiItemIds, 100) as $osiiItemIdsChunk) {
+            $query->setParameter('osiiItemIds', $osiiItemIdsChunk);
+            foreach ($query->toIterable() as $osiiItemEntity) {
+                $localItemEntity = $osiiItemEntity->getLocalItem();
+                $remoteItem = $osiiItemEntity->getSnapshotItem();
+                $localItem = [];
+                $localItem = $this->mapOwner($localItem, $remoteItem);
+                $localItem = $this->mapVisibility($localItem, $remoteItem);
+                $localItem = $this->mapClass($localItem, $remoteItem);
+                $localItem = $this->mapValues($localItem, $remoteItem);
+                // Set the item set. Preserve any existing item set associations.
+                foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
+                    $localItem['o:item_set'][] = ['o:id' => $itemSetId];
                 }
+                $localItemSet = $this->getImportEntity()->getLocalItemSet();
+                if ($localItemSet) {
+                    $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
+                }
+                // Add the source item value.
+                if ($sourceItemPropertyId && $this->getImportEntity()->getAddSourceItem()) {
+                    $localItem[$sourceItemPropertyId][] = [
+                        'type' => 'uri',
+                        'property_id' => $sourceItemPropertyId,
+                        '@id' => sprintf(
+                            '%s/items/%s',
+                            $this->getImportEntity()->getRootEndpoint(),
+                            $osiiItemEntity->getRemoteItemId()
+                        ),
+                    ];
+                }
+                // Add the source site value.
+                if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
+                    $localItem[$sourceSitePropertyId][] = [
+                        'type' => 'uri',
+                        'property_id' => $sourceSitePropertyId,
+                        '@id' => $this->getImportEntity()->getSourceSite(),
+                    ];
+                }
+                $updateOptions = [
+                    'flushEntityManager' => false, // Flush (and clear) only once per batch.
+                    'responseContent' => 'resource', // Avoid the overhead of composing the representation.
+                    'isPartial' => true, // Declare a partial (PATCH) update so media is not deleted.
+                ];
+                $this->getApiManager()->update('items', $localItemEntity->getId(), $localItem, [], $updateOptions);
             }
-            $i++;
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
+            }
         }
-        $this->flushClear();
 
         // Import media from their snapshot.
         $dql = 'SELECT m
