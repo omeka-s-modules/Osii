@@ -196,51 +196,59 @@ class DoImport extends AbstractOsiiJob
             }
         }
 
-        // Import media from their snapshot.
-        $dql = 'SELECT m
-        FROM Osii\Entity\OsiiMedia m
-        JOIN m.osiiItem i
-        WHERE i.import = :import';
-        $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
         $ingesterMapperManager = $this->getServiceLocator()->get('Osii\MediaIngesterMapperManager');
-        foreach ($query->toIterable() as $osiiMediaEntity) {
-            $localMediaEntity = $osiiMediaEntity->getLocalMedia();
-            $localItemEntity = $osiiMediaEntity->getOsiiItem()->getLocalItem();
-            $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
-            $localMedia = [];
-            try {
-                $ingesterMapper = $ingesterMapperManager->get($remoteMedia['o:ingester']);
-            } catch (ServiceNotFoundException $e) {
-                // Ingester mapper is not on local installation. Ignore media.
-                continue;
-            }
-            $localMedia = $this->mapOwner($localMedia, $remoteMedia);
-            $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
-            $localMedia = $this->mapClass($localMedia, $remoteMedia);
-            $localMedia = $this->mapValues($localMedia, $remoteMedia);
-            $localMedia['position'] = $osiiMediaEntity->getPosition();
-            if ($localMediaEntity) {
-                $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
-            } else {
-                $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
-                $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
-                $createOptions = [
-                    'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
-                ];
+        $dql = 'SELECT m.id
+            FROM Osii\Entity\OsiiMedia m
+            WHERE m.import = :import';
+        $query = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter('import', $this->getImportEntity());
+        $osiiMediaIds = array_column($query->getResult(), 'id');
+        $dql = 'SELECT m
+            FROM Osii\Entity\OsiiMedia m
+            WHERE m.id IN (:osiiMediaIds)';
+        $query = $this->getEntityManager()->createQuery($dql);
+        foreach (array_chunk($osiiMediaIds, 100) as $osiiMediaIdsChunk) {
+            $query->setParameter('osiiMediaIds', $osiiMediaIdsChunk);
+            foreach ($query->toIterable() as $osiiMediaEntity) {
+                $localMediaEntity = $osiiMediaEntity->getLocalMedia();
+                $localItemEntity = $osiiMediaEntity->getOsiiItem()->getLocalItem();
+                $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
+                $localMedia = [];
                 try {
-                    $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
-                } catch (Exception $e) {
-                    // There was an error when importing the media. Log the URL
-                    // to the remote media representation and continue to the
-                    // next media.
-                    $this->getLogger()->err(sprintf(
-                        'Cannot import remote media: %s/media/%s',
-                        $this->getImportEntity()->getRootEndpoint(),
-                        $osiiMediaEntity->getRemoteMediaId()
-                    ));
+                    $ingesterMapper = $ingesterMapperManager->get($remoteMedia['o:ingester']);
+                } catch (ServiceNotFoundException $e) {
+                    // Ingester mapper is not on local installation. Ignore media.
                     continue;
                 }
-                $osiiMediaEntity->setLocalMedia($localMediaEntity);
+                $localMedia = $this->mapOwner($localMedia, $remoteMedia);
+                $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
+                $localMedia = $this->mapClass($localMedia, $remoteMedia);
+                $localMedia = $this->mapValues($localMedia, $remoteMedia);
+                $localMedia['position'] = $osiiMediaEntity->getPosition();
+                if ($localMediaEntity) {
+                    $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
+                } else {
+                    $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
+                    $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
+                    $createOptions = [
+                        'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
+                    ];
+                    try {
+                        $localMediaEntity = $this->getApiManager()->create('media', $localMedia, [], $createOptions)->getContent();
+                    } catch (Exception $e) {
+                        // There was an error when importing the media. Log the URL
+                        // to the remote media representation and continue to the
+                        // next media.
+                        $this->getLogger()->err(sprintf(
+                            'Cannot import remote media: %s/media/%s',
+                            $this->getImportEntity()->getRootEndpoint(),
+                            $osiiMediaEntity->getRemoteMediaId()
+                        ));
+                        continue;
+                    }
+                    $osiiMediaEntity->setLocalMedia($localMediaEntity);
+                }
             }
             $this->flushClear();
             if ($this->shouldStop()) {
