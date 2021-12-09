@@ -169,6 +169,8 @@ class DoSnapshot extends AbstractOsiiJob
                 if ($this->shouldStop()) {
                     return;
                 }
+                // Re-merge the OSII item entity because it was detached during clear.
+                $osiiItemEntity = $this->getEntityManager()->merge($osiiItemEntity);
             }
         }
 
