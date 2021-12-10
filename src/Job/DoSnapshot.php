@@ -91,88 +91,87 @@ class DoSnapshot extends AbstractOsiiJob
             }
         }
 
-        // Iterate remote media. Ideally, the media adapter would have a way to
-        // get the media of multiple items using one query. That would make it
-        // much faster to gather media snapshots. Until that's added, we have to
-        // get the media one item at a time, which is slow.
+        // Iterate remote media. This will iterate every media in the remote
+        // installation and make snapshots of those that belong to items in the
+        // import, ignoring the rest. For most circumstances, this method is
+        // much faster than the alternative of making a media request for every
+        // item.
         $endpoint = sprintf('%s/media', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
-        $query = [
-            'key_identity' => $this->getImportEntity()->getKeyIdentity(),
-            'key_credential' => $this->getImportEntity()->getKeyCredential(),
-            'sort_by' => 'id',
-            'sort_order' => 'asc',
-            'per_page' => 50,
-        ];
-        foreach ($remoteItemsWithMedia as $remoteItemId => $mediaPositions) {
-            $osiiItemEntity = $this->getEntityManager()
-                ->getRepository(OsiiEntity\OsiiItem::class)
-                ->findOneBy([
-                    'import' => $this->getImportEntity(),
-                    'remoteItemId' => $remoteItemId,
-                ]);
-            $query['item_id'] = $remoteItemId;
-            $query['page'] = 1;
-            while (true) {
-                $medias = $this->getApiOutput($client, $query);
-                if (!$medias) {
-                    break; // No more media.
+        $query['key_identity'] = $this->getImportEntity()->getKeyIdentity();
+        $query['key_credential'] = $this->getImportEntity()->getKeyCredential();
+        $query['sort_by'] = 'id';
+        $query['sort_order'] = 'asc';
+        $query['per_page'] = 50;
+        $query['page'] = 1;
+        while (true) {
+            $medias = $this->getApiOutput($client, $query);
+            if (!$medias) {
+                break; // No more media.
+            }
+            $this->logMediaIds($medias);
+            foreach ($medias as $media) {
+                $remoteMediaId = $media['o:id'];
+                $remoteItemId = $media['o:item']['o:id'];
+                if (!isset($remoteItemsWithMedia[$remoteItemId])) {
+                    continue; // This media is not part of the import.
                 }
-                $this->logMediaIds($medias, $remoteItemId);
-                foreach ($medias as $media) {
-                    // Save snapshots of remote media.
-                    $osiiMediaEntity = $this->getEntityManager()
-                        ->getRepository(OsiiEntity\OsiiMedia::class)
+                // Save snapshots of remote media.
+                $osiiMediaEntity = $this->getEntityManager()
+                    ->getRepository(OsiiEntity\OsiiMedia::class)
+                    ->findOneBy([
+                        'import' => $this->getImportEntity(),
+                        'remoteMediaId' => $remoteMediaId,
+                    ]);
+                if (null === $osiiMediaEntity) {
+                    // This is a new remote media.
+                    $osiiItemEntity = $this->getEntityManager()
+                        ->getRepository(OsiiEntity\OsiiItem::class)
                         ->findOneBy([
-                            'osiiItem' => $osiiItemEntity,
-                            'remoteMediaId' => $media['o:id'],
+                            'import' => $this->getImportEntity(),
+                            'remoteItemId' => $remoteItemId,
                         ]);
-                    if (null === $osiiMediaEntity) {
-                        // This is a new remote media.
-                        $osiiMediaEntity = new OsiiEntity\OsiiMedia;
-                        $osiiMediaEntity->setImport($this->getImportEntity());
-                        $osiiMediaEntity->setOsiiItem($osiiItemEntity);
-                        $osiiMediaEntity->setRemoteMediaId($media['o:id']);
-                        $this->getEntityManager()->persist($osiiMediaEntity);
-                    } else {
-                        // This is an existing remote media.
-                        $osiiMediaEntity->setModified(new DateTime('now'));
-                    }
-                    $osiiMediaEntity->setSnapshotMedia($media);
-                    $osiiMediaEntity->setPosition($mediaPositions[$media['o:id']]);
-                    // Set metadata about the snapshot.
-                    $snapshotMedia[] = $media['o:id'];
-                    if (isset($media['o:resource_class'])) {
-                        $classId = $media['o:resource_class']['o:id'];
-                        ++$snapshotClasses[$classId]['count'];
-                    }
-                    foreach ($this->getValuesFromResource($media) as $value) {
-                        $dataTypeId = $value['type'];
-                        $propertyId = $value['property_id'];
-                        if (!isset($snapshotDataTypes[$dataTypeId])) {
-                            $snapshotDataTypes[$dataTypeId] = [
-                                'label' => null, // Placeholder until data_types resource is available
-                                'count' => 0,
-                            ];
-                        }
-                        ++$snapshotDataTypes[$dataTypeId]['count'];
-                        ++$snapshotProperties[$propertyId]['count'];
-                    }
-                    if (!isset($snapshotMediaIngesters[$media['o:ingester']])) {
-                        $snapshotMediaIngesters[$media['o:ingester']] = [
-                            'label' => null, // Placeholder until media_ingesters resource is available, if ever
+                    $osiiMediaEntity = new OsiiEntity\OsiiMedia;
+                    $osiiMediaEntity->setImport($this->getImportEntity());
+                    $osiiMediaEntity->setOsiiItem($osiiItemEntity);
+                    $osiiMediaEntity->setRemoteMediaId($remoteMediaId);
+                    $this->getEntityManager()->persist($osiiMediaEntity);
+                } else {
+                    // This is an existing remote media.
+                    $osiiMediaEntity->setModified(new DateTime('now'));
+                }
+                $osiiMediaEntity->setSnapshotMedia($media);
+                $osiiMediaEntity->setPosition($remoteItemsWithMedia[$remoteItemId][$remoteMediaId]);
+                // Set metadata about the snapshot.
+                $snapshotMedia[] = $remoteMediaId;
+                if (isset($media['o:resource_class'])) {
+                    $classId = $media['o:resource_class']['o:id'];
+                    ++$snapshotClasses[$classId]['count'];
+                }
+                foreach ($this->getValuesFromResource($media) as $value) {
+                    $dataTypeId = $value['type'];
+                    $propertyId = $value['property_id'];
+                    if (!isset($snapshotDataTypes[$dataTypeId])) {
+                        $snapshotDataTypes[$dataTypeId] = [
+                            'label' => null, // Placeholder until data_types resource is available
                             'count' => 0,
                         ];
                     }
-                    ++$snapshotMediaIngesters[$media['o:ingester']]['count'];
+                    ++$snapshotDataTypes[$dataTypeId]['count'];
+                    ++$snapshotProperties[$propertyId]['count'];
                 }
-                $query['page']++;
-                $this->flushClear();
-                if ($this->shouldStop()) {
-                    return;
+                if (!isset($snapshotMediaIngesters[$media['o:ingester']])) {
+                    $snapshotMediaIngesters[$media['o:ingester']] = [
+                        'label' => null, // Placeholder until media_ingesters resource is available, if ever
+                        'count' => 0,
+                    ];
                 }
-                // Re-merge the OSII item entity because it was detached during clear.
-                $osiiItemEntity = $this->getEntityManager()->merge($osiiItemEntity);
+                ++$snapshotMediaIngesters[$media['o:ingester']]['count'];
+            }
+            $query['page']++;
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
             }
         }
 
@@ -345,9 +344,8 @@ class DoSnapshot extends AbstractOsiiJob
      * Log remote media IDs.
      *
      * @param array $snapshot
-     * @param int $itemId
      */
-    protected function logMediaIds(array $snapshots, $itemId)
+    protected function logMediaIds(array $snapshots)
     {
         $remoteIds = '';
         foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
@@ -356,6 +354,6 @@ class DoSnapshot extends AbstractOsiiJob
                 $remoteIds .= $snapshot['o:id'] . ', ';
             }
         }
-        $this->getLogger()->info(sprintf('Attempting to snapshot item %s media:%s', $itemId, $remoteIds));
+        $this->getLogger()->info(sprintf('Attempting to snapshot media:%s', $remoteIds));
     }
 }
