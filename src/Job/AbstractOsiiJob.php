@@ -109,5 +109,7 @@ abstract class AbstractOsiiJob extends AbstractJob
     {
         $this->getEntityManager()->flush();
         $this->getEntityManager()->clear();
+        // Merge the Job entity as managed so logging works as expected.
+        $this->getEntityManager()->merge($this->job);
     }
 }

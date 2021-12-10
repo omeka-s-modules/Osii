@@ -39,6 +39,7 @@ class DoSnapshot extends AbstractOsiiJob
             if (!$items) {
                 break; // No more items.
             }
+            $this->logItemIds($items);
             foreach ($items as $item) {
                 // Save snapshots of remote items.
                 $osiiItemEntity = $this->getEntityManager()
@@ -117,6 +118,7 @@ class DoSnapshot extends AbstractOsiiJob
                 if (!$medias) {
                     break; // No more media.
                 }
+                $this->logMediaIds($medias, $remoteItemId);
                 foreach ($medias as $media) {
                     // Save snapshots of remote media.
                     $osiiMediaEntity = $this->getEntityManager()
@@ -320,5 +322,40 @@ class DoSnapshot extends AbstractOsiiJob
         }
         $output = json_decode($response->getBody(), true);
         return $output;
+    }
+
+    /**
+     * Log remote item IDs.
+     *
+     * @param array $snapshot
+     */
+    protected function logItemIds(array $snapshots)
+    {
+        $remoteIds = '';
+        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
+            $remoteIds .= "\n\t";
+            foreach ($snapshotsChunk as $snapshot) {
+                $remoteIds .= $snapshot['o:id'] . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Attempting to snapshot items:%s', $remoteIds));
+    }
+
+    /**
+     * Log remote media IDs.
+     *
+     * @param array $snapshot
+     * @param int $itemId
+     */
+    protected function logMediaIds(array $snapshots, $itemId)
+    {
+        $remoteIds = '';
+        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
+            $remoteIds .= "\n\t";
+            foreach ($snapshotsChunk as $snapshot) {
+                $remoteIds .= $snapshot['o:id'] . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Attempting to snapshot item %s media:%s', $itemId, $remoteIds));
     }
 }
