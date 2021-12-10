@@ -24,9 +24,9 @@ class DoImport extends AbstractOsiiJob
         // related Omeka resources becuase snapshots can change without a
         // subsequent import.
         $dql = 'SELECT i.id AS osii_item, IDENTITY(i.localItem) AS local_item
-        FROM Osii\Entity\OsiiItem i
-        WHERE i.import = :import
-        AND i.remoteItemId NOT IN (:snapshotItems)';
+            FROM Osii\Entity\OsiiItem i
+            WHERE i.import = :import
+            AND i.remoteItemId NOT IN (:snapshotItems)';
         $query = $this->getEntityManager()->createQuery($dql)
             ->setParameters([
                 'import' => $this->getImportEntity(),
@@ -41,10 +41,10 @@ class DoImport extends AbstractOsiiJob
         }
 
         $dql = 'SELECT m.id AS osii_media, IDENTITY(m.localMedia) as local_media
-        FROM Osii\Entity\OsiiMedia m
-        JOIN m.osiiItem i
-        WHERE i.import = :import
-        AND m.remoteMediaId NOT IN (:snapshotMedia)';
+            FROM Osii\Entity\OsiiMedia m
+            JOIN m.osiiItem i
+            WHERE i.import = :import
+            AND m.remoteMediaId NOT IN (:snapshotMedia)';
         $query = $this->getEntityManager()->createQuery($dql)
         ->setParameters([
             'import' => $this->getImportEntity(),
@@ -196,6 +196,7 @@ class DoImport extends AbstractOsiiJob
             }
         }
 
+        // Import media from their snapshot.
         $ingesterMapperManager = $this->getServiceLocator()->get('Osii\MediaIngesterMapperManager');
         $dql = 'SELECT m.id
             FROM Osii\Entity\OsiiMedia m
@@ -260,18 +261,39 @@ class DoImport extends AbstractOsiiJob
         $this->flushClear();
     }
 
+    /**
+     * Map remote to local owner.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
     protected function mapOwner(array $localResource, array $remoteResource)
     {
         $localResource['o:owner']['o:id'] = $this->job->getOwner()->getId();
         return $localResource;
     }
 
+    /**
+     * Map remote to local visibility.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
     protected function mapVisibility(array $localResource, array $remoteResource)
     {
         $localResource['o:is_public'] = $remoteResource['o:is_public'];
         return $localResource;
     }
 
+    /**
+     * Map remote to local resource class.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
     protected function mapClass(array $localResource, array $remoteResource)
     {
         if (isset($remoteResource['o:resource_class']) && isset($this->classMap[$remoteResource['o:resource_class']['o:id']])) {
@@ -280,6 +302,13 @@ class DoImport extends AbstractOsiiJob
         return $localResource;
     }
 
+    /**
+     * Map remote to local values.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
     protected function mapValues(array $localResource, array $remoteResource)
     {
         foreach ($this->getValuesFromResource($remoteResource) as $remoteValue) {
