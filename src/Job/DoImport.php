@@ -356,7 +356,7 @@ class DoImport extends AbstractOsiiJob
                 $osiiIds .= $id . ', ';
             }
         }
-        $this->getLogger()->info(sprintf('Attempting to import items:%s', $osiiIds));
+        $this->getLogger()->info(sprintf('Iterating OSII items:%s', $osiiIds));
     }
 
     /**
@@ -373,6 +373,6 @@ class DoImport extends AbstractOsiiJob
                 $osiiIds .= $id . ', ';
             }
         }
-        $this->getLogger()->info(sprintf('Attempting to import media:%s', $osiiIds));
+        $this->getLogger()->info(sprintf('Iterating OSII media:%s', $osiiIds));
     }
 }

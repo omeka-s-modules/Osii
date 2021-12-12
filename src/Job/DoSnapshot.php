@@ -339,7 +339,7 @@ class DoSnapshot extends AbstractOsiiJob
                 $remoteIds .= $snapshot['o:id'] . ', ';
             }
         }
-        $this->getLogger()->info(sprintf('Attempting to snapshot items:%s', $remoteIds));
+        $this->getLogger()->info(sprintf('Iterating remote items:%s', $remoteIds));
     }
 
     /**
@@ -356,6 +356,6 @@ class DoSnapshot extends AbstractOsiiJob
                 $remoteIds .= $snapshot['o:id'] . ', ';
             }
         }
-        $this->getLogger()->info(sprintf('Attempting to snapshot media:%s', $remoteIds));
+        $this->getLogger()->info(sprintf('Iterating remote media:%s', $remoteIds));
     }
 }
