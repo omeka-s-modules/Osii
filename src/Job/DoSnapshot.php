@@ -98,12 +98,14 @@ class DoSnapshot extends AbstractOsiiJob
         // item.
         $endpoint = sprintf('%s/media', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
-        $query['key_identity'] = $this->getImportEntity()->getKeyIdentity();
-        $query['key_credential'] = $this->getImportEntity()->getKeyCredential();
-        $query['sort_by'] = 'id';
-        $query['sort_order'] = 'asc';
-        $query['per_page'] = 50;
-        $query['page'] = 1;
+        $query = [
+            'key_identity' => $this->getImportEntity()->getKeyIdentity(),
+            'key_credential' => $this->getImportEntity()->getKeyCredential(),
+            'sort_by' => 'id',
+            'sort_order' => 'asc',
+            'per_page' => 50,
+            'page' => 1,
+        ];
         while (true) {
             $medias = $this->getApiOutput($client, $query);
             if (!$medias) {
