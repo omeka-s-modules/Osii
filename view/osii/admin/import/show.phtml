@@ -255,8 +255,9 @@ echo $this->sectionNav([
             if ($import->canViewImportJob()) {
                 $actionsMarkup[] = $this->hyperlink($this->translate('View job'), $this->url('admin/id', ['controller' => 'job', 'id' => $import->importJob()->id()]));
             }
-            if ($import->canViewItems()) {
+            if ($import->canViewResources()) {
                 $actionsMarkup[] = $this->hyperlink($this->translate('View items'), $this->url('admin/default', ['controller' => 'item', 'action' => 'browse'], ['query' => ['osii_import_id' => $import->id()]]));
+                $actionsMarkup[] = $this->hyperlink($this->translate('View media'), $this->url('admin/default', ['controller' => 'media', 'action' => 'browse'], ['query' => ['osii_import_id' => $import->id()]]));
             }
             ?>
             <?php echo implode(' | ', $actionsMarkup); ?>

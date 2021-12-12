@@ -113,5 +113,27 @@ SQL;
                 ));
             }
         );
+        // Enable searching media by OSII import ID (using osii_import_id).
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\MediaAdapter',
+            'api.search.query',
+            function (Event $event) {
+                $request = $event->getParam('request');
+                if (!$request->getValue('osii_import_id')) {
+                    return;
+                }
+                $adapter = $event->getTarget();
+                $alias = $adapter->createAlias();
+                $queryBuilder = $event->getParam('queryBuilder');
+                $queryBuilder->innerJoin(
+                    'Osii\Entity\OsiiMedia', $alias,
+                    'WITH', sprintf('omeka_root.id = %s.localMedia', $alias)
+                );
+                $queryBuilder->andWhere($queryBuilder->expr()->eq(
+                    sprintf('%s.import', $alias),
+                    $adapter->createNamedParameter($queryBuilder, $request->getValue('osii_import_id'))
+                ));
+            }
+        );
     }
 }

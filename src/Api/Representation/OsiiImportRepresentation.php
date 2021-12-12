@@ -273,7 +273,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return (bool) $this->importJob();
     }
 
-    public function canViewItems()
+    public function canViewResources()
     {
         $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
