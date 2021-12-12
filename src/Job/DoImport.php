@@ -146,6 +146,7 @@ class DoImport extends AbstractOsiiJob
             WHERE i.id IN (:osiiItemIds)';
         $query = $this->getEntityManager()->createQuery($dql);
         foreach (array_chunk($osiiItemIds, 100) as $osiiItemIdsChunk) {
+            $this->logItemIds($osiiItemIdsChunk);
             $query->setParameter('osiiItemIds', $osiiItemIdsChunk);
             foreach ($query->toIterable() as $osiiItemEntity) {
                 $localItemEntity = $osiiItemEntity->getLocalItem();
@@ -210,6 +211,7 @@ class DoImport extends AbstractOsiiJob
             WHERE m.id IN (:osiiMediaIds)';
         $query = $this->getEntityManager()->createQuery($dql);
         foreach (array_chunk($osiiMediaIds, 100) as $osiiMediaIdsChunk) {
+            $this->logMediaIds($osiiMediaIdsChunk);
             $query->setParameter('osiiMediaIds', $osiiMediaIdsChunk);
             foreach ($query->toIterable() as $osiiMediaEntity) {
                 $localMediaEntity = $osiiMediaEntity->getLocalMedia();
@@ -242,9 +244,10 @@ class DoImport extends AbstractOsiiJob
                         // to the remote media representation and continue to the
                         // next media.
                         $this->getLogger()->err(sprintf(
-                            'Cannot import remote media: %s/media/%s',
+                            "Cannot import remote media: %s/media/%s\n%s",
                             $this->getImportEntity()->getRootEndpoint(),
-                            $osiiMediaEntity->getRemoteMediaId()
+                            $osiiMediaEntity->getRemoteMediaId(),
+                            (string) $e,
                         ));
                         continue;
                     }
@@ -337,5 +340,39 @@ class DoImport extends AbstractOsiiJob
             $localResource[$propertyId][] = $remoteValue;
         }
         return $localResource;
+    }
+
+    /**
+     * Log OSII item IDs.
+     *
+     * @param array $ids
+     */
+    protected function logItemIds(array $ids)
+    {
+        $osiiIds = '';
+        foreach (array_chunk($ids, 10) as $idsChunk) {
+            $osiiIds .= "\n\t";
+            foreach ($idsChunk as $id) {
+                $osiiIds .= $id . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Attempting to import items:%s', $osiiIds));
+    }
+
+    /**
+     * Log OSII media IDs.
+     *
+     * @param array $ids
+     */
+    protected function logMediaIds(array $ids)
+    {
+        $osiiIds = '';
+        foreach (array_chunk($ids, 10) as $idsChunk) {
+            $osiiIds .= "\n\t";
+            foreach ($idsChunk as $id) {
+                $osiiIds .= $id . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Attempting to import media:%s', $osiiIds));
     }
 }
