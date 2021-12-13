@@ -219,7 +219,10 @@ class DoImport extends AbstractOsiiJob
                 $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
                 $localMedia = [];
                 try {
-                    $ingesterMapper = $ingesterMapperManager->get($remoteMedia['o:ingester']);
+                    $ingesterMapper = $ingesterMapperManager->get(
+                        $remoteMedia['o:ingester'],
+                        ['importEntity' => $this->getImportEntity()]
+                    );
                 } catch (ServiceNotFoundException $e) {
                     // Ingester mapper is not on local installation. Ignore media.
                     continue;
