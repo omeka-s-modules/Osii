@@ -224,7 +224,15 @@ class DoImport extends AbstractOsiiJob
                         ['importEntity' => $this->getImportEntity()]
                     );
                 } catch (ServiceNotFoundException $e) {
-                    // Ingester mapper is not on local installation. Ignore media.
+                    // Ingester mapper is not on local installation. Log the URL
+                    // to the remote media representation and continue to the
+                    // next media.
+                    $this->getLogger()->err(sprintf(
+                        "Cannot import remote media (no ingester mapper): %s/media/%s\n%s",
+                        $this->getImportEntity()->getRootEndpoint(),
+                        $osiiMediaEntity->getRemoteMediaId(),
+                        (string) $e,
+                    ));
                     continue;
                 }
                 $localMedia = $this->mapOwner($localMedia, $remoteMedia);
@@ -248,7 +256,7 @@ class DoImport extends AbstractOsiiJob
                         // to the remote media representation and continue to the
                         // next media.
                         $this->getLogger()->err(sprintf(
-                            "Cannot import remote media: %s/media/%s\n%s",
+                            "Cannot import remote media (error during create): %s/media/%s\n%s",
                             $this->getImportEntity()->getRootEndpoint(),
                             $osiiMediaEntity->getRemoteMediaId(),
                             (string) $e,
