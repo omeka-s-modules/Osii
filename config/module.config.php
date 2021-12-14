@@ -6,10 +6,10 @@ use Laminas\Router\Http;
 return [
     'osii_media_ingester_mappers' => [
         'invokables' => [
-            'html' => Service\MediaIngesterMapper\HtmlFactory::class,
-            'iiif' => Service\MediaIngesterMapper\IiifFactory::class,
-            'oembed' => Service\MediaIngesterMapper\OembedFactory::class,
-            'youtube' => Service\MediaIngesterMapper\YoutubeFactory::class,
+            'html' => MediaIngesterMapper\Html::class,
+            'iiif' => MediaIngesterMapper\Iiif::class,
+            'oembed' => MediaIngesterMapper\Oembed::class,
+            'youtube' => MediaIngesterMapper\Youtube::class,
         ],
         'factories' => [
             'upload' => Service\MediaIngesterMapper\UploadFactory::class,
