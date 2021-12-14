@@ -210,7 +210,7 @@ class DoImport extends AbstractOsiiJob
             FROM Osii\Entity\OsiiMedia m
             WHERE m.id IN (:osiiMediaIds)';
         $query = $this->getEntityManager()->createQuery($dql);
-        foreach (array_chunk($osiiMediaIds, 100) as $osiiMediaIdsChunk) {
+        foreach (array_chunk($osiiMediaIds, 25) as $osiiMediaIdsChunk) {
             $this->logMediaIds($osiiMediaIdsChunk);
             $query->setParameter('osiiMediaIds', $osiiMediaIdsChunk);
             foreach ($query->toIterable() as $osiiMediaEntity) {
