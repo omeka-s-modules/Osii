@@ -1,14 +1,14 @@
 <?php
 namespace Osii\Service\MediaIngesterMapper;
 
-use Osii\MediaIngesterMapper\Url;
+use Osii\MediaIngesterMapper\Html;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
-class UrlFactory implements FactoryInterface
+class HtmlFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        return new Url($options['importEntity']);
+        return new Html($options['importEntity']);
     }
 }

@@ -233,10 +233,11 @@ class DoImport extends AbstractOsiiJob
                 $localMedia = $this->mapValues($localMedia, $remoteMedia);
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
+                    $localMedia = $ingesterMapper->mapForUpdate($localMedia, $remoteMedia);
                     $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
                 } else {
+                    $localMedia = $ingesterMapper->mapForCreate($localMedia, $remoteMedia);
                     $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
-                    $localMedia = $ingesterMapper->mapIngester($localMedia, $remoteMedia);
                     $createOptions = [
                         'responseContent' => 'resource', // Get the entity so we can assign it to the OSII media.
                     ];

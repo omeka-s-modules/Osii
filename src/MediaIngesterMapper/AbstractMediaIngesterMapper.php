@@ -12,6 +12,11 @@ abstract class AbstractMediaIngesterMapper implements MediaIngesterMapperInterfa
         $this->importEntity = $importEntity;
     }
 
+    public function mapForUpdate(array $localResource, array $remoteResource) : array
+    {
+        return $localResource;
+    }
+
     /**
      * Get the ingest_url from the o:original_url.
      *

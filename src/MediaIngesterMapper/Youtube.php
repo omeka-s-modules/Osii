@@ -1,9 +1,9 @@
 <?php
 namespace Osii\MediaIngesterMapper;
 
-class Youtube implements MediaIngesterMapperInterface
+class Youtube extends AbstractMediaIngesterMapper
 {
-    public function mapIngester(array $localResource, array $remoteResource) : array
+    public function mapForCreate(array $localResource, array $remoteResource) : array
     {
         $localResource['o:ingester'] = 'youtube';
         $localResource['o:source'] = $remoteResource['o:source'];
