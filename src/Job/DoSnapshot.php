@@ -22,7 +22,7 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
         $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
 
-        $remoteItemsWithMedia = [];
+        $remoteMediaPositions = [];
 
         // Iterate remote items.
         $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
@@ -64,7 +64,8 @@ class DoSnapshot extends AbstractOsiiJob
                 $snapshotItems[] = $item['o:id'];
                 if (!empty($item['o:media'])) {
                     foreach ($item['o:media'] as $position => $media) {
-                        $remoteItemsWithMedia[$item['o:id']][$media['o:id']] = $position + 1;
+                        $snapshotMedia[] = $media['o:id'];
+                        $remoteMediaPositions[$media['o:id']] = $position + 1;
                     }
                 }
                 if (isset($item['o:resource_class'])) {
@@ -113,9 +114,7 @@ class DoSnapshot extends AbstractOsiiJob
             }
             $this->logMediaIds($medias);
             foreach ($medias as $media) {
-                $remoteMediaId = $media['o:id'];
-                $remoteItemId = $media['o:item']['o:id'];
-                if (!isset($remoteItemsWithMedia[$remoteItemId])) {
+                if (!in_array($media['o:id'], $snapshotMedia)) {
                     continue; // This media is not part of the import.
                 }
                 // Save snapshots of remote media.
@@ -123,7 +122,7 @@ class DoSnapshot extends AbstractOsiiJob
                     ->getRepository(OsiiEntity\OsiiMedia::class)
                     ->findOneBy([
                         'import' => $this->getImportEntity(),
-                        'remoteMediaId' => $remoteMediaId,
+                        'remoteMediaId' => $media['o:id'],
                     ]);
                 if (null === $osiiMediaEntity) {
                     // This is a new remote media.
@@ -131,21 +130,20 @@ class DoSnapshot extends AbstractOsiiJob
                         ->getRepository(OsiiEntity\OsiiItem::class)
                         ->findOneBy([
                             'import' => $this->getImportEntity(),
-                            'remoteItemId' => $remoteItemId,
+                            'remoteItemId' => $media['o:item']['o:id'],
                         ]);
                     $osiiMediaEntity = new OsiiEntity\OsiiMedia;
                     $osiiMediaEntity->setImport($this->getImportEntity());
                     $osiiMediaEntity->setOsiiItem($osiiItemEntity);
-                    $osiiMediaEntity->setRemoteMediaId($remoteMediaId);
+                    $osiiMediaEntity->setRemoteMediaId($media['o:id']);
                     $this->getEntityManager()->persist($osiiMediaEntity);
                 } else {
                     // This is an existing remote media.
                     $osiiMediaEntity->setModified(new DateTime('now'));
                 }
                 $osiiMediaEntity->setSnapshotMedia($media);
-                $osiiMediaEntity->setPosition($remoteItemsWithMedia[$remoteItemId][$remoteMediaId]);
+                $osiiMediaEntity->setPosition($remoteMediaPositions[$media['o:id']]);
                 // Set metadata about the snapshot.
-                $snapshotMedia[] = $remoteMediaId;
                 if (isset($media['o:resource_class'])) {
                     $classId = $media['o:resource_class']['o:id'];
                     ++$snapshotClasses[$classId]['count'];
