@@ -210,7 +210,7 @@ class DoImport extends AbstractOsiiJob
             FROM Osii\Entity\OsiiMedia m
             WHERE m.id IN (:osiiMediaIds)';
         $query = $this->getEntityManager()->createQuery($dql);
-        foreach (array_chunk($osiiMediaIds, 25) as $osiiMediaIdsChunk) {
+        foreach (array_chunk($osiiMediaIds, 20) as $osiiMediaIdsChunk) {
             $this->logMediaIds($osiiMediaIdsChunk);
             $query->setParameter('osiiMediaIds', $osiiMediaIdsChunk);
             foreach ($query->toIterable() as $osiiMediaEntity) {
@@ -241,9 +241,11 @@ class DoImport extends AbstractOsiiJob
                 $localMedia = $this->mapValues($localMedia, $remoteMedia);
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
+                    // Local media exists. Update the media.
                     $localMedia = $ingesterMapper->mapForUpdate($localMedia, $remoteMedia);
                     $this->getApiManager()->update('media', $localMediaEntity->getId(), $localMedia);
                 } else {
+                    // Local media does not exist. Create the media.
                     $localMedia = $ingesterMapper->mapForCreate($localMedia, $remoteMedia);
                     $localMedia['o:item'] = ['o:id' => $localItemEntity->getId()];
                     $createOptions = [
