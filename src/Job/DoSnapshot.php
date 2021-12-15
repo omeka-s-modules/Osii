@@ -15,6 +15,7 @@ class DoSnapshot extends AbstractOsiiJob
         // Set initial snapshot data.
         $snapshotItems = [];
         $snapshotMedia = [];
+        $snapshotItemSets = [];
         $snapshotDataTypes = [];
         $snapshotMediaIngesters = [];
         $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
@@ -66,6 +67,11 @@ class DoSnapshot extends AbstractOsiiJob
                     foreach ($item['o:media'] as $position => $media) {
                         $snapshotMedia[] = $media['o:id'];
                         $remoteMediaPositions[$media['o:id']] = $position + 1;
+                    }
+                }
+                if (!empty($item['o:item_set'])) {
+                    foreach ($item['o:item_set'] as $itemSet) {
+                        $snapshotItemSets[] = $itemSet['o:id'];
                     }
                 }
                 if (isset($item['o:resource_class'])) {
@@ -143,6 +149,7 @@ class DoSnapshot extends AbstractOsiiJob
                 }
                 $osiiMediaEntity->setSnapshotMedia($media);
                 $osiiMediaEntity->setPosition($remoteMediaPositions[$media['o:id']]);
+
                 // Set metadata about the snapshot.
                 if (isset($media['o:resource_class'])) {
                     $classId = $media['o:resource_class']['o:id'];
@@ -175,6 +182,75 @@ class DoSnapshot extends AbstractOsiiJob
             }
         }
 
+        // Iterate remote item sets. This will iterate every item set in the
+        // remote installation and make snapshots of those that belong to items
+        // in the import, ignoring the rest. For most circumstances, this method
+        // is much faster than the alternative of making a media request for
+        // every item.
+        $endpoint = sprintf('%s/item_sets', $this->getImportEntity()->getRootEndpoint());
+        $client = $this->getApiClient($endpoint);
+        $query = [
+            'key_identity' => $this->getImportEntity()->getKeyIdentity(),
+            'key_credential' => $this->getImportEntity()->getKeyCredential(),
+            'sort_by' => 'id',
+            'sort_order' => 'asc',
+            'per_page' => 50,
+            'page' => 1,
+        ];
+        while (true) {
+            $itemSets = $this->getApiOutput($client, $query);
+            if (!$itemSets) {
+                break; // No more item sets.
+            }
+            $this->logItemSetIds($itemSets);
+            foreach ($itemSets as $itemSet) {
+                if (!in_array($itemSet['o:id'], $snapshotItemSets)) {
+                    continue; // This item set is not part of the import.
+                }
+                // Save snapshots of remote item sets.
+                $osiiItemSetEntity = $this->getEntityManager()
+                    ->getRepository(OsiiEntity\OsiiItemSet::class)
+                    ->findOneBy([
+                        'import' => $this->getImportEntity(),
+                        'remoteItemSetId' => $itemSet['o:id'],
+                    ]);
+                if (null === $osiiItemSetEntity) {
+                    // This is a new remote item set.
+                    $osiiItemSetEntity = new OsiiEntity\OsiiItemSet;
+                    $osiiItemSetEntity->setImport($this->getImportEntity());
+                    $osiiItemSetEntity->setRemoteItemSetId($itemSet['o:id']);
+                    $this->getEntityManager()->persist($osiiItemSetEntity);
+                } else {
+                    // This is an existing remote item set.
+                    $osiiItemSetEntity->setModified(new DateTime('now'));
+                }
+                $osiiItemSetEntity->setSnapshotItemSet($itemSet);
+
+                // Set metadata about the snapshot.
+                if (isset($itemSet['o:resource_class'])) {
+                    $classId = $itemSet['o:resource_class']['o:id'];
+                    ++$snapshotClasses[$classId]['count'];
+                }
+                foreach ($this->getValuesFromResource($itemSet) as $value) {
+                    $dataTypeId = $value['type'];
+                    $propertyId = $value['property_id'];
+                    if (!isset($snapshotDataTypes[$dataTypeId])) {
+                        $snapshotDataTypes[$dataTypeId] = [
+                            'label' => null, // Placeholder until data_types resource is available
+                            'count' => 0,
+                        ];
+                    }
+                    ++$snapshotDataTypes[$dataTypeId]['count'];
+                    ++$snapshotProperties[$propertyId]['count'];
+                }
+            }
+            $query['page']++;
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
+            }
+        }
+
         // Remove extraneous properties and classes.
         $snapshotProperties = array_filter($snapshotProperties, function ($property) {
             return $property['count'];
@@ -186,6 +262,7 @@ class DoSnapshot extends AbstractOsiiJob
         // Set the snapshot data to the import entity.
         $this->getImportEntity()->setSnapshotItems($snapshotItems);
         $this->getImportEntity()->setSnapshotMedia($snapshotMedia);
+        $this->getImportEntity()->setSnapshotItemSets($snapshotItemSets);
         $this->getImportEntity()->setSnapshotDataTypes($snapshotDataTypes);
         $this->getImportEntity()->setSnapshotMediaIngesters($snapshotMediaIngesters);
         $this->getImportEntity()->setSnapshotProperties($snapshotProperties);
@@ -355,5 +432,22 @@ class DoSnapshot extends AbstractOsiiJob
             }
         }
         $this->getLogger()->info(sprintf('Iterating remote media:%s', $remoteIds));
+    }
+
+    /**
+     * Log remote item set IDs.
+     *
+     * @param array $snapshot
+     */
+    protected function logItemSetIds(array $snapshots)
+    {
+        $remoteIds = '';
+        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
+            $remoteIds .= "\n\t";
+            foreach ($snapshotsChunk as $snapshot) {
+                $remoteIds .= $snapshot['o:id'] . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Iterating remote item sets:%s', $remoteIds));
     }
 }

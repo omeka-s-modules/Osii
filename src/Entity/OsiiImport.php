@@ -332,6 +332,24 @@ class OsiiImport extends AbstractEntity
      *     nullable=true
      * )
      */
+    protected $snapshotItemSets;
+
+    public function setSnapshotItemSets(?array $snapshotItemSets) : void
+    {
+        $this->snapshotItemSets = $snapshotItemSets;
+    }
+
+    public function getSnapshotItemSets() : ?array
+    {
+        return $this->snapshotItemSets;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
     protected $snapshotDataTypes;
 
     public function setSnapshotDataTypes(?array $snapshotDataTypes) : void
@@ -532,6 +550,20 @@ class OsiiImport extends AbstractEntity
     public function getOsiiMedia()
     {
         return $this->osiiMedia;
+    }
+
+    /**
+     * @OneToMany(
+     *     targetEntity="OsiiItemSet",
+     *     mappedBy="import",
+     *     fetch="EXTRA_LAZY"
+     * )
+     */
+    protected $osiiItemSets;
+
+    public function getOsiiItemSets()
+    {
+        return $this->osiiItemSets;
     }
 
     /**
