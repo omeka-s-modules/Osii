@@ -27,6 +27,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 <ul>
     <li><?php echo sprintf($this->translate('Items in snapshot: %s'), count($import->snapshotItems())); ?></li>
     <li><?php echo sprintf($this->translate('Media in snapshot: %s'), count($import->snapshotMedia())); ?></li>
+    <li><?php echo sprintf($this->translate('Item sets in snapshot: %s'), count($import->snapshotItemSets())); ?></li>
 </ul>
 
 <?php

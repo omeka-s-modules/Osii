@@ -46,6 +46,7 @@ return [
             'osii_imports' => Api\Adapter\OsiiImportAdapter::class,
             'osii_items' => Api\Adapter\OsiiItemAdapter::class,
             'osii_media' => Api\Adapter\OsiiMediaAdapter::class,
+            'osii_item_sets' => Api\Adapter\OsiiItemSetAdapter::class,
         ],
     ],
     'controllers' => [

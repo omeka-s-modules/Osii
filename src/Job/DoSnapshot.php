@@ -71,7 +71,9 @@ class DoSnapshot extends AbstractOsiiJob
                 }
                 if (!empty($item['o:item_set'])) {
                     foreach ($item['o:item_set'] as $itemSet) {
-                        $snapshotItemSets[] = $itemSet['o:id'];
+                        if (!in_array($itemSet['o:id'], $snapshotItemSets)) {
+                            $snapshotItemSets[] = $itemSet['o:id'];
+                        }
                     }
                 }
                 if (isset($item['o:resource_class'])) {
