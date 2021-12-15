@@ -42,8 +42,7 @@ class DoImport extends AbstractOsiiJob
 
         $dql = 'SELECT m.id AS osii_media, IDENTITY(m.localMedia) as local_media
             FROM Osii\Entity\OsiiMedia m
-            JOIN m.osiiItem i
-            WHERE i.import = :import
+            WHERE m.import = :import
             AND m.remoteMediaId NOT IN (:snapshotMedia)';
         $query = $this->getEntityManager()->createQuery($dql)
         ->setParameters([
