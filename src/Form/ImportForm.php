@@ -103,6 +103,17 @@ class ImportForm extends Form
         ]);
         $this->add([
             'type' => LaminasElement\Checkbox::class,
+            'name' => 'o-module-osii:delete_removed_item_sets',
+            'options' => [
+                'label' => 'Delete removed item sets', // @translate
+                'info' => 'Check this if you want to delete local item sets that were removed from the remote snapshot. If not checked, removed item sets will remain but will no longer be managed by this import.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Checkbox::class,
             'name' => 'o-module-osii:add_source_item',
             'options' => [
                 'label' => 'Add remote item URL', // @translate

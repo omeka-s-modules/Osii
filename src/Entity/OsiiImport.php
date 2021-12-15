@@ -235,6 +235,7 @@ class OsiiImport extends AbstractEntity
     {
         return $this->deleteRemovedItems;
     }
+
     /**
      * @Column(
      *     type="boolean",
@@ -251,6 +252,24 @@ class OsiiImport extends AbstractEntity
     public function getDeleteRemovedMedia() : bool
     {
         return $this->deleteRemovedMedia;
+    }
+
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $deleteRemovedItemSets = false;
+
+    public function setDeleteRemovedItemSets($deleteRemovedItemSets) : void
+    {
+        $this->deleteRemovedItemSets = (bool) $deleteRemovedItemSets;
+    }
+
+    public function getDeleteRemovedItemSets() : bool
+    {
+        return $this->deleteRemovedItemSets;
     }
 
     /**

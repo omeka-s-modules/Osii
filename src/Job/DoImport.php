@@ -9,6 +9,7 @@ use Omeka\Entity as OmekaEntity;
 class DoImport extends AbstractOsiiJob
 {
     protected $itemMap;
+    protected $itemSetMap;
     protected $propertyMap;
     protected $classMap;
     protected $dataTypeMap;
@@ -57,8 +58,26 @@ class DoImport extends AbstractOsiiJob
             $this->getApiManager()->batchDelete('media', $localMediaToDelete);
         }
 
-        // Create a local item for every remote item. We do this first so we can
-        // correctly map resource values when updating the item metadata.
+        $dql = 'SELECT i.id AS osii_item_set, IDENTITY(i.localItemSet) AS local_item_set
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.import = :import
+            AND i.remoteItemSetId NOT IN (:snapshotItemSets)';
+        $query = $this->getEntityManager()->createQuery($dql)
+            ->setParameters([
+                'import' => $this->getImportEntity(),
+                'snapshotItemSets' => $this->getImportEntity()->getSnapshotItemSets(),
+            ]);
+        $itemSetsToDelete = $query->getResult();
+        $osiiItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'osii_item_set'));
+        $localItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'local_item_set'));
+        $this->getApiManager()->batchDelete('osii_item_sets', $osiiItemSetsToDelete);
+        if ($this->getImportEntity()->getDeleteRemovedItemSets()) {
+            $this->getApiManager()->batchDelete('item_sets', $localItemSetsToDelete);
+        }
+
+        // Create a local resource for every remote resource (except media). We
+        // do this first so we can correctly map resource values when updating
+        // the resource metadata.
         $dql = 'SELECT i.id
             FROM Osii\Entity\OsiiItem i
             WHERE i.import = :import
@@ -82,6 +101,29 @@ class DoImport extends AbstractOsiiJob
             $this->flushClear();
         }
 
+        $dql = 'SELECT i.id
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.import = :import
+            AND i.localItemSet IS NULL';
+        $query = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter('import', $this->getImportEntity());
+        $osiiItemSetIds = array_column($query->getResult(), 'id');
+        $dql = 'SELECT i
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.id IN (:osiiItemSetIds)';
+        $query = $this->getEntityManager()->createQuery($dql);
+        foreach (array_chunk($osiiItemSetIds, 100) as $osiiItemSetIdsChunk) {
+            $query->setParameter('osiiItemSetIds', $osiiItemSetIdsChunk);
+            foreach ($query->toIterable() as $osiiItemSetEntity) {
+                $localItemSet = new OmekaEntity\ItemSet;
+                $localItemSet->setCreated(new DateTime('now'));
+                $this->getEntityManager()->persist($localItemSet);
+                $osiiItemSetEntity->setLocalItemSet($localItemSet);
+            }
+            $this->flushClear();
+        }
+
         // Get the remote/local ID maps. Keys are remote IDs; values are local
         // IDs. Here we're mapping the remote items, properties, and classes to
         // the local items, properties, and classes.
@@ -90,6 +132,12 @@ class DoImport extends AbstractOsiiJob
             WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
         $this->itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
+
+        $dql = 'SELECT i.remoteItemSetId AS remote_item_set, IDENTITY(i.localItemSet) AS local_item_set
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.import = :import';
+        $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
+        $this->itemSetMap = array_column($query->getResult(), 'local_item_set', 'remote_item_set');
 
         $dql = 'SELECT p.id AS property_id, CONCAT(v.namespaceUri, p.localName) AS uri
             FROM Omeka\Entity\Property p

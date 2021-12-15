@@ -26,6 +26,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
             'o-module-osii:remote_query' => $this->remoteQuery(),
             'o-module-osii:delete_removed_items' => $this->deleteRemovedItems(),
             'o-module-osii:delete_removed_media' => $this->deleteRemovedMedia(),
+            'o-module-osii:delete_removed_item_sets' => $this->deleteRemovedItemSets(),
             'o-module-osii:add_source_item' => $this->addSourceItem(),
             'o-module-osii:source_site' => $this->sourceSite(),
             'o:created' => $this->getDateTime($this->created()),
@@ -165,6 +166,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     public function deleteRemovedMedia()
     {
         return $this->resource->getDeleteRemovedMedia();
+    }
+
+    public function deleteRemovedItemSets()
+    {
+        return $this->resource->getDeleteRemovedItemSets();
     }
 
     public function addSourceItem()
