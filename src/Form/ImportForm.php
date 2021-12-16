@@ -84,7 +84,7 @@ class ImportForm extends Form
             'name' => 'o-module-osii:delete_removed_items',
             'options' => [
                 'label' => 'Delete removed items', // @translate
-                'info' => 'Check this if you want to delete local items that were removed from the remote snapshot. If not checked, removed items will remain but will no longer be managed by this import.', // @translate
+                'info' => 'Check this if, during import, you want to delete local items that were removed from the remote snapshot. If not checked, removed items will remain but will no longer be managed by this import.', // @translate
             ],
             'attributes' => [
                 'required' => false,
@@ -95,7 +95,7 @@ class ImportForm extends Form
             'name' => 'o-module-osii:delete_removed_media',
             'options' => [
                 'label' => 'Delete removed media', // @translate
-                'info' => 'Check this if you want to delete local media that were removed from the remote snapshot. If not checked, removed media will remain but will no longer be managed by this import.', // @translate
+                'info' => 'Check this if, during import, you want to delete local media that were removed from the remote snapshot. If not checked, removed media will remain but will no longer be managed by this import.', // @translate
             ],
             'attributes' => [
                 'required' => false,
@@ -106,7 +106,7 @@ class ImportForm extends Form
             'name' => 'o-module-osii:delete_removed_item_sets',
             'options' => [
                 'label' => 'Delete removed item sets', // @translate
-                'info' => 'Check this if you want to delete local item sets that were removed from the remote snapshot. If not checked, removed item sets will remain but will no longer be managed by this import.', // @translate
+                'info' => 'Check this if, during import, you want to delete local item sets that were removed from the remote snapshot. If not checked, removed item sets will remain but will no longer be managed by this import.', // @translate
             ],
             'attributes' => [
                 'required' => false,
@@ -114,10 +114,10 @@ class ImportForm extends Form
         ]);
         $this->add([
             'type' => LaminasElement\Checkbox::class,
-            'name' => 'o-module-osii:add_source_item',
+            'name' => 'o-module-osii:add_source_resource',
             'options' => [
-                'label' => 'Add remote item URL', // @translate
-                'info' => 'Check this if you want to add the remote items\'s canonical URL to every imported item, saved as a value using property <code>osii:source_item</code>.', // @translate
+                'label' => 'Add remote resource URL', // @translate
+                'info' => 'Check this if you want to add the remote resource\'s canonical URL to every imported resource, saved as a value using property <code>osii:source_resource</code>.', // @translate
                 'escape_info' => false,
             ],
             'attributes' => [
@@ -129,7 +129,7 @@ class ImportForm extends Form
             'name' => 'o-module-osii:source_site',
             'options' => [
                 'label' => 'Add remote site URL', // @translate
-                'info' => 'Enter the URL to the site from which the imported items are derived. If entered, this will be added to every imported item, saved as a value using property <code>osii:source_site</code>.', // @translate
+                'info' => 'Enter the URL to the site from which the imported resources are derived. If entered, this will be added to every imported resource, saved as a value using property <code>osii:source_site</code>.', // @translate
                 'escape_info' => false,
             ],
             'attributes' => [

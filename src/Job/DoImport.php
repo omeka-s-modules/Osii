@@ -14,6 +14,8 @@ class DoImport extends AbstractOsiiJob
     protected $propertyMap;
     protected $classMap;
     protected $dataTypeMap;
+    protected $sourceResourcePropertyId;
+    protected $sourceSitePropertyId;
 
     public function perform()
     {
@@ -183,8 +185,8 @@ class DoImport extends AbstractOsiiJob
         $this->dataTypeMap = $this->getImportEntity()->getDataTypeMap();
 
         // Set the source properties, if used.
-        $sourceItemPropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_item'] ?? null;
-        $sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
+        $this->sourceResourcePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_resource'] ?? null;
+        $this->sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
 
         // Import media from their snapshot. We must import media before other
         // resources because we need to populate self::$mediaMap before updating
@@ -234,6 +236,7 @@ class DoImport extends AbstractOsiiJob
                 $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
                 $localMedia = $this->mapClass($localMedia, $remoteMedia);
                 $localMedia = $this->mapValues($localMedia, $remoteMedia);
+                $localMedia = $this->addSourceUrls($localMedia, $remoteMedia, 'media');
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
@@ -293,6 +296,7 @@ class DoImport extends AbstractOsiiJob
                 $localItem = $this->mapVisibility($localItem, $remoteItem);
                 $localItem = $this->mapClass($localItem, $remoteItem);
                 $localItem = $this->mapValues($localItem, $remoteItem);
+                $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
                 // Map remote to local item sets.
                 foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
                     $itemSetId = $this->itemSetMap[$remoteItemSet['o:id']] ?? null;
@@ -304,26 +308,6 @@ class DoImport extends AbstractOsiiJob
                 $localItemSet = $this->getImportEntity()->getLocalItemSet();
                 if ($localItemSet) {
                     $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
-                }
-                // Add the source item value.
-                if ($sourceItemPropertyId && $this->getImportEntity()->getAddSourceItem()) {
-                    $localItem[$sourceItemPropertyId][] = [
-                        'type' => 'uri',
-                        'property_id' => $sourceItemPropertyId,
-                        '@id' => sprintf(
-                            '%s/items/%s',
-                            $this->getImportEntity()->getRootEndpoint(),
-                            $osiiItemEntity->getRemoteItemId()
-                        ),
-                    ];
-                }
-                // Add the source site value.
-                if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
-                    $localItem[$sourceSitePropertyId][] = [
-                        'type' => 'uri',
-                        'property_id' => $sourceSitePropertyId,
-                        '@id' => $this->getImportEntity()->getSourceSite(),
-                    ];
                 }
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
@@ -361,6 +345,7 @@ class DoImport extends AbstractOsiiJob
                 $localItemSet = $this->mapVisibility($localItemSet, $remoteItemSet);
                 $localItemSet = $this->mapClass($localItemSet, $remoteItemSet);
                 $localItemSet = $this->mapValues($localItemSet, $remoteItemSet);
+                $localItemSet = $this->addSourceUrls($localItemSet, $remoteItemSet, 'item_sets');
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
@@ -469,6 +454,40 @@ class DoImport extends AbstractOsiiJob
                 $localResource[$propertyId] = [];
             }
             $localResource[$propertyId][] = $remoteValue;
+        }
+        return $localResource;
+    }
+
+    /**
+     * Add source URL values.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @param string $resourceName items, item_sets, or media
+     * @return array The local resource JSON-LD
+     */
+    public function addSourceUrls(array $localResource, array $remoteResource, $resourceName)
+    {
+        // Add the source resource value.
+        if ($this->sourceResourcePropertyId && $this->getImportEntity()->getAddSourceResource()) {
+            $localResource[$this->sourceResourcePropertyId][] = [
+                'type' => 'uri',
+                'property_id' => $this->sourceResourcePropertyId,
+                '@id' => sprintf(
+                    '%s/%s/%s',
+                    $this->getImportEntity()->getRootEndpoint(),
+                    $resourceName,
+                    $remoteResource['o:id']
+                ),
+            ];
+        }
+        // Add the source site value.
+        if ($this->sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
+            $localResource[$this->sourceSitePropertyId][] = [
+                'type' => 'uri',
+                'property_id' => $this->sourceSitePropertyId,
+                '@id' => $this->getImportEntity()->getSourceSite(),
+            ];
         }
         return $localResource;
     }

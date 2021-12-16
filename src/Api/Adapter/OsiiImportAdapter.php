@@ -77,8 +77,8 @@ class OsiiImportAdapter extends AbstractEntityAdapter
         if ($this->shouldHydrate($request, 'o-module-osii:delete_removed_item_sets')) {
             $entity->setDeleteRemovedItemSets($request->getValue('o-module-osii:delete_removed_item_sets'));
         }
-        if ($this->shouldHydrate($request, 'o-module-osii:add_source_item')) {
-            $entity->setAddSourceItem($request->getValue('o-module-osii:add_source_item'));
+        if ($this->shouldHydrate($request, 'o-module-osii:add_source_resource')) {
+            $entity->setAddSourceResource($request->getValue('o-module-osii:add_source_resource'));
         }
         if ($this->shouldHydrate($request, 'o-module-osii:source_site')) {
             $entity->setSourceSite($request->getValue('o-module-osii:source_site'));

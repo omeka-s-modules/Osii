@@ -3,9 +3,9 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
-:source_item a rdf:Property ;
-    rdfs:label "source item"@en ;
-    rdfs:comment "The URL to the source item."@en ;
+:source_resource a rdf:Property ;
+    rdfs:label "source resource"@en ;
+    rdfs:comment "The URL to the source resource."@en ;
     rdfs:subPropertyOf dcterms:source .
 
 :source_site a rdf:Property ;

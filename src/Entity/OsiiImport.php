@@ -278,16 +278,16 @@ class OsiiImport extends AbstractEntity
      *     nullable=false
      * )
      */
-    protected $addSourceItem = false;
+    protected $addSourceResource = false;
 
-    public function setAddSourceItem($addSourceItem) : void
+    public function setAddSourceResource($addSourceResource) : void
     {
-        $this->addSourceItem = (bool) $addSourceItem;
+        $this->addSourceResource = (bool) $addSourceResource;
     }
 
-    public function getAddSourceItem() : bool
+    public function getAddSourceResource() : bool
     {
-        return $this->addSourceItem;
+        return $this->addSourceResource;
     }
 
     /**
