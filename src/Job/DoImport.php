@@ -203,10 +203,14 @@ class DoImport extends AbstractOsiiJob
                 $localItem = $this->mapVisibility($localItem, $remoteItem);
                 $localItem = $this->mapClass($localItem, $remoteItem);
                 $localItem = $this->mapValues($localItem, $remoteItem);
-                // Set the item set. Preserve any existing item set associations.
-                foreach ($localItemEntity->getItemSets()->getKeys() as $itemSetId) {
-                    $localItem['o:item_set'][] = ['o:id' => $itemSetId];
+                // Map remote to local item sets.
+                foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
+                    $itemSetId = $this->itemSetMap[$remoteItemSet['o:id']] ?? null;
+                    if ($itemSetId) {
+                        $localItem['o:item_set'][] = ['o:id' => $itemSetId];
+                    }
                 }
+                // Add the import's local item set.
                 $localItemSet = $this->getImportEntity()->getLocalItemSet();
                 if ($localItemSet) {
                     $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
@@ -244,7 +248,43 @@ class DoImport extends AbstractOsiiJob
             }
         }
 
-        // Import media from their snapshot.
+        // Import item sets from their snapshot.
+        $dql = 'SELECT i.id
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.import = :import';
+        $query = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter('import', $this->getImportEntity());
+        $osiiItemSetIds = array_column($query->getResult(), 'id');
+        $dql = 'SELECT i
+            FROM Osii\Entity\OsiiItemSet i
+            WHERE i.id IN (:osiiItemSetIds)';
+        $query = $this->getEntityManager()->createQuery($dql);
+        foreach (array_chunk($osiiItemSetIds, 100) as $osiiItemSetIdsChunk) {
+            $this->logItemSetIds($osiiItemSetIdsChunk);
+            $query->setParameter('osiiItemSetIds', $osiiItemSetIdsChunk);
+            foreach ($query->toIterable() as $osiiItemSetEntity) {
+                $localItemSetEntity = $osiiItemSetEntity->getLocalItemSet();
+                $remoteItemSet = $osiiItemSetEntity->getSnapshotItemSet();
+                $localItemSet = [];
+                $localItemSet = $this->mapOwner($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapVisibility($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapClass($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapValues($localItemSet, $remoteItemSet);
+                $updateOptions = [
+                    'flushEntityManager' => false, // Flush (and clear) only once per batch.
+                    'responseContent' => 'resource', // Avoid the overhead of composing the representation.
+                    'isPartial' => true, // Declare a partial (PATCH) update so item associations are not deleted.
+                ];
+                $this->getApiManager()->update('item_sets', $localItemSetEntity->getId(), $localItemSet, [], $updateOptions);
+            }
+            $this->flushClear();
+            if ($this->shouldStop()) {
+                return;
+            }
+        }
+
+                // Import media from their snapshot.
         $ingesterMapperManager = $this->getServiceLocator()->get('Osii\MediaIngesterMapperManager');
         $dql = 'SELECT m.id
             FROM Osii\Entity\OsiiMedia m
@@ -385,11 +425,21 @@ class DoImport extends AbstractOsiiJob
                 continue;
             }
             if (isset($remoteValue['value_resource_id'])) {
-                if (!isset($this->itemMap[$remoteValue['value_resource_id']])) {
-                    // Item is not on local installation. Ignore value.
-                    continue;
+                if ('items' === $remoteValue['value_resource_name']) {
+                    $valueResourceId = $this->itemMap[$remoteValue['value_resource_id']] ?? null;
+                    if (!$valueResourceId) {
+                        // Item is not on local installation. Ignore value.
+                        continue;
+                    }
+                    $remoteValue['value_resource_id'] = $valueResourceId;
+                } elseif ('item_sets' === $remoteValue['value_resource_name']) {
+                    $valueResourceId = $this->itemSetMap[$remoteValue['value_resource_id']] ?? null;
+                    if (!$valueResourceId) {
+                        // Item set is not on local installation. Ignore value.
+                        continue;
+                    }
+                    $remoteValue['value_resource_id'] = $valueResourceId;
                 }
-                $remoteValue['value_resource_id'] = $this->itemMap[$remoteValue['value_resource_id']];
             }
             $dataType = $this->dataTypeMap[$remoteValue['type']];
             $propertyId = $this->propertyMap[$remoteValue['property_id']];
@@ -418,6 +468,23 @@ class DoImport extends AbstractOsiiJob
             }
         }
         $this->getLogger()->info(sprintf('Iterating OSII items:%s', $osiiIds));
+    }
+
+    /**
+     * Log OSII item set IDs.
+     *
+     * @param array $ids
+     */
+    protected function logItemSetIds(array $ids)
+    {
+        $osiiIds = '';
+        foreach (array_chunk($ids, 10) as $idsChunk) {
+            $osiiIds .= "\n\t";
+            foreach ($idsChunk as $id) {
+                $osiiIds .= $id . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('Iterating OSII item sets:%s', $osiiIds));
     }
 
     /**
