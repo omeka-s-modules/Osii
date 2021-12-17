@@ -303,7 +303,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
                 Job::STATUS_ERROR,
             ]
             ) : true;
-        return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
+        return $snapshotStatus && $importStatus;
     }
 
     public function snapshotStatus()
