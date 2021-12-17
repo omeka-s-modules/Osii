@@ -44,6 +44,20 @@ abstract class AbstractOsiiJob extends AbstractJob
     }
 
     /**
+     * Get the job logger.
+     *
+     * @return
+     */
+    protected function getLogger()
+    {
+        if (null === $this->logger) {
+            // Set the logger if not already set.
+            $this->logger = $this->getServiceLocator()->get('Omeka\Logger');
+        }
+        return $this->logger;
+    }
+
+    /**
      * Get the OSII import entity.
      *
      * @return Osii\Entity\OsiiEntity
@@ -60,19 +74,6 @@ abstract class AbstractOsiiJob extends AbstractJob
         // Preemptively merge the entity in the event that it was detached.
         $this->importEntity = $this->getEntityManager()->merge($this->importEntity);
         return $this->importEntity;
-    }
-
-    /**
-     * Get the job logger.
-     *
-     * @return
-     */
-    protected function getLogger()
-    {
-        if (null === $this->logger) {
-            $this->logger = $this->getServiceLocator()->get('Omeka\Logger');
-        }
-        return $this->logger;
     }
 
     /**

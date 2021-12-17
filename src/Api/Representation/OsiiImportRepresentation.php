@@ -195,7 +195,13 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
                 Job::STATUS_ERROR,
             ]
             ) : true;
-        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        $importStatus = $importJob
+            ? in_array($importJob->status(), [
+                Job::STATUS_COMPLETED,
+                Job::STATUS_STOPPING,
+                Job::STATUS_STOPPED,
+                Job::STATUS_ERROR,
+            ]) : true;
         return $snapshotStatus && $importStatus;
     }
 
@@ -251,7 +257,7 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
                 Job::STATUS_ERROR,
             ]
             ) : true;
-        return $snapshotStatus && $importStatus && null !== $this->dataTypeMap();
+        return $snapshotStatus && $importStatus;
     }
 
     public function canStopImport()

@@ -312,7 +312,7 @@ echo $this->sectionNav([
 <div id="do-snapshot" class="sidebar">
     <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
     <h3><?php echo $this->translate('Snapshot'); ?></h3>
-    <p><?php echo $this->translate('Take a snapshot of the remote items in their current state. This will gather the data needed to import the items and reconcile the local installation with the remote one.'); ?></p>
+    <p><?php echo $this->translate('Take a snapshot of the remote resources in their current state. This will gather the data needed to import the resources and reconcile the local installation with the remote one.'); ?></p>
     <?php echo $this->form($formDoSnapshot); ?>
 </div>
 
@@ -326,7 +326,7 @@ echo $this->sectionNav([
 <div id="do-import" class="sidebar">
     <?php echo $this->hyperlink('', '#', ['class' => 'sidebar-close o-icon-close', 'title' => $this->translate('Close')]); ?>
     <h3><?php echo $this->translate('Import'); ?></h3>
-    <p><?php echo $this->translate('Import the current snapshot. This will add new items and update existing items.'); ?></p>
+    <p><?php echo $this->translate('Import the current snapshot. This will add new resources and update existing resources. Before importing, be sure to map the remote data types to the local data types.'); ?></p>
     <?php echo $this->form($formDoImport); ?>
 </div>
 

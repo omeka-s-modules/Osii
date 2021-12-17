@@ -393,10 +393,10 @@ class DoSnapshot extends AbstractOsiiJob
         $client->setParameterGet($query);
         $response = $client->send();
         if (!$response->isSuccess()) {
-            throw new Exception\RuntimeException('Cannot resolve API endpoint');
+            throw new Exception\RuntimeException(sprintf('Cannot resolve API endpoint: %s', $client->getUri()->toString()));
         }
         if (!$response->getHeaders()->get('omeka-s-version')) {
-            throw new Exception\RuntimeException('Not an Omeka S endpoint');
+            throw new Exception\RuntimeException(sprintf('Not an Omeka S endpoint: %s', $client->getUri()->toString()));
         }
         $output = json_decode($response->getBody(), true);
         return $output;
