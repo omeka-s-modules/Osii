@@ -128,6 +128,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getSnapshotVocabularies();
     }
 
+    public function snapshotTemplates()
+    {
+        return $this->resource->getSnapshotTemplates();
+    }
+
     public function snapshotMediaIngesters()
     {
         return $this->resource->getSnapshotMediaIngesters();
@@ -136,6 +141,11 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
     public function dataTypeMap()
     {
         return $this->resource->getDataTypeMap();
+    }
+
+    public function templateMap()
+    {
+        return $this->resource->getTemplateMap();
     }
 
     public function created()

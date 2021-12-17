@@ -66,10 +66,10 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'excludeMedia', 'excludeItemSets', 'keepRemovedResources', 'addSourceResource', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotItemSets', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'snapshotMediaIngesters', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems', 'osiiMedia', 'osiiItemSets'];
+            return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'excludeMedia', 'excludeItemSets', 'keepRemovedResources', 'addSourceResource', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotItemSets', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'snapshotTemplates', 'snapshotMediaIngesters', 'dataTypeMap', 'templateMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems', 'osiiMedia', 'osiiItemSets'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'excludeMedia', 'excludeItemSets', 'keepRemovedResources', 'addSourceResource', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotItemSets', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'snapshotMediaIngesters', 'dataTypeMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems', 'osiiMedia', 'osiiItemSets'];
+        return ['__isInitialized__', 'id', 'owner', 'localItemSet', 'snapshotJob', 'importJob', 'label', 'rootEndpoint', 'keyIdentity', 'keyCredential', 'remoteQuery', 'excludeMedia', 'excludeItemSets', 'keepRemovedResources', 'addSourceResource', 'sourceSite', 'snapshotItems', 'snapshotMedia', 'snapshotItemSets', 'snapshotDataTypes', 'snapshotProperties', 'snapshotClasses', 'snapshotVocabularies', 'snapshotTemplates', 'snapshotMediaIngesters', 'dataTypeMap', 'templateMap', 'created', 'modified', 'snapshotCompleted', 'importCompleted', 'osiiItems', 'osiiMedia', 'osiiItemSets'];
     }
 
     /**
@@ -656,6 +656,28 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
     /**
      * {@inheritDoc}
      */
+    public function setSnapshotTemplates(?array $snapshotTemplates): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSnapshotTemplates', [$snapshotTemplates]);
+
+        parent::setSnapshotTemplates($snapshotTemplates);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSnapshotTemplates(): ?array
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSnapshotTemplates', []);
+
+        return parent::getSnapshotTemplates();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setSnapshotMediaIngesters(?array $snapshotMediaIngesters): void
     {
 
@@ -695,6 +717,28 @@ class OsiiImport extends \Osii\Entity\OsiiImport implements \Doctrine\ORM\Proxy\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDataTypeMap', []);
 
         return parent::getDataTypeMap();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTemplateMap(?array $templateMap): void
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setTemplateMap', [$templateMap]);
+
+        parent::setTemplateMap($templateMap);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTemplateMap(): ?array
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTemplateMap', []);
+
+        return parent::getTemplateMap();
     }
 
     /**

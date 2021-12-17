@@ -45,6 +45,21 @@ class Osii extends AbstractPlugin
     }
 
     /**
+     * Get local template select element.
+     *
+     * @return LaminasElement\Select
+     */
+    public function getLocalTemplateSelect()
+    {
+        $localTemplates = [];
+        $element = new LaminasElement\Select('local_template');
+        $element->setEmptyOption('[Not mapped]'); // @translate
+        $element->setValueOptions($localTemplates);
+        $element->setAttribute('class', 'local-template-select chosen-select');
+        return $element;
+    }
+
+    /**
      * Get all local property URIs.
      *
      * @return array
@@ -97,6 +112,17 @@ class Osii extends AbstractPlugin
         $countColumn = array_column($snapshotDataTypes, 'count');
         array_multisort($countColumn, SORT_DESC, $snapshotDataTypes);
         return $snapshotDataTypes;
+    }
+
+    /**
+     * Prepare snapshot templates for display.
+     *
+     * @param array $snapshotDataTypes
+     * @return array
+     */
+    public function getPreparedSnapshotTemplates(array $snapshotTemplates)
+    {
+        return $snapshotTemplates;
     }
 
     /**

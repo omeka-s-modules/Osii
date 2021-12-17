@@ -22,6 +22,7 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
         $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
         $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
+        $snapshotTemplates = $this->getSnapshotTemplates($rootEndpoint);
 
         $remoteMediaPositions = [];
 
@@ -79,6 +80,10 @@ class DoSnapshot extends AbstractOsiiJob
                 if (isset($item['o:resource_class'])) {
                     $classId = $item['o:resource_class']['o:id'];
                     ++$snapshotClasses[$classId]['count'];
+                }
+                if (isset($item['o:resource_template'])) {
+                    $templateId = $item['o:resource_template']['o:id'];
+                    ++$snapshotTemplates[$templateId]['count'];
                 }
                 foreach ($this->getValuesFromResource($item) as $value) {
                     $dataTypeId = $value['type'];
@@ -158,6 +163,10 @@ class DoSnapshot extends AbstractOsiiJob
                     $classId = $media['o:resource_class']['o:id'];
                     ++$snapshotClasses[$classId]['count'];
                 }
+                if (isset($item['o:resource_template'])) {
+                    $templateId = $item['o:resource_template']['o:id'];
+                    ++$snapshotTemplates[$templateId]['count'];
+                }
                 foreach ($this->getValuesFromResource($media) as $value) {
                     $dataTypeId = $value['type'];
                     $propertyId = $value['property_id'];
@@ -235,6 +244,10 @@ class DoSnapshot extends AbstractOsiiJob
                     $classId = $itemSet['o:resource_class']['o:id'];
                     ++$snapshotClasses[$classId]['count'];
                 }
+                if (isset($item['o:resource_template'])) {
+                    $templateId = $item['o:resource_template']['o:id'];
+                    ++$snapshotTemplates[$templateId]['count'];
+                }
                 foreach ($this->getValuesFromResource($itemSet) as $value) {
                     $dataTypeId = $value['type'];
                     $propertyId = $value['property_id'];
@@ -255,12 +268,15 @@ class DoSnapshot extends AbstractOsiiJob
             }
         }
 
-        // Remove extraneous properties and classes.
+        // Remove extraneous properties, classes, and templates.
         $snapshotProperties = array_filter($snapshotProperties, function ($property) {
             return $property['count'];
         });
         $snapshotClasses = array_filter($snapshotClasses, function ($class) {
             return $class['count'];
+        });
+        $snapshotTemplates = array_filter($snapshotTemplates, function ($template) {
+            return $template['count'];
         });
 
         // Set the snapshot data to the import entity.
@@ -272,9 +288,12 @@ class DoSnapshot extends AbstractOsiiJob
         $this->getImportEntity()->setSnapshotProperties($snapshotProperties);
         $this->getImportEntity()->setSnapshotClasses($snapshotClasses);
         $this->getImportEntity()->setSnapshotVocabularies($snapshotVocabularies);
+        $this->getImportEntity()->setSnapshotTemplates($snapshotTemplates);
         $this->getImportEntity()->setSnapshotCompleted(new DateTime('now'));
 
         $this->flushClear();
+
+        print_r($snapshotTemplates);
     }
 
     /**
@@ -366,6 +385,35 @@ class DoSnapshot extends AbstractOsiiJob
             $query['page']++;
         }
         return $snapshotVocabularies;
+    }
+
+    /**
+     * Set all remote templates.
+     *
+     * @param string $rootEndpoint
+     * @return array
+     */
+    protected function getSnapshotTemplates($rootEndpoint)
+    {
+        $endpoint = sprintf('%s/resource_templates', $rootEndpoint);
+        $client = $this->getApiClient($endpoint);
+        $query['per_page'] = 50;
+        $query['page'] = 1;
+        $snapshotTemplates = [];
+        while (true) {
+            $templates = $this->getApiOutput($client, $query);
+            if (!$templates) {
+                break; // No more template.
+            }
+            foreach ($templates as $template) {
+                $snapshotTemplates[$template['o:id']] = [
+                    'label' => $template['o:label'],
+                    'count' => 0,
+                ];
+            }
+            $query['page']++;
+        }
+        return $snapshotTemplates;
     }
 
     /**

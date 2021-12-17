@@ -33,6 +33,7 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 <?php
 echo $this->sectionNav([
     'snapshot-data-types' => $this->translate('Snapshot data types'),
+    'snapshot-templates' => $this->translate('Snapshot templates'),
     'snapshot-properties' => $this->translate('Snapshot properties'),
     'snapshot-classes' => $this->translate('Snapshot classes'),
     'snapshot-media-ingesters' => $this->translate('Snapshot media ingesters'),
@@ -77,6 +78,48 @@ echo $this->sectionNav([
     <?php else: ?>
     <div class="no-resources">
         <p><?php echo $this->translate('No data types in snapshot.'); ?></p>
+    </div>
+    <?php endif; ?>
+</div>
+
+<div id="snapshot-templates" class="section">
+    <h3><?php echo $this->translate('Snapshot templates'); ?></h3>
+    <?php if ($remoteTemplates): ?>
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+            <tr>
+                <th><?php echo $this->translate('Remote template'); ?></th>
+                <th><?php echo $this->translate('Remote resource count'); ?></th>
+                <th><?php echo $this->translate('Local template'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php $index = 0; ?>
+        <?php foreach ($remoteTemplates as $remoteTemplateId => $remoteTemplate): ?>
+            <tr>
+                <td>
+                    <?php echo $remoteTemplate['label']; ?>
+                    <input type="hidden"
+                        name="<?php echo $this->escapeHtml(sprintf('template_map[%s][remote]', $index)); ?>"
+                        value="<?php echo $this->escapeHtml($remoteTemplateId); ?>">
+                </td>
+                <td><?php echo $remoteTemplate['count']; ?></td>
+                <td>
+                    <?php
+                    $localTemplateSelect->setName(sprintf('template_map[%s][local]', $index));
+                    $localTemplate = $import->templateMap()[$remoteTemplateId] ?? null;
+                    $localTemplateSelect->setValue($localTemplate);
+                    ?>
+                    <?php echo $this->formElement($localTemplateSelect); ?>
+                </td>
+            </tr>
+        <?php $index++; ?>
+        <?php endforeach; ?>
+        <tbody>
+    </table>
+    <?php else: ?>
+    <div class="no-resources">
+        <p><?php echo $this->translate('No templates in snapshot.'); ?></p>
     </div>
     <?php endif; ?>
 </div>

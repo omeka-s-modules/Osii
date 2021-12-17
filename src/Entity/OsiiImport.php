@@ -441,6 +441,24 @@ class OsiiImport extends AbstractEntity
      *     nullable=true
      * )
      */
+    protected $snapshotTemplates;
+
+    public function setSnapshotTemplates(?array $snapshotTemplates) : void
+    {
+        $this->snapshotTemplates = $snapshotTemplates;
+    }
+
+    public function getSnapshotTemplates() : ?array
+    {
+        return $this->snapshotTemplates;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
     protected $snapshotMediaIngesters;
 
     public function setSnapshotMediaIngesters(?array $snapshotMediaIngesters) : void
@@ -469,6 +487,24 @@ class OsiiImport extends AbstractEntity
     public function getDataTypeMap() : ?array
     {
         return $this->dataTypeMap;
+    }
+
+    /**
+     * @Column(
+     *     type="json",
+     *     nullable=true
+     * )
+     */
+    protected $templateMap;
+
+    public function setTemplateMap(?array $templateMap) : void
+    {
+        $this->templateMap = $templateMap;
+    }
+
+    public function getTemplateMap() : ?array
+    {
+        return $this->templateMap;
     }
 
     /**
