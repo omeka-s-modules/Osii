@@ -292,12 +292,8 @@ echo $this->sectionNav([
         <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
     </div>
     <div class="meta-group">
-        <h4><?php echo $this->translate('Delete removed items'); ?></h4>
-        <div class="value"><?php echo $import->deleteRemovedItems() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
-    </div>
-    <div class="meta-group">
-        <h4><?php echo $this->translate('Delete removed media'); ?></h4>
-        <div class="value"><?php echo $import->deleteRemovedMedia() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
+        <h4><?php echo $this->translate('Keep removed resources'); ?></h4>
+        <div class="value"><?php echo $import->keepRemovedResources() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
     </div>
     <div class="meta-group">
         <h4><?php echo $this->translate('Add remote site URL'); ?></h4>

@@ -224,52 +224,16 @@ class OsiiImport extends AbstractEntity
      *     nullable=false
      * )
      */
-    protected $deleteRemovedItems = false;
+    protected $keepRemovedResources = false;
 
-    public function setDeleteRemovedItems($deleteRemovedItems) : void
+    public function setKeepRemovedResources($keepRemovedResources) : void
     {
-        $this->deleteRemovedItems = (bool) $deleteRemovedItems;
+        $this->keepRemovedResources = (bool) $keepRemovedResources;
     }
 
-    public function getDeleteRemovedItems() : bool
+    public function getKeepRemovedResources() : bool
     {
-        return $this->deleteRemovedItems;
-    }
-
-    /**
-     * @Column(
-     *     type="boolean",
-     *     nullable=false
-     * )
-     */
-    protected $deleteRemovedMedia = false;
-
-    public function setDeleteRemovedMedia($deleteRemovedMedia) : void
-    {
-        $this->deleteRemovedMedia = (bool) $deleteRemovedMedia;
-    }
-
-    public function getDeleteRemovedMedia() : bool
-    {
-        return $this->deleteRemovedMedia;
-    }
-
-    /**
-     * @Column(
-     *     type="boolean",
-     *     nullable=false
-     * )
-     */
-    protected $deleteRemovedItemSets = false;
-
-    public function setDeleteRemovedItemSets($deleteRemovedItemSets) : void
-    {
-        $this->deleteRemovedItemSets = (bool) $deleteRemovedItemSets;
-    }
-
-    public function getDeleteRemovedItemSets() : bool
-    {
-        return $this->deleteRemovedItemSets;
+        return $this->keepRemovedResources;
     }
 
     /**

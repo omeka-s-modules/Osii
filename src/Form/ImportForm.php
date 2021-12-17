@@ -81,32 +81,10 @@ class ImportForm extends Form
         ]);
         $this->add([
             'type' => LaminasElement\Checkbox::class,
-            'name' => 'o-module-osii:delete_removed_items',
+            'name' => 'o-module-osii:keep_removed_resources',
             'options' => [
-                'label' => 'Delete removed items', // @translate
-                'info' => 'Check this if, during import, you want to delete local items that were removed from the remote snapshot. If not checked, removed items will remain but will no longer be managed by this import.', // @translate
-            ],
-            'attributes' => [
-                'required' => false,
-            ],
-        ]);
-        $this->add([
-            'type' => LaminasElement\Checkbox::class,
-            'name' => 'o-module-osii:delete_removed_media',
-            'options' => [
-                'label' => 'Delete removed media', // @translate
-                'info' => 'Check this if, during import, you want to delete local media that were removed from the remote snapshot. If not checked, removed media will remain but will no longer be managed by this import.', // @translate
-            ],
-            'attributes' => [
-                'required' => false,
-            ],
-        ]);
-        $this->add([
-            'type' => LaminasElement\Checkbox::class,
-            'name' => 'o-module-osii:delete_removed_item_sets',
-            'options' => [
-                'label' => 'Delete removed item sets', // @translate
-                'info' => 'Check this if, during import, you want to delete local item sets that were removed from the remote snapshot. If not checked, removed item sets will remain but will no longer be managed by this import.', // @translate
+                'label' => 'Keep removed resources', // @translate
+                'info' => 'Check this if, during import, you want to keep local resources that were removed from the remote snapshot. If checked, removed resources will remain locally but will no longer be managed by this import. If not checked, removed resources will be deleted locally as normal.', // @translate
             ],
             'attributes' => [
                 'required' => false,

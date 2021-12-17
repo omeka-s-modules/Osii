@@ -36,7 +36,7 @@ class DoImport extends AbstractOsiiJob
         $osiiItemsToDelete = array_filter(array_column($itemsToDelete, 'osii_item'));
         $localItemsToDelete = array_filter(array_column($itemsToDelete, 'local_item'));
         $this->getApiManager()->batchDelete('osii_items', $osiiItemsToDelete);
-        if ($this->getImportEntity()->getDeleteRemovedItems()) {
+        if (!$this->getImportEntity()->getKeepRemovedResources()) {
             $this->getApiManager()->batchDelete('items', $localItemsToDelete);
         }
 
@@ -55,7 +55,7 @@ class DoImport extends AbstractOsiiJob
         $osiiMediaToDelete = array_filter(array_column($mediaToDelete, 'osii_media'));
         $localMediaToDelete = array_filter(array_column($mediaToDelete, 'local_media'));
         $this->getApiManager()->batchDelete('osii_media', $osiiMediaToDelete);
-        if ($this->getImportEntity()->getDeleteRemovedMedia()) {
+        if (!$this->getImportEntity()->getKeepRemovedResources()) {
             $this->getApiManager()->batchDelete('media', $localMediaToDelete);
         }
 
