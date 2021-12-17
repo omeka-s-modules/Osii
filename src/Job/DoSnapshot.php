@@ -40,7 +40,7 @@ class DoSnapshot extends AbstractOsiiJob
             if (!$items) {
                 break; // No more items.
             }
-            $this->logItemIds($items);
+            $this->logIds($items, 'Iterating remote items');
             foreach ($items as $item) {
                 // Save snapshots of remote items.
                 $osiiItemEntity = $this->getEntityManager()
@@ -120,7 +120,7 @@ class DoSnapshot extends AbstractOsiiJob
             if (!$medias) {
                 break; // No more media.
             }
-            $this->logMediaIds($medias);
+            $this->logIds($medias, 'Iterating remote media');
             foreach ($medias as $media) {
                 if (!in_array($media['o:id'], $snapshotMedia)) {
                     continue; // This media is not part of the import.
@@ -204,7 +204,7 @@ class DoSnapshot extends AbstractOsiiJob
             if (!$itemSets) {
                 break; // No more item sets.
             }
-            $this->logItemSetIds($itemSets);
+            $this->logIds($itemSets, 'Iterating remote item sets');
             foreach ($itemSets as $itemSet) {
                 if (!in_array($itemSet['o:id'], $snapshotItemSets)) {
                     continue; // This item set is not part of the import.
@@ -400,56 +400,5 @@ class DoSnapshot extends AbstractOsiiJob
         }
         $output = json_decode($response->getBody(), true);
         return $output;
-    }
-
-    /**
-     * Log remote item IDs.
-     *
-     * @param array $snapshot
-     */
-    protected function logItemIds(array $snapshots)
-    {
-        $remoteIds = '';
-        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
-            $remoteIds .= "\n\t";
-            foreach ($snapshotsChunk as $snapshot) {
-                $remoteIds .= $snapshot['o:id'] . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating remote items:%s', $remoteIds));
-    }
-
-    /**
-     * Log remote media IDs.
-     *
-     * @param array $snapshot
-     */
-    protected function logMediaIds(array $snapshots)
-    {
-        $remoteIds = '';
-        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
-            $remoteIds .= "\n\t";
-            foreach ($snapshotsChunk as $snapshot) {
-                $remoteIds .= $snapshot['o:id'] . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating remote media:%s', $remoteIds));
-    }
-
-    /**
-     * Log remote item set IDs.
-     *
-     * @param array $snapshot
-     */
-    protected function logItemSetIds(array $snapshots)
-    {
-        $remoteIds = '';
-        foreach (array_chunk($snapshots, 10) as $snapshotsChunk) {
-            $remoteIds .= "\n\t";
-            foreach ($snapshotsChunk as $snapshot) {
-                $remoteIds .= $snapshot['o:id'] . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating remote item sets:%s', $remoteIds));
     }
 }

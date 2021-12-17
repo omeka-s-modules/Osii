@@ -208,7 +208,7 @@ class DoImport extends AbstractOsiiJob
             WHERE m.id IN (:osiiMediaIds)';
         $query = $this->getEntityManager()->createQuery($dql);
         foreach (array_chunk($osiiMediaIds, 20) as $osiiMediaIdsChunk) {
-            $this->logMediaIds($osiiMediaIdsChunk);
+            $this->logIds($osiiMediaIdsChunk, 'Iterating OSII media');
             $query->setParameter('osiiMediaIds', $osiiMediaIdsChunk);
             foreach ($query->toIterable() as $osiiMediaEntity) {
                 $localMediaEntity = $osiiMediaEntity->getLocalMedia();
@@ -286,7 +286,7 @@ class DoImport extends AbstractOsiiJob
             WHERE i.id IN (:osiiItemIds)';
         $query = $this->getEntityManager()->createQuery($dql);
         foreach (array_chunk($osiiItemIds, 100) as $osiiItemIdsChunk) {
-            $this->logItemIds($osiiItemIdsChunk);
+            $this->logIds($osiiItemIdsChunk, 'Iterating OSII items');
             $query->setParameter('osiiItemIds', $osiiItemIdsChunk);
             foreach ($query->toIterable() as $osiiItemEntity) {
                 $localItemEntity = $osiiItemEntity->getLocalItem();
@@ -335,7 +335,7 @@ class DoImport extends AbstractOsiiJob
             WHERE i.id IN (:osiiItemSetIds)';
         $query = $this->getEntityManager()->createQuery($dql);
         foreach (array_chunk($osiiItemSetIds, 100) as $osiiItemSetIdsChunk) {
-            $this->logItemSetIds($osiiItemSetIdsChunk);
+            $this->logIds($osiiItemSetIdsChunk, 'Iterating OSII item sets');
             $query->setParameter('osiiItemSetIds', $osiiItemSetIdsChunk);
             foreach ($query->toIterable() as $osiiItemSetEntity) {
                 $localItemSetEntity = $osiiItemSetEntity->getLocalItemSet();
@@ -463,10 +463,10 @@ class DoImport extends AbstractOsiiJob
      *
      * @param array $localResource
      * @param array $remoteResource
-     * @param string $resourceName items, item_sets, or media
+     * @param string $resourceType items, item_sets, or media
      * @return array The local resource JSON-LD
      */
-    public function addSourceUrls(array $localResource, array $remoteResource, $resourceName)
+    public function addSourceUrls(array $localResource, array $remoteResource, $resourceType)
     {
         // Add the source resource value.
         if ($this->sourceResourcePropertyId && $this->getImportEntity()->getAddSourceResource()) {
@@ -476,7 +476,7 @@ class DoImport extends AbstractOsiiJob
                 '@id' => sprintf(
                     '%s/%s/%s',
                     $this->getImportEntity()->getRootEndpoint(),
-                    $resourceName,
+                    $resourceType,
                     $remoteResource['o:id']
                 ),
             ];
@@ -490,56 +490,5 @@ class DoImport extends AbstractOsiiJob
             ];
         }
         return $localResource;
-    }
-
-    /**
-     * Log OSII item IDs.
-     *
-     * @param array $ids
-     */
-    protected function logItemIds(array $ids)
-    {
-        $osiiIds = '';
-        foreach (array_chunk($ids, 10) as $idsChunk) {
-            $osiiIds .= "\n\t";
-            foreach ($idsChunk as $id) {
-                $osiiIds .= $id . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating OSII items:%s', $osiiIds));
-    }
-
-    /**
-     * Log OSII item set IDs.
-     *
-     * @param array $ids
-     */
-    protected function logItemSetIds(array $ids)
-    {
-        $osiiIds = '';
-        foreach (array_chunk($ids, 10) as $idsChunk) {
-            $osiiIds .= "\n\t";
-            foreach ($idsChunk as $id) {
-                $osiiIds .= $id . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating OSII item sets:%s', $osiiIds));
-    }
-
-    /**
-     * Log OSII media IDs.
-     *
-     * @param array $ids
-     */
-    protected function logMediaIds(array $ids)
-    {
-        $osiiIds = '';
-        foreach (array_chunk($ids, 10) as $idsChunk) {
-            $osiiIds .= "\n\t";
-            foreach ($idsChunk as $id) {
-                $osiiIds .= $id . ', ';
-            }
-        }
-        $this->getLogger()->info(sprintf('Iterating OSII media:%s', $osiiIds));
     }
 }

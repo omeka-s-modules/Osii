@@ -81,7 +81,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      * @param array $resource
      * @return array
      */
-    protected function getValuesFromResource($resource)
+    protected function getValuesFromResource(array $resource)
     {
         $resourceValues = [];
         foreach ($resource as $values) {
@@ -98,6 +98,24 @@ abstract class AbstractOsiiJob extends AbstractJob
             }
         }
         return $resourceValues;
+    }
+
+    /**
+     * Log IDs from and array of JSON-LD resources or an array of integers.
+     *
+     * @param array $ids
+     * @param string $message
+     */
+    protected function logIds(array $ids, $message)
+    {
+        $idsLog = '';
+        foreach (array_chunk($ids, 10) as $idsChunk) {
+            $idsLog .= "\n\t";
+            foreach ($idsChunk as $id) {
+                $idsLog .= (is_array($id) ? $id['o:id'] : $id) . ', ';
+            }
+        }
+        $this->getLogger()->info(sprintf('%s:%s', $message, $idsLog));
     }
 
     /**
