@@ -47,6 +47,8 @@ $form->prepare();
     <legend><?php echo $this->translate('Local configuration'); ?></legend>
     <?php echo $this->formRow($form->get('o:label')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:local_item_set')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:exclude_media')); ?>
+    <?php echo $this->formRow($form->get('o-module-osii:exclude_item_sets')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:keep_removed_resources')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:source_site')); ?>
     <?php echo $this->formRow($form->get('o-module-osii:add_source_resource')); ?>

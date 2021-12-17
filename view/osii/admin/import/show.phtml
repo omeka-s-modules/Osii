@@ -292,6 +292,14 @@ echo $this->sectionNav([
         <div class="value"><?php echo $localItemSet ? $localItemSet->title() : $this->translate('[n/a]'); ?></div>
     </div>
     <div class="meta-group">
+        <h4><?php echo $this->translate('Exclude media'); ?></h4>
+        <div class="value"><?php echo $import->excludeMedia() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $this->translate('Exclude item sets'); ?></h4>
+        <div class="value"><?php echo $import->excludeItemSets() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
+    </div>
+    <div class="meta-group">
         <h4><?php echo $this->translate('Keep removed resources'); ?></h4>
         <div class="value"><?php echo $import->keepRemovedResources() ? $this->translate('[yes]') : $this->translate('[no]'); ?></div>
     </div>

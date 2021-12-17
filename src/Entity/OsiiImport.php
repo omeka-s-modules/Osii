@@ -224,6 +224,42 @@ class OsiiImport extends AbstractEntity
      *     nullable=false
      * )
      */
+    protected $excludeMedia = false;
+
+    public function setExcludeMedia($excludeMedia) : void
+    {
+        $this->excludeMedia = (bool) $excludeMedia;
+    }
+
+    public function getExcludeMedia() : bool
+    {
+        return $this->excludeMedia;
+    }
+
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
+    protected $excludeItemSets = false;
+
+    public function setExcludeItemSets($excludeItemSets) : void
+    {
+        $this->excludeItemSets = (bool) $excludeItemSets;
+    }
+
+    public function getExcludeItemSets() : bool
+    {
+        return $this->excludeItemSets;
+    }
+
+    /**
+     * @Column(
+     *     type="boolean",
+     *     nullable=false
+     * )
+     */
     protected $keepRemovedResources = false;
 
     public function setKeepRemovedResources($keepRemovedResources) : void

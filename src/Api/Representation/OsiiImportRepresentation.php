@@ -24,6 +24,8 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
             'o-module-osii:key_identity' => $this->keyIdentity(),
             'o-module-osii:key_credential' => $this->keyCredential(),
             'o-module-osii:remote_query' => $this->remoteQuery(),
+            'o-module-osii:exclude_media' => $this->excludeMedia(),
+            'o-module-osii:exclude_item_sets' => $this->excludeItemSets(),
             'o-module-osii:keep_removed_resources' => $this->keepRemovedResources(),
             'o-module-osii:add_source_resource' => $this->addSourceResource(),
             'o-module-osii:source_site' => $this->sourceSite(),
@@ -156,6 +158,16 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getImportCompleted();
     }
 
+    public function excludeMedia()
+    {
+        return $this->resource->getExcludeMedia();
+    }
+
+    public function excludeItemSets()
+    {
+        return $this->resource->getExcludeItemSets();
+    }
+
     public function keepRemovedResources()
     {
         return $this->resource->getKeepRemovedResources();
@@ -228,7 +240,14 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         $snapshotJob = $this->snapshotJob();
         $importJob = $this->importJob();
         $snapshotStatus = $snapshotJob ? Job::STATUS_COMPLETED === $snapshotJob->status() : false;
-        $importStatus = $importJob ? Job::STATUS_COMPLETED === $importJob->status() : true;
+        $importStatus = $importJob
+            ? in_array($importJob->status(), [
+                Job::STATUS_COMPLETED,
+                Job::STATUS_STOPPING,
+                Job::STATUS_STOPPED,
+                Job::STATUS_ERROR,
+            ]
+            ) : true;
         return $snapshotStatus && $importStatus;
     }
 

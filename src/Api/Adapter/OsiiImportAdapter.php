@@ -68,6 +68,12 @@ class OsiiImportAdapter extends AbstractEntityAdapter
                 : null
             );
         }
+        if ($this->shouldHydrate($request, 'o-module-osii:exclude_media')) {
+            $entity->setExcludeMedia($request->getValue('o-module-osii:exclude_media'));
+        }
+        if ($this->shouldHydrate($request, 'o-module-osii:exclude_item_sets')) {
+            $entity->setExcludeItemSets($request->getValue('o-module-osii:exclude_item_sets'));
+        }
         if ($this->shouldHydrate($request, 'o-module-osii:keep_removed_resources')) {
             $entity->setKeepRemovedResources($request->getValue('o-module-osii:keep_removed_resources'));
         }

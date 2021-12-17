@@ -63,13 +63,13 @@ class DoSnapshot extends AbstractOsiiJob
 
                 // Set metadata about the snapshot.
                 $snapshotItems[] = $item['o:id'];
-                if (!empty($item['o:media'])) {
+                if (!empty($item['o:media']) && !$this->getImportEntity()->getExcludeMedia()) {
                     foreach ($item['o:media'] as $position => $media) {
                         $snapshotMedia[] = $media['o:id'];
                         $remoteMediaPositions[$media['o:id']] = $position + 1;
                     }
                 }
-                if (!empty($item['o:item_set'])) {
+                if (!empty($item['o:item_set']) && !$this->getImportEntity()->getExcludeItemSets()) {
                     foreach ($item['o:item_set'] as $itemSet) {
                         if (!in_array($itemSet['o:id'], $snapshotItemSets)) {
                             $snapshotItemSets[] = $itemSet['o:id'];
@@ -115,7 +115,8 @@ class DoSnapshot extends AbstractOsiiJob
             'per_page' => 50,
             'page' => 1,
         ];
-        while (true) {
+        // Iterate only if there are media to snapshot.
+        while ($snapshotMedia) {
             $medias = $this->getApiOutput($client, $query);
             if (!$medias) {
                 break; // No more media.
@@ -199,7 +200,8 @@ class DoSnapshot extends AbstractOsiiJob
             'per_page' => 50,
             'page' => 1,
         ];
-        while (true) {
+        // Iterate only if there are item sets to snapshot.
+        while ($snapshotItemSets) {
             $itemSets = $this->getApiOutput($client, $query);
             if (!$itemSets) {
                 break; // No more item sets.

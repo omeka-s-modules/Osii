@@ -49,7 +49,7 @@ class DoImport extends AbstractOsiiJob
         $query = $this->getEntityManager()->createQuery($dql)
         ->setParameters([
             'import' => $this->getImportEntity(),
-            'snapshotMedia' => $this->getImportEntity()->getSnapshotMedia(),
+            'snapshotMedia' => $this->getImportEntity()->getSnapshotMedia() ?: 0,
         ]);
         $mediaToDelete = $query->getResult();
         $osiiMediaToDelete = array_filter(array_column($mediaToDelete, 'osii_media'));
@@ -68,13 +68,13 @@ class DoImport extends AbstractOsiiJob
         $query = $this->getEntityManager()->createQuery($dql)
             ->setParameters([
                 'import' => $this->getImportEntity(),
-                'snapshotItemSets' => $this->getImportEntity()->getSnapshotItemSets(),
+                'snapshotItemSets' => $this->getImportEntity()->getSnapshotItemSets() ?: 0,
             ]);
         $itemSetsToDelete = $query->getResult();
         $osiiItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'osii_item_set'));
         $localItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'local_item_set'));
         $this->getApiManager()->batchDelete('osii_item_sets', $osiiItemSetsToDelete);
-        if ($this->getImportEntity()->getDeleteRemovedItemSets()) {
+        if (!$this->getImportEntity()->getKeepRemovedResources()) {
             $this->getApiManager()->batchDelete('item_sets', $localItemSetsToDelete);
         }
 

@@ -81,6 +81,28 @@ class ImportForm extends Form
         ]);
         $this->add([
             'type' => LaminasElement\Checkbox::class,
+            'name' => 'o-module-osii:exclude_media',
+            'options' => [
+                'label' => 'Exclude media', // @translate
+                'info' => 'Check this if you want the import to exclude media. If not checked, media will be imported as normal. Note that, after switching this option, you must take a snapshot and then import or changes will not take effect.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Checkbox::class,
+            'name' => 'o-module-osii:exclude_item_sets',
+            'options' => [
+                'label' => 'Exclude item sets', // @translate
+                'info' => 'Check this if you want the import to exclude item sets. If not checked, item sets will be imported as normal. Note that, after switching this option, you must take a snapshot and then import or changes will not take effect.', // @translate
+            ],
+            'attributes' => [
+                'required' => false,
+            ],
+        ]);
+        $this->add([
+            'type' => LaminasElement\Checkbox::class,
             'name' => 'o-module-osii:keep_removed_resources',
             'options' => [
                 'label' => 'Keep removed resources', // @translate
