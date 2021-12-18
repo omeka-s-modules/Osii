@@ -14,3 +14,12 @@
     margin: 0;
     font-weight: 900;
 }
+
+.browse th:first-child, .browse td:first-child {
+    width: 25%;
+}
+
+.browse th:nth-child(2), .browse td:nth-child(2) {
+    width: 35%;
+    word-break: break-all;
+}

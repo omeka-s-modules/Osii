@@ -106,45 +106,17 @@ class Osii extends AbstractPlugin
     }
 
     /**
-     * Prepare snapshot data types for display.
+     * Prepare snapshot data for display.
      *
-     * @param array $snapshotDataTypes
+     * @param array $snapshotData
      * @return array
      */
-    public function getPreparedSnapshotDataTypes(array $snapshotDataTypes)
+    public function getPreparedSnapshotData(array $snapshotData)
     {
-        uasort($snapshotDataTypes, function ($a, $b) {
+        uasort($snapshotData, function ($a, $b) {
             return $b['count'] - $a['count'];
         });
-        return $snapshotDataTypes;
-    }
-
-    /**
-     * Prepare snapshot templates for display.
-     *
-     * @param array $snapshotDataTypes
-     * @return array
-     */
-    public function getPreparedSnapshotTemplates(array $snapshotTemplates)
-    {
-        uasort($snapshotTemplates, function ($a, $b) {
-            return $b['count'] - $a['count'];
-        });
-        return $snapshotTemplates;
-    }
-
-    /**
-     * Prepare snapshot media ingesters for display.
-     *
-     * @param array $snapshotMediaIngesters
-     * @return array
-     */
-    public function getPreparedSnapshotMediaIngesters(array $snapshotMediaIngesters)
-    {
-        uasort($snapshotMediaIngesters, function ($a, $b) {
-            return $b['count'] - $a['count'];
-        });
-        return $snapshotMediaIngesters;
+        return $snapshotData;
     }
 
     /**

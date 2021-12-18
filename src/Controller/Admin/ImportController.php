@@ -128,12 +128,6 @@ class ImportController extends AbstractActionController
         $formStopImport = $this->getForm(OsiiForm\StopImportForm::class, ['import' => $import]);
         $formStopImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'stop-import'], true));
 
-        $snapshotDataTypes = $import->snapshotDataTypes() ?? [];
-        $snapshotProperties = $import->snapshotProperties() ?? [];
-        $snapshotClasses = $import->snapshotClasses() ?? [];
-        $snapshotTemplates = $import->snapshotTemplates() ?? [];
-        $snapshotMediaIngesters = $import->snapshotMediaIngesters() ?? [];
-
         $view = new ViewModel;
         $view->setVariable('import', $import);
         $view->setVariable('form', $form);
@@ -146,11 +140,11 @@ class ImportController extends AbstractActionController
         $view->setVariable('localProperties', $this->osii()->getLocalProperties());
         $view->setVariable('localClasses', $this->osii()->getLocalClasses());
         $view->setVariable('localMediaIngesterMappers', $this->osii()->getLocalMediaIngesterMappers());
-        $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotDataTypes($snapshotDataTypes));
-        $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($snapshotProperties));
-        $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($snapshotClasses));
-        $view->setVariable('remoteTemplates', $this->osii()->getPreparedSnapshotTemplates($snapshotTemplates));
-        $view->setVariable('remoteMediaIngesters', $this->osii()->getPreparedSnapshotMediaIngesters($snapshotMediaIngesters));
+        $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotData($import->snapshotDataTypes() ?? []));
+        $view->setVariable('remoteTemplates', $this->osii()->getPreparedSnapshotData($import->snapshotTemplates() ?? []));
+        $view->setVariable('remoteMediaIngesters', $this->osii()->getPreparedSnapshotData($import->snapshotMediaIngesters() ?? []));
+        $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($import->snapshotProperties() ?? []));
+        $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($import->snapshotClasses() ?? []));
         return $view;
     }
 
