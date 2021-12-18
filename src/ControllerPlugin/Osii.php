@@ -51,7 +51,11 @@ class Osii extends AbstractPlugin
      */
     public function getLocalTemplateSelect()
     {
+        $apiManager = $this->services->get('Omeka\ApiManager');
         $localTemplates = [];
+        foreach ($apiManager->search('resource_templates')->getContent() as $template) {
+            $localTemplates[$template->id()] = $template->label();
+        }
         $element = new LaminasElement\Select('local_template');
         $element->setEmptyOption('[Not mapped]'); // @translate
         $element->setValueOptions($localTemplates);
