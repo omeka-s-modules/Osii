@@ -109,8 +109,9 @@ class Osii extends AbstractPlugin
      */
     public function getPreparedSnapshotDataTypes(array $snapshotDataTypes)
     {
-        $countColumn = array_column($snapshotDataTypes, 'count');
-        array_multisort($countColumn, SORT_DESC, $snapshotDataTypes);
+        uasort($snapshotDataTypes, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
         return $snapshotDataTypes;
     }
 
@@ -122,6 +123,9 @@ class Osii extends AbstractPlugin
      */
     public function getPreparedSnapshotTemplates(array $snapshotTemplates)
     {
+        uasort($snapshotTemplates, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
         return $snapshotTemplates;
     }
 
@@ -133,8 +137,9 @@ class Osii extends AbstractPlugin
      */
     public function getPreparedSnapshotMediaIngesters(array $snapshotMediaIngesters)
     {
-        $countColumn = array_column($snapshotMediaIngesters, 'count');
-        array_multisort($countColumn, SORT_DESC, $snapshotMediaIngesters);
+        uasort($snapshotMediaIngesters, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
         return $snapshotMediaIngesters;
     }
 
