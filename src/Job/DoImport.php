@@ -14,6 +14,7 @@ class DoImport extends AbstractOsiiJob
     protected $propertyMap;
     protected $classMap;
     protected $dataTypeMap;
+    protected $templateMap;
     protected $sourceResourcePropertyId;
     protected $sourceSitePropertyId;
 
@@ -184,6 +185,10 @@ class DoImport extends AbstractOsiiJob
         // local data type names.
         $this->dataTypeMap = $this->getImportEntity()->getDataTypeMap();
 
+        // Set the template map. Keys are remote template IDs. Values are local
+        // template IDs.
+        $this->templateMap = $this->getImportEntity()->getTemplateMap();
+
         // Set the source properties, if used.
         $this->sourceResourcePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_resource'] ?? null;
         $this->sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
@@ -235,6 +240,7 @@ class DoImport extends AbstractOsiiJob
                 $localMedia = $this->mapOwner($localMedia, $remoteMedia);
                 $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
                 $localMedia = $this->mapClass($localMedia, $remoteMedia);
+                $localMedia = $this->mapTemplate($localMedia, $remoteMedia);
                 $localMedia = $this->mapValues($localMedia, $remoteMedia);
                 $localMedia = $this->addSourceUrls($localMedia, $remoteMedia, 'media');
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
@@ -295,6 +301,7 @@ class DoImport extends AbstractOsiiJob
                 $localItem = $this->mapOwner($localItem, $remoteItem);
                 $localItem = $this->mapVisibility($localItem, $remoteItem);
                 $localItem = $this->mapClass($localItem, $remoteItem);
+                $localItem = $this->mapTemplate($localItem, $remoteItem);
                 $localItem = $this->mapValues($localItem, $remoteItem);
                 $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
                 // Map remote to local item sets.
@@ -344,6 +351,7 @@ class DoImport extends AbstractOsiiJob
                 $localItemSet = $this->mapOwner($localItemSet, $remoteItemSet);
                 $localItemSet = $this->mapVisibility($localItemSet, $remoteItemSet);
                 $localItemSet = $this->mapClass($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapTemplate($localItemSet, $remoteItemSet);
                 $localItemSet = $this->mapValues($localItemSet, $remoteItemSet);
                 $localItemSet = $this->addSourceUrls($localItemSet, $remoteItemSet, 'item_sets');
                 $updateOptions = [
@@ -400,6 +408,21 @@ class DoImport extends AbstractOsiiJob
     {
         if (isset($remoteResource['o:resource_class']) && isset($this->classMap[$remoteResource['o:resource_class']['o:id']])) {
             $localResource['o:resource_class']['o:id'] = $this->classMap[$remoteResource['o:resource_class']['o:id']];
+        }
+        return $localResource;
+    }
+
+    /**
+     * Map remote to local resource template.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
+    protected function mapTemplate(array $localResource, array $remoteResource)
+    {
+        if (isset($remoteResource['o:resource_template']) && isset($this->templateMap[$remoteResource['o:resource_template']['o:id']])) {
+            $localResource['o:resource_template']['o:id'] = $this->templateMap[$remoteResource['o:resource_template']['o:id']];
         }
         return $localResource;
     }
