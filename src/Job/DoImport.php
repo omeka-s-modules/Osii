@@ -10,8 +10,6 @@ use Osii\Stdlib\Mappings;
 class DoImport extends AbstractOsiiJob
 {
     protected $mappings;
-    protected $sourceResourcePropertyId;
-    protected $sourceSitePropertyId;
 
     public function perform()
     {
@@ -151,13 +149,13 @@ class DoImport extends AbstractOsiiJob
             FROM Omeka\Entity\Property p
             JOIN p.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
-        $localProperties = array_column($query->getResult(), 'property_id', 'uri');
+        $this->mappings->set('localProperties', array_column($query->getResult(), 'property_id', 'uri'));
         foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
             $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
             $localName = $remoteProperty['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
-            if (isset($localProperties[$uri])) {
-                $this->mappings->set('properties', $remotePropertyId, $localProperties[$uri]);
+            if ($this->mappings->get('localProperties', $uri)) {
+                $this->mappings->set('properties', $remotePropertyId, $this->mappings->get('localProperties', $uri));
             }
         }
 
@@ -166,13 +164,13 @@ class DoImport extends AbstractOsiiJob
             FROM Omeka\Entity\ResourceClass c
             JOIN c.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
-        $localClasses = array_column($query->getResult(), 'class_id', 'uri');
+        $this->mappings->set('localClasses', array_column($query->getResult(), 'class_id', 'uri'));
         foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
             $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
             $localName = $remoteClass['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
-            if (isset($localClasses[$uri])) {
-                $this->mappings->set('classes', $remoteClassId, $localClasses[$uri]);
+            if ($this->mappings->get('localClasses', $uri)) {
+                $this->mappings->set('classes', $remoteClassId, $this->mappings->get('localClasses', $uri));
             }
         }
 
@@ -183,10 +181,6 @@ class DoImport extends AbstractOsiiJob
         // Set the template map. Keys are remote template IDs. Values are local
         // template IDs.
         $this->mappings->set('templates', $this->getImportEntity()->getTemplateMap());
-
-        // Set the source properties, if used.
-        $this->sourceResourcePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_resource'] ?? null;
-        $this->sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
 
         // Import media from their snapshot. We must import media before other
         // resources because we need to populate the media map before updating
@@ -504,10 +498,14 @@ class DoImport extends AbstractOsiiJob
     public function addSourceUrls(array $localResource, array $remoteResource, $resourceType)
     {
         // Add the source resource value.
-        if ($this->sourceResourcePropertyId && $this->getImportEntity()->getAddSourceResource()) {
-            $localResource[$this->sourceResourcePropertyId][] = [
+        $sourceResourcePropertyId = $this->mappings->get(
+            'localProperties',
+            'http://omeka.org/s/vocabs/o-module-osii#source_resource'
+        );
+        if ($sourceResourcePropertyId && $this->getImportEntity()->getAddSourceResource()) {
+            $localResource[$sourceResourcePropertyId][] = [
                 'type' => 'uri',
-                'property_id' => $this->sourceResourcePropertyId,
+                'property_id' => $sourceResourcePropertyId,
                 '@id' => sprintf(
                     '%s/%s/%s',
                     $this->getImportEntity()->getRootEndpoint(),
@@ -517,10 +515,14 @@ class DoImport extends AbstractOsiiJob
             ];
         }
         // Add the source site value.
-        if ($this->sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
-            $localResource[$this->sourceSitePropertyId][] = [
+        $sourceSitePropertyId = $this->mappings->get(
+            'localProperties',
+            'http://omeka.org/s/vocabs/o-module-osii#source_site'
+        );
+        if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
+            $localResource[$sourceSitePropertyId][] = [
                 'type' => 'uri',
-                'property_id' => $this->sourceSitePropertyId,
+                'property_id' => $sourceSitePropertyId,
                 '@id' => $this->getImportEntity()->getSourceSite(),
             ];
         }

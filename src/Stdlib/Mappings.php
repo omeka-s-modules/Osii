@@ -7,15 +7,15 @@ class Mappings
      * Set a mapping.
      *
      * @param string $mapName The name of the map
-     * @param mixed $remoteId The entire map array, or the remote ID
-     * @param mixed|null $localId The local ID
+     * @param mixed $sourceId The entire map array, or the source ID
+     * @param mixed|null $targetId The target ID
      */
-    public function set($mapName, $remoteId, $localId = null)
+    public function set($mapName, $sourceId, $targetId = null)
     {
-        if (is_array($remoteId)) {
-            $this->$mapName = $remoteId;
+        if (is_array($sourceId)) {
+            $this->$mapName = $sourceId;
         } else {
-            $this->$mapName[$remoteId] = $localId;
+            $this->$mapName[$sourceId] = $targetId;
         }
     }
 
@@ -23,14 +23,14 @@ class Mappings
      * Get a mapping.
      *
      * @param string $mapName The name of the map
-     * @param mixed $remoteId The remote ID
-     * @return The entire map array, or the local ID
+     * @param mixed $sourceId The source ID
+     * @return The entire map array, or the target ID
      */
-    public function get($mapName, $remoteId = null)
+    public function get($mapName, $sourceId = null)
     {
-        if (null === $remoteId) {
+        if (null === $sourceId) {
             return $this->$mapName;
         }
-        return $this->$mapName[$remoteId] ?? null;
+        return $this->$mapName[$sourceId] ?? null;
     }
 }
