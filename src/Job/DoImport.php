@@ -305,6 +305,7 @@ class DoImport extends AbstractOsiiJob
                 $localItem = $this->mapValues($localItem, $remoteItem);
                 $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
                 // Map remote to local item sets.
+                $localItem['o:item_set'] = [];
                 foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
                     $itemSetId = $this->itemSetMap[$remoteItemSet['o:id']] ?? null;
                     if ($itemSetId) {
