@@ -32,16 +32,15 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <?php
 echo $this->sectionNav([
-    'snapshot-data-types' => $this->translate('Snapshot data types'),
-    'snapshot-templates' => $this->translate('Snapshot templates'),
-    'snapshot-media-ingesters' => $this->translate('Snapshot media ingesters'),
-    'snapshot-properties' => $this->translate('Snapshot properties'),
-    'snapshot-classes' => $this->translate('Snapshot classes'),
+    'snapshot-data-types' => $this->translate('Data types'),
+    'snapshot-templates' => $this->translate('Templates'),
+    'snapshot-media-ingesters' => $this->translate('Media ingesters'),
+    'snapshot-properties' => $this->translate('Properties'),
+    'snapshot-classes' => $this->translate('Classes'),
 ]);
 ?>
 
 <div id="snapshot-data-types" class="section active">
-    <h3><?php echo $this->translate('Snapshot data types'); ?></h3>
     <?php if ($remoteDataTypes): ?>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
@@ -83,7 +82,6 @@ echo $this->sectionNav([
 </div>
 
 <div id="snapshot-templates" class="section">
-    <h3><?php echo $this->translate('Snapshot templates'); ?></h3>
     <?php if ($remoteTemplates): ?>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
@@ -125,7 +123,6 @@ echo $this->sectionNav([
 </div>
 
 <div id="snapshot-media-ingesters" class="section">
-    <h3><?php echo $this->translate('Snapshot media ingesters'); ?></h3>
     <?php if ($remoteMediaIngesters): ?>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
@@ -153,7 +150,6 @@ echo $this->sectionNav([
 </div>
 
 <div id="snapshot-properties" class="section">
-    <h3><?php echo $this->translate('Snapshot properties'); ?></h3>
     <?php if ($remoteProperties): ?>
     <?php foreach ($remoteProperties as $vocabularyId => $properties): ?>
     <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
@@ -191,7 +187,6 @@ echo $this->sectionNav([
 </div>
 
 <div id="snapshot-classes" class="section">
-    <h3><?php echo $this->translate('Snapshot classes'); ?></h3>
     <?php if ($remoteClasses): ?>
     <?php foreach ($remoteClasses as $vocabularyId => $classes): ?>
     <?php $vocabulary = $import->snapshotVocabularies()[$vocabularyId]; ?>
