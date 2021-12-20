@@ -5,16 +5,11 @@ use DateTime;
 use Exception;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Omeka\Entity as OmekaEntity;
+use Osii\Stdlib\Mappings;
 
 class DoImport extends AbstractOsiiJob
 {
-    protected $mediaMap;
-    protected $itemMap;
-    protected $itemSetMap;
-    protected $propertyMap;
-    protected $classMap;
-    protected $dataTypeMap;
-    protected $templateMap;
+    protected $mappings;
     protected $sourceResourcePropertyId;
     protected $sourceSitePropertyId;
 
@@ -131,19 +126,21 @@ class DoImport extends AbstractOsiiJob
             $this->flushClear();
         }
 
+        $this->mappings = new Mappings;
+
         // Set the item map. Keys are remote IDs. Values are local IDs.
         $dql = 'SELECT i.remoteItemId AS remote_item, IDENTITY(i.localItem) AS local_item
             FROM Osii\Entity\OsiiItem i
             WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
-        $this->itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
+        $this->mappings->set('items', array_column($query->getResult(), 'local_item', 'remote_item'));
 
         // Set the item set map. Keys are remote IDs. Values are local IDs.
         $dql = 'SELECT i.remoteItemSetId AS remote_item_set, IDENTITY(i.localItemSet) AS local_item_set
             FROM Osii\Entity\OsiiItemSet i
             WHERE i.import = :import';
         $query = $this->getEntityManager()->createQuery($dql)->setParameter('import', $this->getImportEntity());
-        $this->itemSetMap = array_column($query->getResult(), 'local_item_set', 'remote_item_set');
+        $this->mappings->set('itemSets', array_column($query->getResult(), 'local_item_set', 'remote_item_set'));
 
         $snapshotVocabularies = $this->getImportEntity()->getSnapshotVocabularies();
         $snapshotProperties = $this->getImportEntity()->getSnapshotProperties();
@@ -155,13 +152,12 @@ class DoImport extends AbstractOsiiJob
             JOIN p.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
         $localProperties = array_column($query->getResult(), 'property_id', 'uri');
-        $this->propertyMap = [];
         foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
             $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
             $localName = $remoteProperty['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localProperties[$uri])) {
-                $this->propertyMap[$remotePropertyId] = $localProperties[$uri];
+                $this->mappings->set('properties', $remotePropertyId, $localProperties[$uri]);
             }
         }
 
@@ -171,30 +167,29 @@ class DoImport extends AbstractOsiiJob
             JOIN c.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
         $localClasses = array_column($query->getResult(), 'class_id', 'uri');
-        $this->classMap = [];
         foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
             $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
             $localName = $remoteClass['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
             if (isset($localClasses[$uri])) {
-                $this->classMap[$remoteClassId] = $localClasses[$uri];
+                $this->mappings->set('classes', $remoteClassId, $localClasses[$uri]);
             }
         }
 
         // Set the data type map. Keys are remote data type names. Values are
         // local data type names.
-        $this->dataTypeMap = $this->getImportEntity()->getDataTypeMap();
+        $this->mappings->set('dataTypes', $this->getImportEntity()->getDataTypeMap());
 
         // Set the template map. Keys are remote template IDs. Values are local
         // template IDs.
-        $this->templateMap = $this->getImportEntity()->getTemplateMap();
+        $this->mappings->set('templates', $this->getImportEntity()->getTemplateMap());
 
         // Set the source properties, if used.
         $this->sourceResourcePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_resource'] ?? null;
         $this->sourceSitePropertyId = $localProperties['http://omeka.org/s/vocabs/o-module-osii#source_site'] ?? null;
 
         // Import media from their snapshot. We must import media before other
-        // resources because we need to populate self::$mediaMap before updating
+        // resources because we need to populate the media map before updating
         // item values, specifically for mapping media resource values. Ideally,
         // we would create media stubs before updating them, like we do for
         // items and item sets, but media ingest only happens during create
@@ -271,7 +266,7 @@ class DoImport extends AbstractOsiiJob
                     }
                     $osiiMediaEntity->setLocalMedia($localMediaEntity);
                 }
-                $this->mediaMap[$remoteMedia['o:id']] = $localMediaEntity->getId();
+                $this->mappings->set('media', $remoteMedia['o:id'], $localMediaEntity->getId());
             }
             $this->flushClear();
             if ($this->shouldStop()) {
@@ -309,7 +304,7 @@ class DoImport extends AbstractOsiiJob
                 // locally since the last import.
                 $localItem['o:media'] = [];
                 foreach ($remoteItem['o:media'] as $remoteMedia) {
-                    $mediaId = $this->mediaMap[$remoteMedia['o:id']] ?? null;
+                    $mediaId = $this->mappings->get('media', $remoteMedia['o:id']);
                     if ($mediaId) {
                         $localItem['o:media'][] = ['o:id' => $mediaId];
                     }
@@ -319,7 +314,7 @@ class DoImport extends AbstractOsiiJob
                 // import.
                 $localItem['o:item_set'] = [];
                 foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
-                    $itemSetId = $this->itemSetMap[$remoteItemSet['o:id']] ?? null;
+                    $itemSetId = $this->mappings->get('itemSets', $remoteItemSet['o:id']);
                     if ($itemSetId) {
                         $localItem['o:item_set'][] = ['o:id' => $itemSetId];
                     }
@@ -419,8 +414,10 @@ class DoImport extends AbstractOsiiJob
      */
     protected function mapClass(array $localResource, array $remoteResource)
     {
-        if (isset($remoteResource['o:resource_class']) && isset($this->classMap[$remoteResource['o:resource_class']['o:id']])) {
-            $localResource['o:resource_class']['o:id'] = $this->classMap[$remoteResource['o:resource_class']['o:id']];
+        if (isset($remoteResource['o:resource_class'])
+            && $this->mappings->get('classes', $remoteResource['o:resource_class']['o:id'])
+        ) {
+            $localResource['o:resource_class']['o:id'] = $this->mappings->get('classes', $remoteResource['o:resource_class']['o:id']);
         }
         return $localResource;
     }
@@ -434,8 +431,10 @@ class DoImport extends AbstractOsiiJob
      */
     protected function mapTemplate(array $localResource, array $remoteResource)
     {
-        if (isset($remoteResource['o:resource_template']) && isset($this->templateMap[$remoteResource['o:resource_template']['o:id']])) {
-            $localResource['o:resource_template']['o:id'] = $this->templateMap[$remoteResource['o:resource_template']['o:id']];
+        if (isset($remoteResource['o:resource_template'])
+            && $this->mappings->get('templates', $remoteResource['o:resource_template']['o:id'])
+        ) {
+            $localResource['o:resource_template']['o:id'] = $this->mappings->get('templates', $remoteResource['o:resource_template']['o:id']);
         }
         return $localResource;
     }
@@ -450,31 +449,31 @@ class DoImport extends AbstractOsiiJob
     protected function mapValues(array $localResource, array $remoteResource)
     {
         foreach ($this->getValuesFromResource($remoteResource) as $remoteValue) {
-            if (!isset($this->dataTypeMap[$remoteValue['type']])) {
+            if (!$this->mappings->get('dataTypes', $remoteValue['type'])) {
                 // Data type is not on local installation. Ignore value.
                 continue;
             }
-            if (!isset($this->propertyMap[$remoteValue['property_id']])) {
+            if (!$this->mappings->get('properties', $remoteValue['property_id'])) {
                 // Property is not on local installation. Ignore value.
                 continue;
             }
             if (isset($remoteValue['value_resource_id'])) {
                 if ('items' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->itemMap[$remoteValue['value_resource_id']] ?? null;
+                    $valueResourceId = $this->mappings->get('items', $remoteValue['value_resource_id']);
                     if (!$valueResourceId) {
                         // Item is not on local installation. Ignore value.
                         continue;
                     }
                     $remoteValue['value_resource_id'] = $valueResourceId;
                 } elseif ('item_sets' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->itemSetMap[$remoteValue['value_resource_id']] ?? null;
+                    $valueResourceId = $this->mappings->get('itemSets', $remoteValue['value_resource_id']);
                     if (!$valueResourceId) {
                         // Item set is not on local installation. Ignore value.
                         continue;
                     }
                     $remoteValue['value_resource_id'] = $valueResourceId;
                 } elseif ('media' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->mediaMap[$remoteValue['value_resource_id']] ?? null;
+                    $valueResourceId = $this->mappings->get('media', $remoteValue['value_resource_id']);
                     if (!$valueResourceId) {
                         // Media is not on local installation. Ignore value.
                         continue;
@@ -482,8 +481,8 @@ class DoImport extends AbstractOsiiJob
                     $remoteValue['value_resource_id'] = $valueResourceId;
                 }
             }
-            $dataType = $this->dataTypeMap[$remoteValue['type']];
-            $propertyId = $this->propertyMap[$remoteValue['property_id']];
+            $dataType = $this->mappings->get('dataTypes', $remoteValue['type']);
+            $propertyId = $this->mappings->get('properties', $remoteValue['property_id']);
             $remoteValue['type'] = $dataType;
             $remoteValue['property_id'] = $propertyId;
             if (!isset($localResource[$propertyId])) {
