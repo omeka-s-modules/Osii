@@ -304,7 +304,19 @@ class DoImport extends AbstractOsiiJob
                 $localItem = $this->mapTemplate($localItem, $remoteItem);
                 $localItem = $this->mapValues($localItem, $remoteItem);
                 $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
-                // Map remote to local item sets.
+                // Map remote to local media. Media has already been imported
+                // above, but this step is still necessary to remove media added
+                // locally since the last import.
+                $localItem['o:media'] = [];
+                foreach ($remoteItem['o:media'] as $remoteMedia) {
+                    $mediaId = $this->mediaMap[$remoteMedia['o:id']] ?? null;
+                    if ($mediaId) {
+                        $localItem['o:media'][] = ['o:id' => $mediaId];
+                    }
+                }
+                // Map remote to local item sets. Set an empty o:item_set by
+                // default to remove item sets added locally since the last
+                // import.
                 $localItem['o:item_set'] = [];
                 foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
                     $itemSetId = $this->itemSetMap[$remoteItemSet['o:id']] ?? null;
