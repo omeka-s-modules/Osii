@@ -302,7 +302,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param string $rootEndpoint
      * @return array
      */
-    protected function getSnapshotProperties($rootEndpoint)
+    public function getSnapshotProperties($rootEndpoint)
     {
         $endpoint = sprintf('%s/properties', $rootEndpoint);
         $client = $this->getApiClient($endpoint);
@@ -333,7 +333,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param string $rootEndpoint
      * @return array
      */
-    protected function getSnapshotClasses($rootEndpoint)
+    public function getSnapshotClasses($rootEndpoint)
     {
         $endpoint = sprintf('%s/resource_classes', $rootEndpoint);
         $client = $this->getApiClient($endpoint);
@@ -364,7 +364,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param string $rootEndpoint
      * @return array
      */
-    protected function getSnapshotVocabularies($rootEndpoint)
+    public function getSnapshotVocabularies($rootEndpoint)
     {
         $endpoint = sprintf('%s/vocabularies', $rootEndpoint);
         $client = $this->getApiClient($endpoint);
@@ -393,7 +393,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param string $rootEndpoint
      * @return array
      */
-    protected function getSnapshotTemplates($rootEndpoint)
+    public function getSnapshotTemplates($rootEndpoint)
     {
         $endpoint = sprintf('%s/resource_templates', $rootEndpoint);
         $client = $this->getApiClient($endpoint);
@@ -422,7 +422,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param string $endpoint
      * @return Client
      */
-    protected function getApiClient($endpoint)
+    public function getApiClient($endpoint)
     {
         $client = $this->getServiceLocator()->get('Omeka\HttpClient');
         $client->setUri($endpoint);
@@ -438,7 +438,7 @@ class DoSnapshot extends AbstractOsiiJob
      * @param array $query
      * @return array
      */
-    protected function getApiOutput(Client $client, array $query)
+    public function getApiOutput(Client $client, array $query)
     {
         $client->setParameterGet($query);
         $response = $client->send();

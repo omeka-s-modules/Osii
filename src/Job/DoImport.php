@@ -382,7 +382,7 @@ class DoImport extends AbstractOsiiJob
      * @param array $remoteResource
      * @return array
      */
-    protected function mapResource(array $localResource, array $remoteResource)
+    public function mapResource(array $localResource, array $remoteResource)
     {
         $resourceMapperManager = $this->getServiceLocator()->get('Osii\ResourceMapperManager');
         foreach ($resourceMapperManager->getRegisteredNames() as $resourceMapperName) {

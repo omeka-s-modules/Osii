@@ -20,7 +20,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      *
      * @return Omeka\Api\Manager
      */
-    protected function getApiManager()
+    public function getApiManager()
     {
         if (null === $this->apiManager) {
             // Set the API manager if not already set.
@@ -34,7 +34,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      *
      * @return Doctrine\ORM\EntityManager
      */
-    protected function getEntityManager()
+    public function getEntityManager()
     {
         if (null === $this->entityManager) {
             // Set the entity manager if not already set.
@@ -48,7 +48,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      *
      * @return
      */
-    protected function getLogger()
+    public function getLogger()
     {
         if (null === $this->logger) {
             // Set the logger if not already set.
@@ -72,7 +72,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      *
      * @return Osii\Entity\OsiiEntity
      */
-    protected function getImportEntity()
+    public function getImportEntity()
     {
         if (null === $this->importEntity) {
             // Set the entity if not already set.
@@ -117,7 +117,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      * @param array $ids
      * @param string $message
      */
-    protected function logIds(array $ids, $message)
+    public function logIds(array $ids, $message)
     {
         $idsLog = '';
         foreach (array_chunk($ids, 10) as $idsChunk) {
@@ -134,7 +134,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      *
      * Call this in iterations to save memory.
      */
-    protected function flushClear()
+    public function flushClear()
     {
         $this->getEntityManager()->flush();
         $this->getEntityManager()->clear();
