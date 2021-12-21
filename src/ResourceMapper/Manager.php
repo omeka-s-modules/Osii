@@ -1,5 +1,5 @@
 <?php
-namespace Osii\ModuleMapper;
+namespace Osii\ResourceMapper;
 
 use Omeka\ServiceManager\AbstractPluginManager;
 
@@ -7,7 +7,7 @@ class Manager extends AbstractPluginManager
 {
     protected $autoAddInvokableClass = false;
 
-    protected $instanceOf = ModuleMapperInterface::class;
+    protected $instanceOf = ResourceMapperInterface::class;
 
     public function get($name, $options = [], $usePeeringServiceManagers = true)
     {

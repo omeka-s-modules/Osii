@@ -58,6 +58,16 @@ abstract class AbstractOsiiJob extends AbstractJob
     }
 
     /**
+     * Get the job entity.
+     *
+     * @return Omeka\Entity\Job
+     */
+    public function getJobEntity()
+    {
+        return $this->job;
+    }
+
+    /**
      * Get the OSII import entity.
      *
      * @return Osii\Entity\OsiiEntity
@@ -82,7 +92,7 @@ abstract class AbstractOsiiJob extends AbstractJob
      * @param array $resource
      * @return array
      */
-    protected function getValuesFromResource(array $resource)
+    public function getValuesFromResource(array $resource)
     {
         $resourceValues = [];
         foreach ($resource as $values) {

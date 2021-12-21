@@ -230,13 +230,8 @@ class DoImport extends AbstractOsiiJob
                     ));
                     continue;
                 }
-                $localMedia = $this->mapOwner($localMedia, $remoteMedia);
-                $localMedia = $this->mapVisibility($localMedia, $remoteMedia);
-                $localMedia = $this->mapClass($localMedia, $remoteMedia);
-                $localMedia = $this->mapTemplate($localMedia, $remoteMedia);
-                $localMedia = $this->mapValues($localMedia, $remoteMedia);
+                $localMedia = $this->mapResource($localMedia, $remoteMedia);
                 $localMedia = $this->addSourceUrls($localMedia, $remoteMedia, 'media');
-                $localMedia = $this->mapModules($localMedia, $remoteMedia);
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
@@ -292,11 +287,7 @@ class DoImport extends AbstractOsiiJob
                 $localItemEntity = $osiiItemEntity->getLocalItem();
                 $remoteItem = $osiiItemEntity->getSnapshotItem();
                 $localItem = [];
-                $localItem = $this->mapOwner($localItem, $remoteItem);
-                $localItem = $this->mapVisibility($localItem, $remoteItem);
-                $localItem = $this->mapClass($localItem, $remoteItem);
-                $localItem = $this->mapTemplate($localItem, $remoteItem);
-                $localItem = $this->mapValues($localItem, $remoteItem);
+                $localItem = $this->mapResource($localItem, $remoteItem);
                 $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
                 // Map remote to local media. Media has already been imported
                 // above, but this step is still necessary to remove media added
@@ -355,11 +346,7 @@ class DoImport extends AbstractOsiiJob
                 $localItemSetEntity = $osiiItemSetEntity->getLocalItemSet();
                 $remoteItemSet = $osiiItemSetEntity->getSnapshotItemSet();
                 $localItemSet = [];
-                $localItemSet = $this->mapOwner($localItemSet, $remoteItemSet);
-                $localItemSet = $this->mapVisibility($localItemSet, $remoteItemSet);
-                $localItemSet = $this->mapClass($localItemSet, $remoteItemSet);
-                $localItemSet = $this->mapTemplate($localItemSet, $remoteItemSet);
-                $localItemSet = $this->mapValues($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapResource($localItemSet, $remoteItemSet);
                 $localItemSet = $this->addSourceUrls($localItemSet, $remoteItemSet, 'item_sets');
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
@@ -379,115 +366,28 @@ class DoImport extends AbstractOsiiJob
     }
 
     /**
-     * Map remote to local owner.
+     * Get the mappings for this import.
      *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @return array The local resource JSON-LD
+     * @return Osii\Stdlib\Mappings
      */
-    protected function mapOwner(array $localResource, array $remoteResource)
+    public function getMappings()
     {
-        $localResource['o:owner']['o:id'] = $this->job->getOwner()->getId();
-        return $localResource;
+        return $this->mappings;
     }
 
     /**
-     * Map remote to local visibility.
+     * Map remote to to local resource data
      *
      * @param array $localResource
      * @param array $remoteResource
-     * @return array The local resource JSON-LD
+     * @return array
      */
-    protected function mapVisibility(array $localResource, array $remoteResource)
+    protected function mapResource(array $localResource, array $remoteResource)
     {
-        $localResource['o:is_public'] = $remoteResource['o:is_public'];
-        return $localResource;
-    }
-
-    /**
-     * Map remote to local resource class.
-     *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @return array The local resource JSON-LD
-     */
-    protected function mapClass(array $localResource, array $remoteResource)
-    {
-        if (isset($remoteResource['o:resource_class'])
-            && $this->mappings->get('classes', $remoteResource['o:resource_class']['o:id'])
-        ) {
-            $localResource['o:resource_class']['o:id'] = $this->mappings->get('classes', $remoteResource['o:resource_class']['o:id']);
-        }
-        return $localResource;
-    }
-
-    /**
-     * Map remote to local resource template.
-     *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @return array The local resource JSON-LD
-     */
-    protected function mapTemplate(array $localResource, array $remoteResource)
-    {
-        if (isset($remoteResource['o:resource_template'])
-            && $this->mappings->get('templates', $remoteResource['o:resource_template']['o:id'])
-        ) {
-            $localResource['o:resource_template']['o:id'] = $this->mappings->get('templates', $remoteResource['o:resource_template']['o:id']);
-        }
-        return $localResource;
-    }
-
-    /**
-     * Map remote to local values.
-     *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @return array The local resource JSON-LD
-     */
-    protected function mapValues(array $localResource, array $remoteResource)
-    {
-        foreach ($this->getValuesFromResource($remoteResource) as $remoteValue) {
-            $localDataTypeId = $this->mappings->get('dataTypes', $remoteValue['type']);
-            if (!$localDataTypeId) {
-                // Data type is not on local installation. Ignore value.
-                continue;
-            }
-            $localPropertyId = $this->mappings->get('properties', $remoteValue['property_id']);
-            if (!$localPropertyId) {
-                // Property is not on local installation. Ignore value.
-                continue;
-            }
-            if (isset($remoteValue['value_resource_id'])) {
-                if ('items' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->mappings->get('items', $remoteValue['value_resource_id']);
-                    if (!$valueResourceId) {
-                        // Item is not on local installation. Ignore value.
-                        continue;
-                    }
-                    $remoteValue['value_resource_id'] = $valueResourceId;
-                } elseif ('item_sets' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->mappings->get('itemSets', $remoteValue['value_resource_id']);
-                    if (!$valueResourceId) {
-                        // Item set is not on local installation. Ignore value.
-                        continue;
-                    }
-                    $remoteValue['value_resource_id'] = $valueResourceId;
-                } elseif ('media' === $remoteValue['value_resource_name']) {
-                    $valueResourceId = $this->mappings->get('media', $remoteValue['value_resource_id']);
-                    if (!$valueResourceId) {
-                        // Media is not on local installation. Ignore value.
-                        continue;
-                    }
-                    $remoteValue['value_resource_id'] = $valueResourceId;
-                }
-            }
-            $remoteValue['type'] = $localDataTypeId;
-            $remoteValue['property_id'] = $localPropertyId;
-            if (!isset($localResource[$localPropertyId])) {
-                $localResource[$localPropertyId] = [];
-            }
-            $localResource[$localPropertyId][] = $remoteValue;
+        $resourceMapperManager = $this->getServiceLocator()->get('Osii\ResourceMapperManager');
+        foreach ($resourceMapperManager->getRegisteredNames() as $resourceMapperName) {
+            $resourceMapper = $resourceMapperManager->get($resourceMapperName, ['job' => $this]);
+            $localResource = $resourceMapper->mapResource($localResource, $remoteResource);
         }
         return $localResource;
     }
@@ -530,29 +430,6 @@ class DoImport extends AbstractOsiiJob
                 'property_id' => $sourceSitePropertyId,
                 '@id' => $this->getImportEntity()->getSourceSite(),
             ];
-        }
-        return $localResource;
-    }
-
-    /**
-     * Map module data.
-     *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @return array The local resource JSON-LD
-     */
-    protected function mapModules(array $localResource, array $remoteResource)
-    {
-        $moduleMapperManager = $this->getServiceLocator()->get('Osii\ModuleMapperManager');
-        foreach ($moduleMapperManager->getRegisteredNames() as $moduleMapper) {
-            $moduleMapper = $moduleMapperManager->get(
-                $moduleMapper,
-                [
-                    'importEntity' => $this->getImportEntity(),
-                    'mappings' => $this->mappings,
-                ]
-            );
-            $localResource = $moduleMapper->mapModule($localResource, $remoteResource);
         }
         return $localResource;
     }
