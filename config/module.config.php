@@ -4,6 +4,7 @@ namespace Osii;
 use Laminas\Router\Http;
 
 return [
+    'osii_module_mappers' => [],
     'osii_media_ingester_mappers' => [
         'factories' => [
             'html' => Service\MediaIngesterMapper\HtmlFactory::class,
@@ -39,6 +40,7 @@ return [
     'service_manager' => [
         'factories' => [
             'Osii\MediaIngesterMapperManager' => Service\MediaIngesterMapper\ManagerFactory::class,
+            'Osii\ModuleMapperManager' => Service\ModuleMapper\ManagerFactory::class,
         ],
     ],
     'api_adapters' => [

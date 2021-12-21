@@ -236,6 +236,7 @@ class DoImport extends AbstractOsiiJob
                 $localMedia = $this->mapTemplate($localMedia, $remoteMedia);
                 $localMedia = $this->mapValues($localMedia, $remoteMedia);
                 $localMedia = $this->addSourceUrls($localMedia, $remoteMedia, 'media');
+                $localMedia = $this->mapModules($localMedia, $remoteMedia);
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
@@ -529,6 +530,29 @@ class DoImport extends AbstractOsiiJob
                 'property_id' => $sourceSitePropertyId,
                 '@id' => $this->getImportEntity()->getSourceSite(),
             ];
+        }
+        return $localResource;
+    }
+
+    /**
+     * Map module data.
+     *
+     * @param array $localResource
+     * @param array $remoteResource
+     * @return array The local resource JSON-LD
+     */
+    protected function mapModules(array $localResource, array $remoteResource)
+    {
+        $moduleMapperManager = $this->getServiceLocator()->get('Osii\ModuleMapperManager');
+        foreach ($moduleMapperManager->getRegisteredNames() as $moduleMapper) {
+            $moduleMapper = $moduleMapperManager->get(
+                $moduleMapper,
+                [
+                    'importEntity' => $this->getImportEntity(),
+                    'mappings' => $this->mappings,
+                ]
+            );
+            $localResource = $moduleMapper->mapModule($localResource, $remoteResource);
         }
         return $localResource;
     }
