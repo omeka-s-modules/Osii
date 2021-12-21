@@ -6,12 +6,12 @@ use Laminas\Router\Http;
 return [
     'osii_resource_mappers' => [
         'factories' => [
-            'owner' => Service\ResourceMapper\OwnerFactory::class,
-            'visibility' => Service\ResourceMapper\VisibilityFactory::class,
+            'resource_owner' => Service\ResourceMapper\ResourceOwnerFactory::class,
+            'resource_visibility' => Service\ResourceMapper\ResourceVisibilityFactory::class,
             'resource_class' => Service\ResourceMapper\ResourceClassFactory::class,
             'resource_template' => Service\ResourceMapper\ResourceTemplateFactory::class,
-            'values' => Service\ResourceMapper\ValuesFactory::class,
-            'source_urls' => Service\ResourceMapper\SourceUrlsFactory::class,
+            'resource_values' => Service\ResourceMapper\ResourceValuesFactory::class,
+            'resource_source_urls' => Service\ResourceMapper\ResourceSourceUrlsFactory::class,
         ],
     ],
     'osii_media_ingester_mappers' => [

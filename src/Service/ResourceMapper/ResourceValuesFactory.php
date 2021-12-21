@@ -1,14 +1,14 @@
 <?php
 namespace Osii\Service\ResourceMapper;
 
-use Osii\ResourceMapper\Visibility;
+use Osii\ResourceMapper\ResourceValues;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
-class VisibilityFactory implements FactoryInterface
+class ResourceValuesFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        return new Visibility($options['job']);
+        return new ResourceValues($options['job']);
     }
 }

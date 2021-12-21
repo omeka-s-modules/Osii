@@ -1,7 +1,7 @@
 <?php
 namespace Osii\ResourceMapper;
 
-class Visibility extends AbstractResourceMapper
+class ResourceVisibility extends AbstractResourceMapper
 {
     public function mapResource(array $localResource, array $remoteResource) : array
     {

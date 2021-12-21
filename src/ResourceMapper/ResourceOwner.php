@@ -1,7 +1,7 @@
 <?php
 namespace Osii\ResourceMapper;
 
-class Owner extends AbstractResourceMapper
+class ResourceOwner extends AbstractResourceMapper
 {
     public function mapResource(array $localResource, array $remoteResource) : array
     {
