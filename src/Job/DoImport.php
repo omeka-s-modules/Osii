@@ -285,31 +285,6 @@ class DoImport extends AbstractOsiiJob
                 $localItemEntity = $osiiItemEntity->getLocalItem();
                 $remoteItem = $osiiItemEntity->getSnapshotItem();
                 $localItem = $this->mapResource([], $remoteItem);
-                // Map remote to local media. Media has already been imported
-                // above, but this step is still necessary to remove media added
-                // locally since the last import.
-                $localItem['o:media'] = [];
-                foreach ($remoteItem['o:media'] as $remoteMedia) {
-                    $mediaId = $this->getMappings()->get('media', $remoteMedia['o:id']);
-                    if ($mediaId) {
-                        $localItem['o:media'][] = ['o:id' => $mediaId];
-                    }
-                }
-                // Map remote to local item sets. Set an empty o:item_set by
-                // default to remove item sets added locally since the last
-                // import.
-                $localItem['o:item_set'] = [];
-                foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
-                    $itemSetId = $this->getMappings()->get('itemSets', $remoteItemSet['o:id']);
-                    if ($itemSetId) {
-                        $localItem['o:item_set'][] = ['o:id' => $itemSetId];
-                    }
-                }
-                // Add the import's local item set.
-                $localItemSet = $this->getImportEntity()->getLocalItemSet();
-                if ($localItemSet) {
-                    $localItem['o:item_set'][] = ['o:id' => $localItemSet->getId()];
-                }
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
