@@ -230,7 +230,6 @@ class DoImport extends AbstractOsiiJob
                     continue;
                 }
                 $localMedia = $this->mapResource([], $remoteMedia);
-                $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
                     $localMedia = $ingesterMapper->mapForUpdate($localMedia, $remoteMedia);

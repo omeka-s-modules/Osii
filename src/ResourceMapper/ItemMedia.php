@@ -13,8 +13,8 @@ class ItemMedia extends AbstractResourceMapper
         }
 
         // Map remote to local media. Media has already been imported in the
-        // job, but this step is still necessary to remove media added locally
-        // since the last import.
+        // job, but this step is still necessary to save position and remove
+        // media added locally since the last import.
         $localResource['o:media'] = [];
         foreach ($remoteResource['o:media'] as $remoteMedia) {
             $mediaId = $mappings->get('media', $remoteMedia['o:id']);

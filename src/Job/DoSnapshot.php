@@ -24,8 +24,6 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
         $snapshotTemplates = $this->getSnapshotTemplates($rootEndpoint);
 
-        $remoteMediaPositions = [];
-
         // Iterate remote items.
         $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
@@ -65,9 +63,8 @@ class DoSnapshot extends AbstractOsiiJob
                 // Set metadata about the snapshot.
                 $snapshotItems[] = $item['o:id'];
                 if (!empty($item['o:media']) && !$this->getImportEntity()->getExcludeMedia()) {
-                    foreach ($item['o:media'] as $position => $media) {
+                    foreach ($item['o:media'] as $media) {
                         $snapshotMedia[] = $media['o:id'];
-                        $remoteMediaPositions[$media['o:id']] = $position + 1;
                     }
                 }
                 if (!empty($item['o:item_set']) && !$this->getImportEntity()->getExcludeItemSets()) {
@@ -156,7 +153,6 @@ class DoSnapshot extends AbstractOsiiJob
                     $osiiMediaEntity->setModified(new DateTime('now'));
                 }
                 $osiiMediaEntity->setSnapshotMedia($media);
-                $osiiMediaEntity->setPosition($remoteMediaPositions[$media['o:id']]);
 
                 // Set metadata about the snapshot.
                 if (isset($media['o:resource_class'])) {

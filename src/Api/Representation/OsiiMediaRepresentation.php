@@ -18,7 +18,6 @@ class OsiiMediaRepresentation extends AbstractEntityRepresentation
             'o-module-osii:osii_item' => $this->osiiItem()->getReference(),
             'o-module-osii:local_media' => $localMedia ? $localMedia->getReference() : null,
             'o-module-osii:remote_media_id' => $this->remoteMediaId(),
-            'o-module-osii:position' => $this->position(),
             'o:created' => $this->getDateTime($this->created()),
             'o:modified' => $modified ? $this->getDateTime($modified) : null,
         ];
@@ -42,11 +41,6 @@ class OsiiMediaRepresentation extends AbstractEntityRepresentation
     public function remoteMediaId()
     {
         return $this->resource->getRemoteMediaId();
-    }
-
-    public function position()
-    {
-        return $this->resource->getPosition();
     }
 
     public function created()

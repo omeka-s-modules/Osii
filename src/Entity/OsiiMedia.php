@@ -143,27 +143,6 @@ class OsiiMedia extends AbstractEntity
 
     /**
      * @Column(
-     *     type="integer",
-     *     nullable=false,
-     *     options={
-     *         "unsigned"=true
-     *     }
-     * )
-     */
-    protected $position;
-
-    public function setPosition(int $position) : void
-    {
-        $this->position = $position;
-    }
-
-    public function getPosition() : int
-    {
-        return $this->position;
-    }
-
-    /**
-     * @Column(
      *     type="datetime",
      *     nullable=false
      * )
