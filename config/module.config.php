@@ -11,6 +11,7 @@ return [
             'resource_class' => Service\ResourceMapper\ResourceClassFactory::class,
             'resource_template' => Service\ResourceMapper\ResourceTemplateFactory::class,
             'values' => Service\ResourceMapper\ValuesFactory::class,
+            'source_urls' => Service\ResourceMapper\SourceUrlsFactory::class,
         ],
     ],
     'osii_media_ingester_mappers' => [

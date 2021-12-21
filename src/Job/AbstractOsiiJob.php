@@ -112,6 +112,26 @@ abstract class AbstractOsiiJob extends AbstractJob
     }
 
     /**
+     * Get the resource name from resource JSON-LD.
+     *
+     * @param array $resource
+     * @return string
+     */
+    public function getResourceName(array $resource)
+    {
+        $type = $resource['@type'];
+        if ('o:Item' === $type || (is_array($type) && in_array('o:Item', $type))) {
+            return 'items';
+        }
+        if ('o:Media' === $type || (is_array($type) && in_array('o:Media', $type))) {
+            return 'media';
+        }
+        if ('o:ItemSet' === $type || (is_array($type) && in_array('o:ItemSet', $type))) {
+            return 'item_sets';
+        }
+    }
+
+    /**
      * Log IDs from and array of JSON-LD resources or an array of integers.
      *
      * @param array $ids

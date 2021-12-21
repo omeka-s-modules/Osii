@@ -231,7 +231,6 @@ class DoImport extends AbstractOsiiJob
                     continue;
                 }
                 $localMedia = $this->mapResource($localMedia, $remoteMedia);
-                $localMedia = $this->addSourceUrls($localMedia, $remoteMedia, 'media');
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
@@ -288,7 +287,6 @@ class DoImport extends AbstractOsiiJob
                 $remoteItem = $osiiItemEntity->getSnapshotItem();
                 $localItem = [];
                 $localItem = $this->mapResource($localItem, $remoteItem);
-                $localItem = $this->addSourceUrls($localItem, $remoteItem, 'items');
                 // Map remote to local media. Media has already been imported
                 // above, but this step is still necessary to remove media added
                 // locally since the last import.
@@ -347,7 +345,6 @@ class DoImport extends AbstractOsiiJob
                 $remoteItemSet = $osiiItemSetEntity->getSnapshotItemSet();
                 $localItemSet = [];
                 $localItemSet = $this->mapResource($localItemSet, $remoteItemSet);
-                $localItemSet = $this->addSourceUrls($localItemSet, $remoteItemSet, 'item_sets');
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
@@ -388,48 +385,6 @@ class DoImport extends AbstractOsiiJob
         foreach ($resourceMapperManager->getRegisteredNames() as $resourceMapperName) {
             $resourceMapper = $resourceMapperManager->get($resourceMapperName, ['job' => $this]);
             $localResource = $resourceMapper->mapResource($localResource, $remoteResource);
-        }
-        return $localResource;
-    }
-
-    /**
-     * Add source URL values.
-     *
-     * @param array $localResource
-     * @param array $remoteResource
-     * @param string $resourceType items, item_sets, or media
-     * @return array The local resource JSON-LD
-     */
-    public function addSourceUrls(array $localResource, array $remoteResource, $resourceType)
-    {
-        // Add the source resource value.
-        $sourceResourcePropertyId = $this->mappings->get(
-            'localProperties',
-            'http://omeka.org/s/vocabs/o-module-osii#source_resource'
-        );
-        if ($sourceResourcePropertyId && $this->getImportEntity()->getAddSourceResource()) {
-            $localResource[$sourceResourcePropertyId][] = [
-                'type' => 'uri',
-                'property_id' => $sourceResourcePropertyId,
-                '@id' => sprintf(
-                    '%s/%s/%s',
-                    $this->getImportEntity()->getRootEndpoint(),
-                    $resourceType,
-                    $remoteResource['o:id']
-                ),
-            ];
-        }
-        // Add the source site value.
-        $sourceSitePropertyId = $this->mappings->get(
-            'localProperties',
-            'http://omeka.org/s/vocabs/o-module-osii#source_site'
-        );
-        if ($sourceSitePropertyId && $this->getImportEntity()->getSourceSite()) {
-            $localResource[$sourceSitePropertyId][] = [
-                'type' => 'uri',
-                'property_id' => $sourceSitePropertyId,
-                '@id' => $this->getImportEntity()->getSourceSite(),
-            ];
         }
         return $localResource;
     }
