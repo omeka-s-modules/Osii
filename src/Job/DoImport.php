@@ -15,6 +15,8 @@ class DoImport extends AbstractOsiiJob
     {
         ini_set('memory_limit', '500M'); // Set a high memory limit.
 
+        $this->mappings = new Mappings;
+
         // Remove items that have been deleted or removed from the remote
         // installation since the previous snapshot.
         $dql = 'SELECT i.id AS osii_item, IDENTITY(i.localItem) AS local_item
@@ -124,11 +126,9 @@ class DoImport extends AbstractOsiiJob
             $this->flushClear();
         }
 
-        $this->mappings = new Mappings;
-
         // Set the user-configured data type and template maps.
-        $this->mappings->set('dataTypes', $this->getImportEntity()->getDataTypeMap());
-        $this->mappings->set('templates', $this->getImportEntity()->getTemplateMap());
+        $this->getMappings()->set('dataTypes', $this->getImportEntity()->getDataTypeMap());
+        $this->getMappings()->set('templates', $this->getImportEntity()->getTemplateMap());
 
         // Set the item map. Keys are remote IDs. Values are local IDs.
         $dql = 'SELECT i.remoteItemId AS remote_item, IDENTITY(i.localItem) AS local_item
@@ -138,7 +138,7 @@ class DoImport extends AbstractOsiiJob
             ->createQuery($dql)
             ->setParameter('import', $this->getImportEntity());
         $itemMap = array_column($query->getResult(), 'local_item', 'remote_item');
-        $this->mappings->set('items', $itemMap);
+        $this->getMappings()->set('items', $itemMap);
 
         // Set the item set map. Keys are remote IDs. Values are local IDs.
         $dql = 'SELECT i.remoteItemSetId AS remote_item_set, IDENTITY(i.localItemSet) AS local_item_set
@@ -148,7 +148,7 @@ class DoImport extends AbstractOsiiJob
             ->createQuery($dql)
             ->setParameter('import', $this->getImportEntity());
         $itemSetMap = array_column($query->getResult(), 'local_item_set', 'remote_item_set');
-        $this->mappings->set('itemSets', $itemSetMap);
+        $this->getMappings()->set('itemSets', $itemSetMap);
 
         $snapshotVocabularies = $this->getImportEntity()->getSnapshotVocabularies();
         $snapshotProperties = $this->getImportEntity()->getSnapshotProperties();
@@ -159,14 +159,14 @@ class DoImport extends AbstractOsiiJob
             FROM Omeka\Entity\Property p
             JOIN p.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
-        $this->mappings->set('localProperties', array_column($query->getResult(), 'property_id', 'uri'));
+        $this->getMappings()->set('localProperties', array_column($query->getResult(), 'property_id', 'uri'));
         foreach ($snapshotProperties as $remotePropertyId => $remoteProperty) {
             $namespaceUri = $snapshotVocabularies[$remoteProperty['vocabulary_id']]['namespace_uri'];
             $localName = $remoteProperty['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
-            $localPropertyId = $this->mappings->get('localProperties', $uri);
+            $localPropertyId = $this->getMappings()->get('localProperties', $uri);
             if ($localPropertyId) {
-                $this->mappings->set('properties', $remotePropertyId, $localPropertyId);
+                $this->getMappings()->set('properties', $remotePropertyId, $localPropertyId);
             }
         }
 
@@ -175,14 +175,14 @@ class DoImport extends AbstractOsiiJob
             FROM Omeka\Entity\ResourceClass c
             JOIN c.vocabulary v';
         $query = $this->getEntityManager()->createQuery($dql);
-        $this->mappings->set('localClasses', array_column($query->getResult(), 'class_id', 'uri'));
+        $this->getMappings()->set('localClasses', array_column($query->getResult(), 'class_id', 'uri'));
         foreach ($snapshotClasses as $remoteClassId => $remoteClass) {
             $namespaceUri = $snapshotVocabularies[$remoteClass['vocabulary_id']]['namespace_uri'];
             $localName = $remoteClass['local_name'];
             $uri = sprintf('%s%s', $namespaceUri, $localName);
-            $localClassId = $this->mappings->get('localClasses', $uri);
+            $localClassId = $this->getMappings()->get('localClasses', $uri);
             if ($localClassId) {
-                $this->mappings->set('classes', $remoteClassId, $localClassId);
+                $this->getMappings()->set('classes', $remoteClassId, $localClassId);
             }
         }
 
@@ -212,7 +212,6 @@ class DoImport extends AbstractOsiiJob
                 $localMediaEntity = $osiiMediaEntity->getLocalMedia();
                 $localItemEntity = $osiiMediaEntity->getOsiiItem()->getLocalItem();
                 $remoteMedia = $osiiMediaEntity->getSnapshotMedia();
-                $localMedia = [];
                 try {
                     $ingesterMapper = $ingesterMapperManager->get(
                         $remoteMedia['o:ingester'],
@@ -230,7 +229,7 @@ class DoImport extends AbstractOsiiJob
                     ));
                     continue;
                 }
-                $localMedia = $this->mapResource($localMedia, $remoteMedia);
+                $localMedia = $this->mapResource([], $remoteMedia);
                 $localMedia['position'] = $osiiMediaEntity->getPosition();
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
@@ -259,7 +258,7 @@ class DoImport extends AbstractOsiiJob
                     }
                     $osiiMediaEntity->setLocalMedia($localMediaEntity);
                 }
-                $this->mappings->set('media', $remoteMedia['o:id'], $localMediaEntity->getId());
+                $this->getMappings()->set('media', $remoteMedia['o:id'], $localMediaEntity->getId());
             }
             $this->flushClear();
             if ($this->shouldStop()) {
@@ -285,14 +284,13 @@ class DoImport extends AbstractOsiiJob
             foreach ($query->toIterable() as $osiiItemEntity) {
                 $localItemEntity = $osiiItemEntity->getLocalItem();
                 $remoteItem = $osiiItemEntity->getSnapshotItem();
-                $localItem = [];
-                $localItem = $this->mapResource($localItem, $remoteItem);
+                $localItem = $this->mapResource([], $remoteItem);
                 // Map remote to local media. Media has already been imported
                 // above, but this step is still necessary to remove media added
                 // locally since the last import.
                 $localItem['o:media'] = [];
                 foreach ($remoteItem['o:media'] as $remoteMedia) {
-                    $mediaId = $this->mappings->get('media', $remoteMedia['o:id']);
+                    $mediaId = $this->getMappings()->get('media', $remoteMedia['o:id']);
                     if ($mediaId) {
                         $localItem['o:media'][] = ['o:id' => $mediaId];
                     }
@@ -302,7 +300,7 @@ class DoImport extends AbstractOsiiJob
                 // import.
                 $localItem['o:item_set'] = [];
                 foreach ($remoteItem['o:item_set'] as $remoteItemSet) {
-                    $itemSetId = $this->mappings->get('itemSets', $remoteItemSet['o:id']);
+                    $itemSetId = $this->getMappings()->get('itemSets', $remoteItemSet['o:id']);
                     if ($itemSetId) {
                         $localItem['o:item_set'][] = ['o:id' => $itemSetId];
                     }
@@ -343,8 +341,7 @@ class DoImport extends AbstractOsiiJob
             foreach ($query->toIterable() as $osiiItemSetEntity) {
                 $localItemSetEntity = $osiiItemSetEntity->getLocalItemSet();
                 $remoteItemSet = $osiiItemSetEntity->getSnapshotItemSet();
-                $localItemSet = [];
-                $localItemSet = $this->mapResource($localItemSet, $remoteItemSet);
+                $localItemSet = $this->mapResource([], $remoteItemSet);
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
