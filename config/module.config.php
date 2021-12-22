@@ -2,28 +2,40 @@
 namespace Osii;
 
 use Laminas\Router\Http;
+use Osii\MediaIngesterMapper;
+use Osii\ResourceMappers;
+use Osii\Service\MediaIngesterMapper\MediaIngesterMapperFactory;
+use Osii\Service\ResourceMapper\ResourceMapperFactory;
 
 return [
     'osii_resource_mappers' => [
         'factories' => [
-            'resource_owner' => Service\ResourceMapper\ResourceOwnerFactory::class,
-            'resource_visibility' => Service\ResourceMapper\ResourceVisibilityFactory::class,
-            'resource_class' => Service\ResourceMapper\ResourceClassFactory::class,
-            'resource_template' => Service\ResourceMapper\ResourceTemplateFactory::class,
-            'resource_values' => Service\ResourceMapper\ResourceValuesFactory::class,
-            'resource_source_urls' => Service\ResourceMapper\ResourceSourceUrlsFactory::class,
-            'item_media' => Service\ResourceMapper\ItemMediaFactory::class,
-            'item_item_sets' => Service\ResourceMapper\ItemItemSetsFactory::class,
+            ResourceMapper\ResourceOwner::class => ResourceMapperFactory::class,
+            ResourceMapper\ResourceVisibility::class => ResourceMapperFactory::class,
+            ResourceMapper\ResourceClass::class => ResourceMapperFactory::class,
+            ResourceMapper\ResourceTemplate::class => ResourceMapperFactory::class,
+            ResourceMapper\ResourceValues::class => ResourceMapperFactory::class,
+            ResourceMapper\ResourceSourceUrls::class => ResourceMapperFactory::class,
+            ResourceMapper\ItemMedia::class => ResourceMapperFactory::class,
+            ResourceMapper\ItemItemSets::class => ResourceMapperFactory::class,
         ],
     ],
     'osii_media_ingester_mappers' => [
         'factories' => [
-            'html' => Service\MediaIngesterMapper\HtmlFactory::class,
-            'iiif' => Service\MediaIngesterMapper\IiifFactory::class,
-            'oembed' => Service\MediaIngesterMapper\OembedFactory::class,
-            'youtube' => Service\MediaIngesterMapper\YoutubeFactory::class,
-            'upload' => Service\MediaIngesterMapper\UploadFactory::class,
-            'url' => Service\MediaIngesterMapper\UrlFactory::class,
+            MediaIngesterMapper\Html::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\Iiif::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\Oembed::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\Youtube::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\Upload::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\Url::class => MediaIngesterMapperFactory::class,
+        ],
+        'aliases' => [
+            'html' => MediaIngesterMapper\Html::class,
+            'iiif' => MediaIngesterMapper\Iiif::class,
+            'oembed' => MediaIngesterMapper\Oembed::class,
+            'youtube' => MediaIngesterMapper\Youtube::class,
+            'upload' => MediaIngesterMapper\Upload::class,
+            'url' => MediaIngesterMapper\Url::class,
         ],
     ],
     'translator' => [
