@@ -58,6 +58,7 @@ class DoSnapshot extends AbstractOsiiJob
                     // This is an existing remote item.
                     $osiiItemEntity->setModified(new DateTime('now'));
                 }
+                $item = $this->prepareResource($item);
                 $osiiItemEntity->setSnapshotItem($item);
 
                 // Set metadata about the snapshot.
@@ -152,6 +153,7 @@ class DoSnapshot extends AbstractOsiiJob
                     // This is an existing remote media.
                     $osiiMediaEntity->setModified(new DateTime('now'));
                 }
+                $media = $this->prepareResource($media);
                 $osiiMediaEntity->setSnapshotMedia($media);
 
                 // Set metadata about the snapshot.
@@ -233,6 +235,7 @@ class DoSnapshot extends AbstractOsiiJob
                     // This is an existing remote item set.
                     $osiiItemSetEntity->setModified(new DateTime('now'));
                 }
+                $itemSet = $this->prepareResource($itemSet);
                 $osiiItemSetEntity->setSnapshotItemSet($itemSet);
 
                 // Set metadata about the snapshot.
@@ -290,6 +293,22 @@ class DoSnapshot extends AbstractOsiiJob
         $this->flushClear();
 
         print_r($snapshotTemplates);
+    }
+
+    /**
+     * Prepare remote resource data.
+     *
+     * @param array $remoteResource
+     * @return array
+     */
+    public function prepareResource(array $remoteResource)
+    {
+        $resourceMapperManager = $this->getServiceLocator()->get('Osii\ResourceMapperManager');
+        foreach ($resourceMapperManager->getRegisteredNames() as $resourceMapperName) {
+            $resourceMapper = $resourceMapperManager->get($resourceMapperName, ['job' => $this]);
+            $remoteResource = $resourceMapper->prepareResource($remoteResource);
+        }
+        return $remoteResource;
     }
 
     /**
