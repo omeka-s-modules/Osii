@@ -8,7 +8,9 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 <?php echo $this->form()->openTag($form); ?>
 
 <div id="page-actions">
+    <?php if ($import->canEditImport()): ?>
     <?php echo $import->link($this->translate('Edit import'), 'edit', ['class' => 'button']); ?>
+    <?php endif; ?>
     <?php if ($import->canPrepareImport()): ?>
     <input type="submit" value="<?php echo $this->escapeHtml($this->translate('Submit')); ?>">
     <?php endif; ?>

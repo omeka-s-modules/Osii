@@ -289,6 +289,29 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $importStatus;
     }
 
+    public function canEditImport()
+    {
+        $snapshotJob = $this->snapshotJob();
+        $importJob = $this->importJob();
+        $snapshotStatus = $snapshotJob
+            ? in_array($snapshotJob->status(), [
+                Job::STATUS_COMPLETED,
+                Job::STATUS_STOPPING,
+                Job::STATUS_STOPPED,
+                Job::STATUS_ERROR,
+            ]
+            ) : true;
+        $importStatus = $importJob
+            ? in_array($importJob->status(), [
+                Job::STATUS_COMPLETED,
+                Job::STATUS_STOPPING,
+                Job::STATUS_STOPPED,
+                Job::STATUS_ERROR,
+            ]
+            ) : true;
+        return $snapshotStatus && $importStatus;
+    }
+
     public function canRefreshImportStatus()
     {
         $importJob = $this->importJob();
