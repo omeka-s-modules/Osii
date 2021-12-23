@@ -2,8 +2,6 @@
 namespace Osii;
 
 use Laminas\Router\Http;
-use Osii\MediaIngesterMapper;
-use Osii\ResourceMappers;
 use Osii\Service\MediaIngesterMapper\MediaIngesterMapperFactory;
 use Osii\Service\ResourceMapper\ResourceMapperFactory;
 

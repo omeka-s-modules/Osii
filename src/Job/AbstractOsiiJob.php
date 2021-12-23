@@ -2,7 +2,6 @@
 namespace Osii\Job;
 
 use Omeka\Job\AbstractJob;
-use Omeka\Log\Writer\Job as JobWriter;
 use Osii\Entity as OsiiEntity;
 
 abstract class AbstractOsiiJob extends AbstractJob
