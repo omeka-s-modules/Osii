@@ -193,6 +193,24 @@ class OsiiImportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getSourceSite();
     }
 
+    public function localItemCount()
+    {
+        $apiManager = $this->getServiceLocator()->get('Omeka\ApiManager');
+        return $apiManager->search('items', ['osii_import_id' => $this->id(), 'limit' => 0])->getTotalResults();
+    }
+
+    public function localMediaCount()
+    {
+        $apiManager = $this->getServiceLocator()->get('Omeka\ApiManager');
+        return $apiManager->search('media', ['osii_import_id' => $this->id(), 'limit' => 0])->getTotalResults();
+    }
+
+    public function localItemSetCount()
+    {
+        $apiManager = $this->getServiceLocator()->get('Omeka\ApiManager');
+        return $apiManager->search('item_sets', ['osii_import_id' => $this->id(), 'limit' => 0])->getTotalResults();
+    }
+
     public function canDoSnapshot()
     {
         $snapshotJob = $this->snapshotJob();

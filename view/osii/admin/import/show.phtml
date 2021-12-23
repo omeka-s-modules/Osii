@@ -26,14 +26,9 @@ $this->htmlElement('body')->appendAttribute('class', 'osii import show');
 
 <p><?php echo $this->translate('Prepare the import below.'); ?></p>
 
-<ul>
-    <li><?php echo sprintf($this->translate('Items in snapshot: %s'), count($import->snapshotItems())); ?></li>
-    <li><?php echo sprintf($this->translate('Media in snapshot: %s'), count($import->snapshotMedia())); ?></li>
-    <li><?php echo sprintf($this->translate('Item sets in snapshot: %s'), count($import->snapshotItemSets())); ?></li>
-</ul>
-
 <?php
 echo $this->sectionNav([
+    'snapshot-resources' => $this->translate('Resources'),
     'snapshot-data-types' => $this->translate('Data types'),
     'snapshot-templates' => $this->translate('Templates'),
     'snapshot-media-ingesters' => $this->translate('Media ingesters'),
@@ -42,7 +37,36 @@ echo $this->sectionNav([
 ]);
 ?>
 
-<div id="snapshot-data-types" class="section active">
+<div id="snapshot-resources" class="section active">
+    <table class="tablesaw" data-tablesaw-mode="stack">
+        <thead>
+        <tr>
+            <th></th>
+            <th><?php echo $this->translate('Remote'); ?></th>
+            <th><?php echo $this->translate('Local'); ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><?php echo $this->translate('Items'); ?></td>
+            <td><?php echo count($import->snapshotItems()); ?></td>
+            <td><?php echo $import->localItemCount(); ?></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Media'); ?></td>
+            <td><?php echo count($import->snapshotMedia()); ?></td>
+            <td><?php echo $import->localMediaCount(); ?></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Item sets'); ?></td>
+            <td><?php echo count($import->snapshotItemSets()); ?></td>
+            <td><?php echo $import->localItemSetCount(); ?></td>
+        </tr>
+        <tbody>
+    </table>
+</div>
+
+<div id="snapshot-data-types" class="section">
     <?php if ($remoteDataTypes): ?>
     <table class="tablesaw" data-tablesaw-mode="stack">
         <thead>
