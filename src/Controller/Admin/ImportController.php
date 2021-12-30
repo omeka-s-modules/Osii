@@ -116,35 +116,13 @@ class ImportController extends AbstractActionController
             }
         }
 
-        $formDoSnapshot = $this->getForm(OsiiForm\DoSnapshotForm::class, ['import' => $import]);
-        $formDoSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-snapshot'], true));
-
-        $formStopSnapshot = $this->getForm(OsiiForm\StopSnapshotForm::class, ['import' => $import]);
-        $formStopSnapshot->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'stop-snapshot'], true));
-
-        $formDoImport = $this->getForm(OsiiForm\DoImportForm::class, ['import' => $import]);
-        $formDoImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'do-import'], true));
-
-        $formStopImport = $this->getForm(OsiiForm\StopImportForm::class, ['import' => $import]);
-        $formStopImport->setAttribute('action', $this->url()->fromRoute('admin/osii-import-id', ['action' => 'stop-import'], true));
-
         $view = new ViewModel;
         $view->setVariable('import', $import);
         $view->setVariable('form', $form);
-        $view->setVariable('formDoSnapshot', $formDoSnapshot);
-        $view->setVariable('formStopSnapshot', $formStopSnapshot);
-        $view->setVariable('formDoImport', $formDoImport);
-        $view->setVariable('formStopImport', $formStopImport);
-        $view->setVariable('localDataTypeSelect', $this->osii()->getLocalDataTypeSelect());
-        $view->setVariable('localTemplateSelect', $this->osii()->getLocalTemplateSelect());
-        $view->setVariable('localProperties', $this->osii()->getLocalProperties());
-        $view->setVariable('localClasses', $this->osii()->getLocalClasses());
-        $view->setVariable('localMediaIngesterMappers', $this->osii()->getLocalMediaIngesterMappers());
-        $view->setVariable('remoteDataTypes', $this->osii()->getPreparedSnapshotData($import->snapshotDataTypes() ?? []));
-        $view->setVariable('remoteTemplates', $this->osii()->getPreparedSnapshotData($import->snapshotTemplates() ?? []));
-        $view->setVariable('remoteMediaIngesters', $this->osii()->getPreparedSnapshotData($import->snapshotMediaIngesters() ?? []));
-        $view->setVariable('remoteProperties', $this->osii()->getPreparedSnapshotMembers($import->snapshotProperties() ?? []));
-        $view->setVariable('remoteClasses', $this->osii()->getPreparedSnapshotMembers($import->snapshotClasses() ?? []));
+        $view->setVariable('formDoSnapshot', $this->osii()->getFormDoSnapshot($import));
+        $view->setVariable('formStopSnapshot', $this->osii()->getFormStopSnapshot($import));
+        $view->setVariable('formDoImport', $this->osii()->getFormDoImport($import));
+        $view->setVariable('formStopImport', $this->osii()->getFormStopImport($import));
         return $view;
     }
 

@@ -1,6 +1,14 @@
 <?php
 $this->headLink()->appendStylesheet($this->assetUrl('css/admin/osii.css', 'Osii'));
 $this->htmlElement('body')->appendAttribute('class', 'osii import show');
+
+$localDataTypeSelect = $this->osii()->getLocalDataTypeSelect();
+$localTemplateSelect = $this->osii()->getLocalTemplateSelect();
+$remoteDataTypes = $this->osii()->prepareSnapshotData($import->snapshotDataTypes());
+$remoteTemplates = $this->osii()->prepareSnapshotData($import->snapshotTemplates());
+$remoteMediaIngesters = $this->osii()->prepareSnapshotData($import->snapshotMediaIngesters());
+$remoteProperties = $this->osii()->prepareSnapshotMembers($import->snapshotProperties());
+$remoteClasses = $this->osii()->prepareSnapshotMembers($import->snapshotClasses());
 ?>
 
 <?php echo $this->pageTitle($this->translate('Manage import'), 1, $this->translate('Omeka S Item Importer'), $import->label()); ?>
@@ -163,7 +171,7 @@ echo $this->sectionNav([
             <tr>
                 <td><?php echo $remoteMediaIngesterId; ?></td>
                 <td><?php echo $remoteMediaIngester['count']; ?></td>
-                <td><?php echo in_array($remoteMediaIngesterId, $localMediaIngesterMappers) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+                <td><?php echo $this->osii()->hasMediaIngesterMapper($remoteMediaIngesterId) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
         <?php endforeach; ?>
         <tbody>
@@ -199,7 +207,7 @@ echo $this->sectionNav([
                 <td><?php echo $property['local_name']; ?></td>
                 <td><?php echo $property['label']; ?></td>
                 <td><?php echo $property['count']; ?></td>
-                <td><?php echo in_array($propertyUri, $localProperties) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+                <td><?php echo $this->osii()->hasProperty($propertyUri) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
         <?php endforeach; ?>
         <tbody>
@@ -236,7 +244,7 @@ echo $this->sectionNav([
                 <td><?php echo $class['local_name']; ?></td>
                 <td><?php echo $class['label']; ?></td>
                 <td><?php echo $class['count']; ?></td>
-                <td><?php echo in_array($classUri, $localClasses) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
+                <td><?php echo $this->osii()->hasClass($classUri) ? sprintf('<span style="color: green">%s</span>', $this->translate('Yes')) : sprintf('<span style="color: red">%s</span>', $this->translate('No')); ?></td>
             </tr>
         <?php endforeach; ?>
         <tbody>
