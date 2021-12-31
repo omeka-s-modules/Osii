@@ -291,8 +291,6 @@ class DoSnapshot extends AbstractOsiiJob
         $this->getImportEntity()->setSnapshotCompleted(new DateTime('now'));
 
         $this->flushClear();
-
-        print_r($snapshotTemplates);
     }
 
     /**
