@@ -229,7 +229,10 @@ class DoImport extends AbstractOsiiJob
                     ));
                     continue;
                 }
-                $localMedia = $this->mapResource([], $remoteMedia);
+                $localMedia = [
+                    'o:id' => $localMediaEntity ? $localMediaEntity->getId() : null,
+                ];
+                $localMedia = $this->mapResource($localMedia, $remoteMedia);
                 if ($localMediaEntity) {
                     // Local media exists. Update the media.
                     $localMedia = $ingesterMapper->mapForUpdate($localMedia, $remoteMedia);
@@ -283,7 +286,10 @@ class DoImport extends AbstractOsiiJob
             foreach ($query->toIterable() as $osiiItemEntity) {
                 $localItemEntity = $osiiItemEntity->getLocalItem();
                 $remoteItem = $osiiItemEntity->getSnapshotItem();
-                $localItem = $this->mapResource([], $remoteItem);
+                $localItem = [
+                    'o:id' => $localItemEntity->getId(),
+                ];
+                $localItem = $this->mapResource($localItem, $remoteItem);
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
@@ -315,7 +321,10 @@ class DoImport extends AbstractOsiiJob
             foreach ($query->toIterable() as $osiiItemSetEntity) {
                 $localItemSetEntity = $osiiItemSetEntity->getLocalItemSet();
                 $remoteItemSet = $osiiItemSetEntity->getSnapshotItemSet();
-                $localItemSet = $this->mapResource([], $remoteItemSet);
+                $localItemSet = [
+                    'o:id' => $localItemSetEntity->getId(),
+                ];
+                $localItemSet = $this->mapResource($localItemSet, $remoteItemSet);
                 $updateOptions = [
                     'flushEntityManager' => false, // Flush (and clear) only once per batch.
                     'responseContent' => 'resource', // Avoid the overhead of composing the representation.
