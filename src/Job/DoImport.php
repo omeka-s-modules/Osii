@@ -225,7 +225,7 @@ class DoImport extends AbstractOsiiJob
                         "Cannot import remote media (no ingester mapper): %s/media/%s\n%s",
                         $this->getImportEntity()->getRootEndpoint(),
                         $osiiMediaEntity->getRemoteMediaId(),
-                        (string) $e,
+                        (string) $e
                     ));
                     continue;
                 }
@@ -254,7 +254,7 @@ class DoImport extends AbstractOsiiJob
                             "Cannot import remote media (error during create): %s/media/%s\n%s",
                             $this->getImportEntity()->getRootEndpoint(),
                             $osiiMediaEntity->getRemoteMediaId(),
-                            (string) $e,
+                            (string) $e
                         ));
                         continue;
                     }
