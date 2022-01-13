@@ -210,6 +210,7 @@ class OsiiImport extends AbstractEntity
     public function setRemoteQuery(?string $remoteQuery) : void
     {
         $remoteQuery = trim($remoteQuery);
+        $remoteQuery = ltrim($remoteQuery, '?');
         $this->remoteQuery = $remoteQuery ?: null;
     }
 
