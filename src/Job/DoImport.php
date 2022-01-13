@@ -31,9 +31,9 @@ class DoImport extends AbstractOsiiJob
         $itemsToDelete = $query->getResult();
         $osiiItemsToDelete = array_filter(array_column($itemsToDelete, 'osii_item'));
         $localItemsToDelete = array_filter(array_column($itemsToDelete, 'local_item'));
-        $this->getApiManager()->batchDelete('osii_items', $osiiItemsToDelete);
+        $this->batchDelete('osii_items', $osiiItemsToDelete);
         if (!$this->getImportEntity()->getKeepRemovedResources()) {
-            $this->getApiManager()->batchDelete('items', $localItemsToDelete);
+            $this->batchDelete('items', $localItemsToDelete);
         }
 
         // Remove media that have been deleted or removed from the remote
@@ -50,9 +50,9 @@ class DoImport extends AbstractOsiiJob
         $mediaToDelete = $query->getResult();
         $osiiMediaToDelete = array_filter(array_column($mediaToDelete, 'osii_media'));
         $localMediaToDelete = array_filter(array_column($mediaToDelete, 'local_media'));
-        $this->getApiManager()->batchDelete('osii_media', $osiiMediaToDelete);
+        $this->batchDelete('osii_media', $osiiMediaToDelete);
         if (!$this->getImportEntity()->getKeepRemovedResources()) {
-            $this->getApiManager()->batchDelete('media', $localMediaToDelete);
+            $this->batchDelete('media', $localMediaToDelete);
         }
 
         // Remove item sets that have been deleted or removed from the remote
@@ -69,9 +69,9 @@ class DoImport extends AbstractOsiiJob
         $itemSetsToDelete = $query->getResult();
         $osiiItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'osii_item_set'));
         $localItemSetsToDelete = array_filter(array_column($itemSetsToDelete, 'local_item_set'));
-        $this->getApiManager()->batchDelete('osii_item_sets', $osiiItemSetsToDelete);
+        $this->batchDelete('osii_item_sets', $osiiItemSetsToDelete);
         if (!$this->getImportEntity()->getKeepRemovedResources()) {
-            $this->getApiManager()->batchDelete('item_sets', $localItemSetsToDelete);
+            $this->batchDelete('item_sets', $localItemSetsToDelete);
         }
 
         // Create a local item stub for every remote item. We do this first so
@@ -367,5 +367,22 @@ class DoImport extends AbstractOsiiJob
             $localResource = $resourceMapper->mapResource($localResource, $remoteResource);
         }
         return $localResource;
+    }
+
+    /**
+     * Perform a batch delete operation.
+     *
+     * When deleting a very large amount of resources, the batch delete
+     * operation may exceed the memory limit. This method prevents that by
+     * chunking the resource IDs into managable sizes.
+     *
+     * @param string $resourceName
+     * @param array $resourceIds
+     */
+    public function batchDelete($resourceName, array $resourceIds)
+    {
+        foreach (array_chunk($resourceIds, 1000) as $resourceIdsChunk) {
+            $this->getApiManager()->batchDelete($resourceName, $resourceIdsChunk);
+        }
     }
 }
