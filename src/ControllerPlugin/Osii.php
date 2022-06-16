@@ -1,7 +1,6 @@
 <?php
 namespace Osii\ControllerPlugin;
 
-use Laminas\Form\Element as LaminasElement;
 use Osii\Form as OsiiForm;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\ServiceManager\ServiceLocatorInterface;

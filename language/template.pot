@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-22 22:04-0500\n"
+"POT-Creation-Date: 2022-06-16 16:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "Browse imports"
 msgstr ""
 
 #: view/osii/admin/import/browse.phtml:6 view/osii/admin/import/form.phtml:12
-#: view/osii/admin/import/form.phtml:14 view/osii/admin/import/show.phtml:6
+#: view/osii/admin/import/form.phtml:14 view/osii/admin/import/show.phtml:14
 msgid "Omeka S Item Importer"
 msgstr ""
 
@@ -31,7 +31,7 @@ msgid "Add import"
 msgstr ""
 
 #: view/osii/admin/import/browse.phtml:13 view/osii/admin/import/form.phtml:30
-#: view/osii/admin/import/show.phtml:20
+#: view/osii/admin/import/show.phtml:28
 msgid "Imports"
 msgstr ""
 
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Date created"
 msgstr ""
 
-#: view/osii/admin/import/browse.phtml:36 view/osii/admin/import/show.phtml:334
+#: view/osii/admin/import/browse.phtml:36 view/osii/admin/import/show.phtml:342
 msgid "Root endpoint"
 msgstr ""
 
@@ -60,11 +60,11 @@ msgstr ""
 msgid "Add a new import."
 msgstr ""
 
-#: view/osii/admin/import/form.phtml:12 view/osii/admin/import/show.phtml:12
+#: view/osii/admin/import/form.phtml:12 view/osii/admin/import/show.phtml:20
 msgid "Edit import"
 msgstr ""
 
-#: view/osii/admin/import/form.phtml:33 view/osii/admin/import/show.phtml:22
+#: view/osii/admin/import/form.phtml:33 view/osii/admin/import/show.phtml:30
 msgid "Manage"
 msgstr ""
 
@@ -80,223 +80,221 @@ msgstr ""
 msgid "import"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:6
+#: view/osii/admin/import/show.phtml:14
 msgid "Manage import"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:27
-msgid "Prepare the import below."
+#: view/osii/admin/import/show.phtml:35
+msgid ""
+"Prepare the import below. Remember to click the Submit button to save your "
+"changes."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:34
+#: view/osii/admin/import/show.phtml:42
 msgid "Media ingesters"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:45
+#: view/osii/admin/import/show.phtml:53
 msgid "Remote"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:46
+#: view/osii/admin/import/show.phtml:54
 msgid "Local"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:74
+#: view/osii/admin/import/show.phtml:82
 msgid "Remote data type"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:75 view/osii/admin/import/show.phtml:191
+#: view/osii/admin/import/show.phtml:83 view/osii/admin/import/show.phtml:199
 msgid "Remote value count"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:76
+#: view/osii/admin/import/show.phtml:84
 msgid "Local data type"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:105
+#: view/osii/admin/import/show.phtml:113
 msgid "No data types in snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:115
+#: view/osii/admin/import/show.phtml:123
 msgid "Remote template"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:116
+#: view/osii/admin/import/show.phtml:124 view/osii/admin/import/show.phtml:236
 msgid "Remote resource count"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:117
+#: view/osii/admin/import/show.phtml:125
 msgid "Local template"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:146
+#: view/osii/admin/import/show.phtml:154
 msgid "No templates in snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:156
+#: view/osii/admin/import/show.phtml:164
 msgid "Remote media ingester"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:157
+#: view/osii/admin/import/show.phtml:165
 msgid "Remote media count"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:158
+#: view/osii/admin/import/show.phtml:166
 msgid "Mapper available?"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:173
+#: view/osii/admin/import/show.phtml:181
 msgid "No media ingesters in snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:183 view/osii/admin/import/show.phtml:220
+#: view/osii/admin/import/show.phtml:191 view/osii/admin/import/show.phtml:228
 #, php-format
 msgid "Vocabulary label: %s"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:184 view/osii/admin/import/show.phtml:221
+#: view/osii/admin/import/show.phtml:192 view/osii/admin/import/show.phtml:229
 #, php-format
 msgid "Vocabulary namespace URI: %s"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:189 view/osii/admin/import/show.phtml:226
+#: view/osii/admin/import/show.phtml:197 view/osii/admin/import/show.phtml:234
 msgid "Remote local name"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:190 view/osii/admin/import/show.phtml:227
+#: view/osii/admin/import/show.phtml:198 view/osii/admin/import/show.phtml:235
 msgid "Remote label"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:192 view/osii/admin/import/show.phtml:229
+#: view/osii/admin/import/show.phtml:200 view/osii/admin/import/show.phtml:237
 msgid "On local install?"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:210
+#: view/osii/admin/import/show.phtml:218
 msgid "No properties in snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:228
-msgid "Remote item count"
-msgstr ""
-
-#: view/osii/admin/import/show.phtml:247
+#: view/osii/admin/import/show.phtml:255
 msgid "No classes in snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:253
+#: view/osii/admin/import/show.phtml:261
 msgid "Prepare import is not available now."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:260
+#: view/osii/admin/import/show.phtml:268
 msgid "Import actions"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:262 view/osii/admin/import/show.phtml:382
-#: view/osii/admin/import/show.phtml:389
+#: view/osii/admin/import/show.phtml:270 view/osii/admin/import/show.phtml:390
+#: view/osii/admin/import/show.phtml:397
 msgid "Snapshot"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:267 view/osii/admin/import/show.phtml:300
+#: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
 #, php-format
 msgid "Last completed: %s"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:267 view/osii/admin/import/show.phtml:300
-#: view/osii/admin/import/show.phtml:339 view/osii/admin/import/show.phtml:343
-#: view/osii/admin/import/show.phtml:347 view/osii/admin/import/show.phtml:356
+#: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
+#: view/osii/admin/import/show.phtml:347 view/osii/admin/import/show.phtml:351
+#: view/osii/admin/import/show.phtml:355 view/osii/admin/import/show.phtml:364
 msgid "[n/a]"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:273
+#: view/osii/admin/import/show.phtml:281
 msgid "Take snapshot"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:279
+#: view/osii/admin/import/show.phtml:287
 msgid "Stop snapshot"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:285 view/osii/admin/import/show.phtml:318
+#: view/osii/admin/import/show.phtml:293 view/osii/admin/import/show.phtml:326
 msgid "Refresh status"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:288 view/osii/admin/import/show.phtml:321
+#: view/osii/admin/import/show.phtml:296 view/osii/admin/import/show.phtml:329
 msgid "View job"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:306
+#: view/osii/admin/import/show.phtml:314
 msgid "Import snapshot"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:312
+#: view/osii/admin/import/show.phtml:320
 msgid "Stop import"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:325
+#: view/osii/admin/import/show.phtml:333
 msgid "View media"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:326
+#: view/osii/admin/import/show.phtml:334
 msgid "View item sets"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:332
+#: view/osii/admin/import/show.phtml:340
 msgid "Import metadata"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:342
+#: view/osii/admin/import/show.phtml:350
 msgid "Key identity"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:346
+#: view/osii/admin/import/show.phtml:354
 msgid "Key credential"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:350
+#: view/osii/admin/import/show.phtml:358
 msgid "Import label"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:359
+#: view/osii/admin/import/show.phtml:367
 msgid "Exclude media"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:360 view/osii/admin/import/show.phtml:364
-#: view/osii/admin/import/show.phtml:368 view/osii/admin/import/show.phtml:376
+#: view/osii/admin/import/show.phtml:368 view/osii/admin/import/show.phtml:372
+#: view/osii/admin/import/show.phtml:376 view/osii/admin/import/show.phtml:384
 msgid "[yes]"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:360 view/osii/admin/import/show.phtml:364
 #: view/osii/admin/import/show.phtml:368 view/osii/admin/import/show.phtml:372
-#: view/osii/admin/import/show.phtml:376
+#: view/osii/admin/import/show.phtml:376 view/osii/admin/import/show.phtml:380
+#: view/osii/admin/import/show.phtml:384
 msgid "[no]"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:363
+#: view/osii/admin/import/show.phtml:371
 msgid "Exclude item sets"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:367
+#: view/osii/admin/import/show.phtml:375
 msgid "Keep removed resources"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:371
+#: view/osii/admin/import/show.phtml:379
 msgid "Add remote site URL"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:375
+#: view/osii/admin/import/show.phtml:383
 msgid "Add remote resource URL"
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:383
+#: view/osii/admin/import/show.phtml:391
 msgid ""
 "Take a snapshot of the remote resources in their current state. This will "
 "gather the data needed to import the resources and reconcile the local "
 "installation with the remote one."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:390
+#: view/osii/admin/import/show.phtml:398
 msgid "Stop the currently running snapshot."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:397
+#: view/osii/admin/import/show.phtml:405
 msgid ""
 "Import the current snapshot. This will add new resources and update existing "
 "resources. Before you confirm, be sure to submit mapping changes and "
@@ -304,7 +302,7 @@ msgid ""
 "extent desired."
 msgstr ""
 
-#: view/osii/admin/import/show.phtml:404
+#: view/osii/admin/import/show.phtml:412
 msgid "Stop the currently running import."
 msgstr ""
 
@@ -333,7 +331,7 @@ msgstr ""
 msgid "An import must have valid authentication"
 msgstr ""
 
-#: src/ControllerPlugin/Osii.php:41 src/ControllerPlugin/Osii.php:60
+#: src/ViewHelper/Osii.php:155 src/ViewHelper/Osii.php:174
 msgid "[Not mapped]"
 msgstr ""
 
@@ -423,22 +421,22 @@ msgstr ""
 msgid "Import successfully added."
 msgstr ""
 
-#: src/Controller/Admin/ImportController.php:162
+#: src/Controller/Admin/ImportController.php:140
 msgid "Taking snapshot. This may take a while."
 msgstr ""
 
-#: src/Controller/Admin/ImportController.php:176
+#: src/Controller/Admin/ImportController.php:154
 msgid "Stopping snapshot."
 msgstr ""
 
-#: src/Controller/Admin/ImportController.php:193
+#: src/Controller/Admin/ImportController.php:171
 msgid "Importing. This may take a while."
 msgstr ""
 
-#: src/Controller/Admin/ImportController.php:207
+#: src/Controller/Admin/ImportController.php:185
 msgid "Stopping import."
 msgstr ""
 
-#: src/Controller/Admin/ImportController.php:222
+#: src/Controller/Admin/ImportController.php:200
 msgid "Import successfully deleted."
 msgstr ""

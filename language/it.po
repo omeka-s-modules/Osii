@@ -4,7 +4,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Pols12 <poltron54@gmail.com>, 2021
+# Giorgio Comai <g@giorgiocomai.eu>, 2022
 # 
 #, fuzzy
 msgid ""
@@ -13,81 +13,81 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-16 16:12-0400\n"
 "PO-Revision-Date: 2021-11-24 15:32+0000\n"
-"Last-Translator: Pols12 <poltron54@gmail.com>, 2021\n"
-"Language-Team: French (https://www.transifex.com/omeka/teams/14184/fr/)\n"
+"Last-Translator: Giorgio Comai <g@giorgiocomai.eu>, 2022\n"
+"Language-Team: Italian (https://www.transifex.com/omeka/teams/14184/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Language: it\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: view/osii/admin/import/browse.phtml:6
 msgid "Browse imports"
-msgstr "Parcourir les importations"
+msgstr "Sfoglia le importazioni"
 
 #: view/osii/admin/import/browse.phtml:6 view/osii/admin/import/form.phtml:12
 #: view/osii/admin/import/form.phtml:14 view/osii/admin/import/show.phtml:14
 msgid "Omeka S Item Importer"
-msgstr "Importateur de contenus Omeka S"
+msgstr "Importatore di contenuti di Omeka S"
 
 #: view/osii/admin/import/browse.phtml:9 view/osii/admin/import/form.phtml:14
 msgid "Add import"
-msgstr "Ajouter une importation"
+msgstr "Aggiungi importazione"
 
 #: view/osii/admin/import/browse.phtml:13 view/osii/admin/import/form.phtml:30
 #: view/osii/admin/import/show.phtml:28
 msgid "Imports"
-msgstr "Importations"
+msgstr "Importazioni"
 
 #: view/osii/admin/import/browse.phtml:20
 msgid "Date created"
-msgstr "Date de création"
+msgstr "Data di creazione"
 
 #: view/osii/admin/import/browse.phtml:36
 #: view/osii/admin/import/show.phtml:342
 msgid "Root endpoint"
-msgstr "Destination racine"
+msgstr "Endpoint di root"
 
 #: view/osii/admin/import/browse.phtml:37
 msgid "Snapshot status"
-msgstr ""
+msgstr "Status dello snapshot"
 
 #: view/osii/admin/import/browse.phtml:38
 msgid "Import status"
-msgstr ""
+msgstr "Stato dell'importazione"
 
 #: view/osii/admin/import/browse.phtml:68
 #, php-format
 msgid "No imports found. %s"
-msgstr "Aucune importation trouvée. %s"
+msgstr "Nessuna importazione trovata. %s"
 
 #: view/osii/admin/import/browse.phtml:69
 msgid "Add a new import."
-msgstr "Ajouter une nouvelle importation"
+msgstr "Aggiungi una nuova importazione."
 
 #: view/osii/admin/import/form.phtml:12 view/osii/admin/import/show.phtml:20
 msgid "Edit import"
-msgstr "Modifier l’importation"
+msgstr "Modifica importazione"
 
 #: view/osii/admin/import/form.phtml:33 view/osii/admin/import/show.phtml:30
 msgid "Manage"
-msgstr "Gérer"
+msgstr "Gestisci"
 
 #: view/osii/admin/import/form.phtml:40
 msgid "Remote configuration"
-msgstr ""
+msgstr "Configurazione remota"
 
 #: view/osii/admin/import/form.phtml:47
 msgid "Local configuration"
-msgstr ""
+msgstr "Configurazione locale"
 
 #: view/osii/admin/import/form.phtml:61
 msgid "import"
-msgstr "importer"
+msgstr "importazione"
 
 #: view/osii/admin/import/show.phtml:14
 msgid "Manage import"
-msgstr "Gérer l’importation"
+msgstr "Gestisci l'importazione"
 
 #: view/osii/admin/import/show.phtml:35
 msgid ""
@@ -97,141 +97,142 @@ msgstr ""
 
 #: view/osii/admin/import/show.phtml:42
 msgid "Media ingesters"
-msgstr ""
+msgstr "Processatori di media"
 
 #: view/osii/admin/import/show.phtml:53
 msgid "Remote"
-msgstr ""
+msgstr "Remoto"
 
 #: view/osii/admin/import/show.phtml:54
 msgid "Local"
-msgstr ""
+msgstr "Locale"
 
 #: view/osii/admin/import/show.phtml:82
 msgid "Remote data type"
-msgstr "Type de donnée distant"
+msgstr "Tipo di dati in remoto"
 
 #: view/osii/admin/import/show.phtml:83 view/osii/admin/import/show.phtml:199
 msgid "Remote value count"
-msgstr "Nombre de valeurs distant"
+msgstr "Numero di valori in remoto"
 
 #: view/osii/admin/import/show.phtml:84
 msgid "Local data type"
-msgstr "Type de données local"
+msgstr "Tipo di dati locale"
 
 #: view/osii/admin/import/show.phtml:113
 msgid "No data types in snapshot."
-msgstr ""
+msgstr "Nessun tipo di dati nello snapshot."
 
 #: view/osii/admin/import/show.phtml:123
 msgid "Remote template"
-msgstr ""
+msgstr "Modello remoto"
 
 #: view/osii/admin/import/show.phtml:124 view/osii/admin/import/show.phtml:236
 msgid "Remote resource count"
-msgstr ""
+msgstr "Numero di risorse remote"
 
 #: view/osii/admin/import/show.phtml:125
 msgid "Local template"
-msgstr ""
+msgstr "Modello locale"
 
 #: view/osii/admin/import/show.phtml:154
 msgid "No templates in snapshot."
-msgstr ""
+msgstr "Nessun modello nello snapshot."
 
 #: view/osii/admin/import/show.phtml:164
 msgid "Remote media ingester"
-msgstr ""
+msgstr "Processatore di media remoto"
 
 #: view/osii/admin/import/show.phtml:165
 msgid "Remote media count"
-msgstr ""
+msgstr "Numero di media remoti"
 
 #: view/osii/admin/import/show.phtml:166
 msgid "Mapper available?"
-msgstr ""
+msgstr "Mappatore disponibile?"
 
 #: view/osii/admin/import/show.phtml:181
 msgid "No media ingesters in snapshot."
-msgstr ""
+msgstr "Nessun processatore di media nello snapshot."
 
 #: view/osii/admin/import/show.phtml:191 view/osii/admin/import/show.phtml:228
 #, php-format
 msgid "Vocabulary label: %s"
-msgstr "Nom du vocabulaire : %s"
+msgstr "Etichetta del vocabolario: %s"
 
 #: view/osii/admin/import/show.phtml:192 view/osii/admin/import/show.phtml:229
 #, php-format
 msgid "Vocabulary namespace URI: %s"
-msgstr "URI de l’espace de noms du vocabulaire : %s"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:197 view/osii/admin/import/show.phtml:234
 msgid "Remote local name"
-msgstr "Nom local distant"
+msgstr "Nome locale del remoto"
 
 #: view/osii/admin/import/show.phtml:198 view/osii/admin/import/show.phtml:235
 msgid "Remote label"
-msgstr "Nom distant"
+msgstr "Etichetta del remoto"
 
 #: view/osii/admin/import/show.phtml:200 view/osii/admin/import/show.phtml:237
 msgid "On local install?"
-msgstr "Installation locale ?"
+msgstr "Sull'istallazione locale?"
 
 #: view/osii/admin/import/show.phtml:218
 msgid "No properties in snapshot."
-msgstr ""
+msgstr "Nessuna proprietà nello snapshot."
 
 #: view/osii/admin/import/show.phtml:255
 msgid "No classes in snapshot."
-msgstr ""
+msgstr "Nessuna classe nello snapshot."
 
 #: view/osii/admin/import/show.phtml:261
 msgid "Prepare import is not available now."
-msgstr "La préparation de l’importation n’est pas possible actuellement."
+msgstr ""
+"La preparazione dell'importazione non è disponibile in questo momento."
 
 #: view/osii/admin/import/show.phtml:268
 msgid "Import actions"
-msgstr ""
+msgstr "Azioni di importazione"
 
 #: view/osii/admin/import/show.phtml:270 view/osii/admin/import/show.phtml:390
 #: view/osii/admin/import/show.phtml:397
 msgid "Snapshot"
-msgstr "Instantané"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
 #, php-format
 msgid "Last completed: %s"
-msgstr "Dernier traité : %s"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
 #: view/osii/admin/import/show.phtml:347 view/osii/admin/import/show.phtml:351
 #: view/osii/admin/import/show.phtml:355 view/osii/admin/import/show.phtml:364
 msgid "[n/a]"
-msgstr "[sans objet]"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:281
 msgid "Take snapshot"
-msgstr "Prendre un instantané"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:287
 msgid "Stop snapshot"
-msgstr "Arrêter l’instantané"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:293 view/osii/admin/import/show.phtml:326
 msgid "Refresh status"
-msgstr "Actualiser l’état"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:296 view/osii/admin/import/show.phtml:329
 msgid "View job"
-msgstr "Voir la tâche"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:314
 msgid "Import snapshot"
-msgstr "Importer un instantané"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:320
 msgid "Stop import"
-msgstr "Arrêter l’importation"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:333
 msgid "View media"
@@ -243,15 +244,15 @@ msgstr ""
 
 #: view/osii/admin/import/show.phtml:340
 msgid "Import metadata"
-msgstr "Importer les métadonnées"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:350
 msgid "Key identity"
-msgstr "Identité de la clé"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:354
 msgid "Key credential"
-msgstr "Certificat de la clé"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:358
 msgid "Import label"
@@ -297,7 +298,7 @@ msgstr ""
 
 #: view/osii/admin/import/show.phtml:398
 msgid "Stop the currently running snapshot."
-msgstr "Arrêter l’instantané en cours."
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:405
 msgid ""
@@ -309,60 +310,60 @@ msgstr ""
 
 #: view/osii/admin/import/show.phtml:412
 msgid "Stop the currently running import."
-msgstr "Arrêter l’importation en cours."
+msgstr ""
 
 #: src/Api/Representation/OsiiImportRepresentation.php:382
 msgid "Not taken"
-msgstr "Pas pris"
+msgstr ""
 
 #: src/Api/Representation/OsiiImportRepresentation.php:389
 msgid "Not imported"
-msgstr "Pas importé"
+msgstr ""
 
 #: src/Api/Adapter/OsiiImportAdapter.php:37
 msgid "Invalid local item set format passed in request."
-msgstr "La requête contenait un format de collection locale invalide."
+msgstr ""
 
 #: src/Api/Adapter/OsiiImportAdapter.php:91
 msgid "An import must have a label"
-msgstr "Une importation doit avoir un nom"
+msgstr ""
 
 #: src/Api/Adapter/OsiiImportAdapter.php:94
 msgid "An import must have a valid root endpoint"
-msgstr "Une importation doit avoir une destination racine valide"
+msgstr ""
 
 #: src/Api/Adapter/OsiiImportAdapter.php:97
 #: src/Api/Adapter/OsiiImportAdapter.php:98
 msgid "An import must have valid authentication"
-msgstr "Une importation doit avoir une authentification valide."
+msgstr ""
 
 #: src/ViewHelper/Osii.php:155 src/ViewHelper/Osii.php:174
 msgid "[Not mapped]"
-msgstr "[Non mappé]"
+msgstr ""
 
 #: src/Form/DoImportForm.php:14
 msgid "Confirm import snapshot"
-msgstr "Confirmer l’importation de l’instantané"
+msgstr ""
 
 #: src/Form/StopImportForm.php:14
 msgid "Confirm stop import snapshot"
-msgstr "Confirmer l’arrêt de l’importation de l’instantané"
+msgstr ""
 
 #: src/Form/DoSnapshotForm.php:14
 msgid "Confirm take snapshot"
-msgstr "Confirmer la prise de l’instantané"
+msgstr ""
 
 #: src/Form/StopSnapshotForm.php:14
 msgid "Confirm stop snapshot"
-msgstr "Confirmer l’arrêt de l’instantané"
+msgstr ""
 
 #: src/Form/ImportForm.php:19
 msgid "Enter the label of this import."
-msgstr "Indiquer le nom de cette importation."
+msgstr ""
 
 #: src/Form/ImportForm.php:30
 msgid "Enter the root endpoint of the API."
-msgstr "Indiquer la destination racine de l’API."
+msgstr ""
 
 #: src/Form/ImportForm.php:41
 msgid ""
@@ -373,14 +374,10 @@ msgstr ""
 #: src/Form/ImportForm.php:52
 msgid "Enter the key_identity used to authenticate the API user."
 msgstr ""
-"Indiquer le champ key_identity utilisé pour authentifier l’utilisateur dans "
-"l’API."
 
 #: src/Form/ImportForm.php:63
 msgid "Enter the key_credential used to authenticate the API user."
 msgstr ""
-"Indiquer le champ key_credential utilisé pour authentifier l’utilisateur "
-"dans l’API."
 
 #: src/Form/ImportForm.php:74
 msgid "Select the item set to which imported items will be assigned."
@@ -388,7 +385,7 @@ msgstr ""
 
 #: src/Form/ImportForm.php:75
 msgid "Select an item set"
-msgstr "Choisir une collection"
+msgstr ""
 
 #: src/Form/ImportForm.php:87
 msgid ""
@@ -428,24 +425,24 @@ msgstr ""
 
 #: src/Controller/Admin/ImportController.php:47
 msgid "Import successfully added."
-msgstr "L’importation a bien été ajoutée."
+msgstr ""
 
 #: src/Controller/Admin/ImportController.php:140
 msgid "Taking snapshot. This may take a while."
-msgstr "Copie instantanée en cours. Cela peut prendre un moment."
+msgstr ""
 
 #: src/Controller/Admin/ImportController.php:154
 msgid "Stopping snapshot."
-msgstr "Arrêt de la copie instantanée en cours."
+msgstr ""
 
 #: src/Controller/Admin/ImportController.php:171
 msgid "Importing. This may take a while."
-msgstr "Importation en cours. Cela peut prendre un moment."
+msgstr ""
 
 #: src/Controller/Admin/ImportController.php:185
 msgid "Stopping import."
-msgstr "Arrêt de l’importation en cours."
+msgstr ""
 
 #: src/Controller/Admin/ImportController.php:200
 msgid "Import successfully deleted."
-msgstr "L’importation a bien été supprimée."
+msgstr ""
