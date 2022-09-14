@@ -111,6 +111,21 @@ abstract class AbstractOsiiJob extends AbstractJob
     }
 
     /**
+     * Get value annotations from value JSON-LD.
+     *
+     * @param array $value
+     * @return array
+     */
+    public function getValueAnnotationsFromValue(array $value)
+    {
+        $valueAnnotations = [];
+        if (isset($value['@annotation']) && is_array($value['@annotation'])) {
+            $valueAnnotations = $this->getValuesFromResource($value['@annotation']);
+        }
+        return $valueAnnotations;
+    }
+
+    /**
      * Get the resource name from resource JSON-LD.
      *
      * @param array $resource

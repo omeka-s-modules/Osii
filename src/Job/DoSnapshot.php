@@ -81,6 +81,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $templateId = $item['o:resource_template']['o:id'];
                     ++$snapshotTemplates[$templateId]['count'];
                 }
+                // Set metadata about resource values.
                 foreach ($this->getValuesFromResource($item) as $value) {
                     $dataTypeId = $value['type'];
                     $propertyId = $value['property_id'];
@@ -92,6 +93,19 @@ class DoSnapshot extends AbstractOsiiJob
                     }
                     ++$snapshotDataTypes[$dataTypeId]['count'];
                     ++$snapshotProperties[$propertyId]['count'];
+                    // Set metadata about value annotations.
+                    foreach ($this->getValueAnnotationsFromValue($value) as $valueAnnotation) {
+                        $dataTypeId = $valueAnnotation['type'];
+                        $propertyId = $valueAnnotation['property_id'];
+                        if (!isset($snapshotDataTypes[$dataTypeId])) {
+                            $snapshotDataTypes[$dataTypeId] = [
+                                'label' => null, // Placeholder until data_types resource is available
+                                'count' => 0,
+                            ];
+                        }
+                        ++$snapshotDataTypes[$dataTypeId]['count'];
+                        ++$snapshotProperties[$propertyId]['count'];
+                    }
                 }
             }
             $query['page']++;
@@ -161,6 +175,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $templateId = $item['o:resource_template']['o:id'];
                     ++$snapshotTemplates[$templateId]['count'];
                 }
+                // Set metadata about resource values.
                 foreach ($this->getValuesFromResource($media) as $value) {
                     $dataTypeId = $value['type'];
                     $propertyId = $value['property_id'];
@@ -172,6 +187,19 @@ class DoSnapshot extends AbstractOsiiJob
                     }
                     ++$snapshotDataTypes[$dataTypeId]['count'];
                     ++$snapshotProperties[$propertyId]['count'];
+                    // Set metadata about value annotations.
+                    foreach ($this->getValueAnnotationsFromValue($value) as $valueAnnotation) {
+                        $dataTypeId = $valueAnnotation['type'];
+                        $propertyId = $valueAnnotation['property_id'];
+                        if (!isset($snapshotDataTypes[$dataTypeId])) {
+                            $snapshotDataTypes[$dataTypeId] = [
+                                'label' => null, // Placeholder until data_types resource is available
+                                'count' => 0,
+                            ];
+                        }
+                        ++$snapshotDataTypes[$dataTypeId]['count'];
+                        ++$snapshotProperties[$propertyId]['count'];
+                    }
                 }
                 if (!isset($snapshotMediaIngesters[$media['o:ingester']])) {
                     $snapshotMediaIngesters[$media['o:ingester']] = [
@@ -241,6 +269,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $templateId = $item['o:resource_template']['o:id'];
                     ++$snapshotTemplates[$templateId]['count'];
                 }
+                // Set metadata about resource values.
                 foreach ($this->getValuesFromResource($itemSet) as $value) {
                     $dataTypeId = $value['type'];
                     $propertyId = $value['property_id'];
@@ -252,6 +281,19 @@ class DoSnapshot extends AbstractOsiiJob
                     }
                     ++$snapshotDataTypes[$dataTypeId]['count'];
                     ++$snapshotProperties[$propertyId]['count'];
+                    // Set metadata about value annotations.
+                    foreach ($this->getValueAnnotationsFromValue($value) as $valueAnnotation) {
+                        $dataTypeId = $valueAnnotation['type'];
+                        $propertyId = $valueAnnotation['property_id'];
+                        if (!isset($snapshotDataTypes[$dataTypeId])) {
+                            $snapshotDataTypes[$dataTypeId] = [
+                                'label' => null, // Placeholder until data_types resource is available
+                                'count' => 0,
+                            ];
+                        }
+                        ++$snapshotDataTypes[$dataTypeId]['count'];
+                        ++$snapshotProperties[$propertyId]['count'];
+                    }
                 }
             }
             $query['page']++;
