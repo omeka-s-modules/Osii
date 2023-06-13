@@ -1,6 +1,8 @@
 <?php
 namespace Osii\Job;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Omeka\Entity\Job as JobEntity;
 use Omeka\Job\AbstractJob;
 use Osii\Entity as OsiiEntity;
 
@@ -13,6 +15,14 @@ abstract class AbstractOsiiJob extends AbstractJob
     protected $importEntity;
 
     protected $logger;
+
+    protected $originalIdentityMap;
+
+    public function __construct(JobEntity $job, ServiceLocatorInterface $serviceLocator)
+    {
+        parent::__construct($job, $serviceLocator);
+        $this->originalIdentityMap = $this->getServiceLocator()->get('Omeka\EntityManager')->getUnitOfWork()->getIdentityMap();
+    }
 
     /**
      * Get the API manager.
@@ -170,9 +180,22 @@ abstract class AbstractOsiiJob extends AbstractJob
      */
     public function flushClear()
     {
-        $this->getEntityManager()->flush();
-        $this->getEntityManager()->clear();
-        // Merge the Job entity as managed so logging works as expected.
-        $this->getEntityManager()->merge($this->job);
+        $em = $this->getEntityManager();
+
+        $em->flush();
+
+        $uow = $em->getUnitOfWork();
+        $identityMap = $uow->getIdentityMap();
+        foreach ($identityMap as $entityClass => $entities) {
+            foreach ($entities as $idHash => $entity) {
+                if (!isset($this->originalIdentityMap[$entityClass][$idHash])) {
+                    $em->detach($entity);
+                }
+            }
+        }
+        $scheduledInsertions = $uow->getScheduledEntityInsertions();
+        foreach ($scheduledInsertions as $entity) {
+            $em->detach($entity);
+        }
     }
 }
