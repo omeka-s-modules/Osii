@@ -21,7 +21,9 @@ abstract class AbstractOsiiJob extends AbstractJob
     public function __construct(JobEntity $job, ServiceLocatorInterface $serviceLocator)
     {
         parent::__construct($job, $serviceLocator);
-        $this->originalIdentityMap = $this->getServiceLocator()->get('Omeka\EntityManager')->getUnitOfWork()->getIdentityMap();
+        // Set the original identity map so we have a snapshot of the original
+        // state of the entity manager.
+        $this->originalIdentityMap = $this->getEntityManager()->getUnitOfWork()->getIdentityMap();
     }
 
     /**
@@ -180,22 +182,23 @@ abstract class AbstractOsiiJob extends AbstractJob
      */
     public function flushClear()
     {
-        $em = $this->getEntityManager();
+        $entityManager = $this->getEntityManager();
 
-        $em->flush();
+        // Flush the entity manager to persist changes.
+        $entityManager->flush();
 
-        $uow = $em->getUnitOfWork();
-        $identityMap = $uow->getIdentityMap();
+        // Detach entities that were *not* part of the original state of the
+        // entity manager to avoid reaching the memory limit. Do this instead of
+        // explicitly clearing the entity manager to avoid the uncommon but
+        // irksome "A new entity was found" Doctrine errors.
+        $unitOfWork = $entityManager->getUnitOfWork();
+        $identityMap = $unitOfWork->getIdentityMap();
         foreach ($identityMap as $entityClass => $entities) {
             foreach ($entities as $idHash => $entity) {
                 if (!isset($this->originalIdentityMap[$entityClass][$idHash])) {
-                    $em->detach($entity);
+                    $entityManager->detach($entity);
                 }
             }
-        }
-        $scheduledInsertions = $uow->getScheduledEntityInsertions();
-        foreach ($scheduledInsertions as $entity) {
-            $em->detach($entity);
         }
     }
 }
