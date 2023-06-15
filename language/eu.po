@@ -4,7 +4,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Pols12 <poltron54@gmail.com>, 2021
+# Iametza Interaktiboa, 2022
 # 
 #, fuzzy
 msgid ""
@@ -13,280 +13,282 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-15 12:36-0400\n"
 "PO-Revision-Date: 2021-11-24 15:32+0000\n"
-"Last-Translator: Pols12 <poltron54@gmail.com>, 2021\n"
-"Language-Team: French (https://app.transifex.com/omeka/teams/14184/fr/)\n"
+"Last-Translator: Iametza Interaktiboa, 2022\n"
+"Language-Team: Basque (https://app.transifex.com/omeka/teams/14184/eu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Language: eu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: view/osii/admin/import/browse.phtml:6
 msgid "Browse imports"
-msgstr "Parcourir les importations"
+msgstr "Arakatu inportazioak"
 
 #: view/osii/admin/import/browse.phtml:6 view/osii/admin/import/form.phtml:12
 #: view/osii/admin/import/form.phtml:14 view/osii/admin/import/show.phtml:14
 msgid "Omeka S Item Importer"
-msgstr "Importateur de contenus Omeka S"
+msgstr "Omeka S Elementu Inportatzailea"
 
 #: view/osii/admin/import/browse.phtml:9 view/osii/admin/import/form.phtml:14
 msgid "Add import"
-msgstr "Ajouter une importation"
+msgstr "Gehitu inportazioa"
 
 #: view/osii/admin/import/browse.phtml:13 view/osii/admin/import/form.phtml:30
 #: view/osii/admin/import/show.phtml:28
 msgid "Imports"
-msgstr "Importations"
+msgstr "Inportazioak"
 
 #: view/osii/admin/import/browse.phtml:20
 msgid "Date created"
-msgstr "Date de création"
+msgstr "Sortze data"
 
 #: view/osii/admin/import/browse.phtml:36
 #: view/osii/admin/import/show.phtml:342
 msgid "Root endpoint"
-msgstr "Destination racine"
+msgstr "Erro amaiera-puntua"
 
 #: view/osii/admin/import/browse.phtml:37
 msgid "Snapshot status"
-msgstr ""
+msgstr "Argazki egoera"
 
 #: view/osii/admin/import/browse.phtml:38
 msgid "Import status"
-msgstr ""
+msgstr "Inportazio egoera"
 
 #: view/osii/admin/import/browse.phtml:68
 #, php-format
 msgid "No imports found. %s"
-msgstr "Aucune importation trouvée. %s"
+msgstr "Ez da inportaziorik aurkitu. %s"
 
 #: view/osii/admin/import/browse.phtml:69
 msgid "Add a new import."
-msgstr "Ajouter une nouvelle importation"
+msgstr "Gehitu inportazio berria."
 
 #: view/osii/admin/import/form.phtml:12 view/osii/admin/import/show.phtml:20
 msgid "Edit import"
-msgstr "Modifier l’importation"
+msgstr "Editatu inportazioa"
 
 #: view/osii/admin/import/form.phtml:33 view/osii/admin/import/show.phtml:30
 msgid "Manage"
-msgstr "Gérer"
+msgstr "Kudeatu"
 
 #: view/osii/admin/import/form.phtml:40
 msgid "Remote configuration"
-msgstr ""
+msgstr "Kanpo konfigurazioa"
 
 #: view/osii/admin/import/form.phtml:47
 msgid "Local configuration"
-msgstr ""
+msgstr "Barneko konfigurazioa"
 
 #: view/osii/admin/import/form.phtml:61
 msgid "import"
-msgstr "importer"
+msgstr "inportatu"
 
 #: view/osii/admin/import/show.phtml:14
 msgid "Manage import"
-msgstr "Gérer l’importation"
+msgstr "Kudeatu inportazioak"
 
 #: view/osii/admin/import/show.phtml:35
 msgid ""
 "Prepare the import below. Remember to click the Submit button to save your "
 "changes."
 msgstr ""
+"Prestatu inportazioa ondoren. Gogoratu Bidali botoiari ematearekin zure "
+"aldaketak gorde daitezen."
 
 #: view/osii/admin/import/show.phtml:42
 msgid "Media ingesters"
-msgstr ""
+msgstr "Multimedia txertatze moduak"
 
 #: view/osii/admin/import/show.phtml:53
 msgid "Remote"
-msgstr ""
+msgstr "Kanpokoa"
 
 #: view/osii/admin/import/show.phtml:54
 msgid "Local"
-msgstr ""
+msgstr "Barrukoa"
 
 #: view/osii/admin/import/show.phtml:82
 msgid "Remote data type"
-msgstr "Type de donnée distant"
+msgstr "Kanpoko datu mota"
 
 #: view/osii/admin/import/show.phtml:83 view/osii/admin/import/show.phtml:199
 msgid "Remote value count"
-msgstr "Nombre de valeurs distant"
+msgstr "Kanpoko balio kopurua"
 
 #: view/osii/admin/import/show.phtml:84
 msgid "Local data type"
-msgstr "Type de données local"
+msgstr "Barneko datu mota"
 
 #: view/osii/admin/import/show.phtml:113
 msgid "No data types in snapshot."
-msgstr ""
+msgstr "Ez dago datu motarik argazkian."
 
 #: view/osii/admin/import/show.phtml:123
 msgid "Remote template"
-msgstr ""
+msgstr "Kanpoko txantiloia"
 
 #: view/osii/admin/import/show.phtml:124 view/osii/admin/import/show.phtml:236
 msgid "Remote resource count"
-msgstr ""
+msgstr "Kanpoko baliabide kopurua"
 
 #: view/osii/admin/import/show.phtml:125
 msgid "Local template"
-msgstr ""
+msgstr "Barneko txantiloia"
 
 #: view/osii/admin/import/show.phtml:154
 msgid "No templates in snapshot."
-msgstr ""
+msgstr "Ez dago txantiloirik argazkian."
 
 #: view/osii/admin/import/show.phtml:164
 msgid "Remote media ingester"
-msgstr ""
+msgstr "Kanpoko multimedia txertatzeko modua"
 
 #: view/osii/admin/import/show.phtml:165
 msgid "Remote media count"
-msgstr ""
+msgstr "Kanpoko multimedia kopurua"
 
 #: view/osii/admin/import/show.phtml:166
 msgid "Mapper available?"
-msgstr ""
+msgstr "Mapatzailerik eskuragarri?"
 
 #: view/osii/admin/import/show.phtml:181
 msgid "No media ingesters in snapshot."
-msgstr ""
+msgstr "Ez dago multimedia txertatzeko modurik argazkian."
 
 #: view/osii/admin/import/show.phtml:191 view/osii/admin/import/show.phtml:228
 #, php-format
 msgid "Vocabulary label: %s"
-msgstr "Nom du vocabulaire : %s"
+msgstr "Hiztegi etiketa: %s"
 
 #: view/osii/admin/import/show.phtml:192 view/osii/admin/import/show.phtml:229
 #, php-format
 msgid "Vocabulary namespace URI: %s"
-msgstr "URI de l’espace de noms du vocabulaire : %s"
+msgstr "Hiztegi izen-leku BIUa: %s"
 
 #: view/osii/admin/import/show.phtml:197 view/osii/admin/import/show.phtml:234
 msgid "Remote local name"
-msgstr "Nom local distant"
+msgstr "Kanpoko barne izena"
 
 #: view/osii/admin/import/show.phtml:198 view/osii/admin/import/show.phtml:235
 msgid "Remote label"
-msgstr "Nom distant"
+msgstr "Kanpoko etiketa"
 
 #: view/osii/admin/import/show.phtml:200 view/osii/admin/import/show.phtml:237
 msgid "On local install?"
-msgstr "Installation locale ?"
+msgstr "Barneko instalazioan?"
 
 #: view/osii/admin/import/show.phtml:218
 msgid "No properties in snapshot."
-msgstr ""
+msgstr "Ez dago propietaterik argazkian."
 
 #: view/osii/admin/import/show.phtml:255
 msgid "No classes in snapshot."
-msgstr ""
+msgstr "Ez dago klaserik argazkian."
 
 #: view/osii/admin/import/show.phtml:261
 msgid "Prepare import is not available now."
-msgstr "La préparation de l’importation n’est pas possible actuellement."
+msgstr "Inportazio prestatzea ez dago eskuragarri orain."
 
 #: view/osii/admin/import/show.phtml:268
 msgid "Import actions"
-msgstr ""
+msgstr "Inportazio ekintzak"
 
 #: view/osii/admin/import/show.phtml:270 view/osii/admin/import/show.phtml:390
 #: view/osii/admin/import/show.phtml:397
 msgid "Snapshot"
-msgstr "Instantané"
+msgstr "Argazkia"
 
 #: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
 #, php-format
 msgid "Last completed: %s"
-msgstr "Dernier traité : %s"
+msgstr "Azkenekoz osatuta: %s"
 
 #: view/osii/admin/import/show.phtml:275 view/osii/admin/import/show.phtml:308
 #: view/osii/admin/import/show.phtml:347 view/osii/admin/import/show.phtml:351
 #: view/osii/admin/import/show.phtml:355 view/osii/admin/import/show.phtml:364
 msgid "[n/a]"
-msgstr "[sans objet]"
+msgstr ""
 
 #: view/osii/admin/import/show.phtml:281
 msgid "Take snapshot"
-msgstr "Prendre un instantané"
+msgstr "Egin argazkia"
 
 #: view/osii/admin/import/show.phtml:287
 msgid "Stop snapshot"
-msgstr "Arrêter l’instantané"
+msgstr "Gelditu argazkia"
 
 #: view/osii/admin/import/show.phtml:293 view/osii/admin/import/show.phtml:326
 msgid "Refresh status"
-msgstr "Actualiser l’état"
+msgstr "Freskatu egoera"
 
 #: view/osii/admin/import/show.phtml:296 view/osii/admin/import/show.phtml:329
 msgid "View job"
-msgstr "Voir la tâche"
+msgstr "Ikusi lana"
 
 #: view/osii/admin/import/show.phtml:314
 msgid "Import snapshot"
-msgstr "Importer un instantané"
+msgstr "Inportatu argazkia"
 
 #: view/osii/admin/import/show.phtml:320
 msgid "Stop import"
-msgstr "Arrêter l’importation"
+msgstr "Gelditu inportazioa"
 
 #: view/osii/admin/import/show.phtml:333
 msgid "View media"
-msgstr ""
+msgstr "Ikusi multimedia"
 
 #: view/osii/admin/import/show.phtml:334
 msgid "View item sets"
-msgstr ""
+msgstr "Ikusi elementu multzoak"
 
 #: view/osii/admin/import/show.phtml:340
 msgid "Import metadata"
-msgstr "Importer les métadonnées"
+msgstr "Inportazio metadatua"
 
 #: view/osii/admin/import/show.phtml:350
 msgid "Key identity"
-msgstr "Identité de la clé"
+msgstr "Kode identitatea"
 
 #: view/osii/admin/import/show.phtml:354
 msgid "Key credential"
-msgstr "Certificat de la clé"
+msgstr "Kode kredentziala"
 
 #: view/osii/admin/import/show.phtml:358
 msgid "Import label"
-msgstr ""
+msgstr "Inportatu etiketa"
 
 #: view/osii/admin/import/show.phtml:367
 msgid "Exclude media"
-msgstr ""
+msgstr "Baztertu multimedia"
 
 #: view/osii/admin/import/show.phtml:368 view/osii/admin/import/show.phtml:372
 #: view/osii/admin/import/show.phtml:376 view/osii/admin/import/show.phtml:384
 msgid "[yes]"
-msgstr ""
+msgstr "[bai]"
 
 #: view/osii/admin/import/show.phtml:368 view/osii/admin/import/show.phtml:372
 #: view/osii/admin/import/show.phtml:376 view/osii/admin/import/show.phtml:380
 #: view/osii/admin/import/show.phtml:384
 msgid "[no]"
-msgstr ""
+msgstr "[ez]"
 
 #: view/osii/admin/import/show.phtml:371
 msgid "Exclude item sets"
-msgstr ""
+msgstr "Baztertu elementu multzoak"
 
 #: view/osii/admin/import/show.phtml:375
 msgid "Keep removed resources"
-msgstr ""
+msgstr "Mantendu kendutako baliabideak"
 
 #: view/osii/admin/import/show.phtml:379
 msgid "Add remote site URL"
-msgstr ""
+msgstr "Gehitu kanpoko atari helbidea"
 
 #: view/osii/admin/import/show.phtml:383
 msgid "Add remote resource URL"
-msgstr ""
+msgstr "Gehitu kanpoko baliabide helbidea"
 
 #: view/osii/admin/import/show.phtml:391
 msgid ""
@@ -294,10 +296,13 @@ msgid ""
 "gather the data needed to import the resources and reconcile the local "
 "installation with the remote one."
 msgstr ""
+"Egin kanpoko baliabideen uneko egoeraren argazkia. Honek baliabideak "
+"inportatu eta tokiko instalazioa urrunekoarekin bateratzeko behar diren "
+"datuak bilduko ditu."
 
 #: view/osii/admin/import/show.phtml:398
 msgid "Stop the currently running snapshot."
-msgstr "Arrêter l’instantané en cours."
+msgstr "Gelditu une honetan martxan dagoen argazkia."
 
 #: view/osii/admin/import/show.phtml:405
 msgid ""
@@ -309,86 +314,87 @@ msgstr ""
 
 #: view/osii/admin/import/show.phtml:412
 msgid "Stop the currently running import."
-msgstr "Arrêter l’importation en cours."
+msgstr "Gelditu une honetan martxan dagoen inportazioa."
 
 #: src/Api/Representation/OsiiImportRepresentation.php:382
 msgid "Not taken"
-msgstr "Pas pris"
+msgstr "Hartu gabe"
 
 #: src/Api/Representation/OsiiImportRepresentation.php:389
 msgid "Not imported"
-msgstr "Pas importé"
+msgstr "Inportatu gabe"
 
 #: src/Api/Adapter/OsiiImportAdapter.php:37
 msgid "Invalid local item set format passed in request."
-msgstr "La requête contenait un format de collection locale invalide."
+msgstr "Tokiko elementu multzo formatu desegokia bidali da eskaeran."
 
 #: src/Api/Adapter/OsiiImportAdapter.php:91
 msgid "An import must have a label"
-msgstr "Une importation doit avoir un nom"
+msgstr "Inportazioak etiketa eduki behar du"
 
 #: src/Api/Adapter/OsiiImportAdapter.php:94
 msgid "An import must have a valid root endpoint"
-msgstr "Une importation doit avoir une destination racine valide"
+msgstr "Inportazioak erro amaiera-puntu egokia eduki behar du"
 
 #: src/Api/Adapter/OsiiImportAdapter.php:97
 #: src/Api/Adapter/OsiiImportAdapter.php:98
 msgid "An import must have valid authentication"
-msgstr "Une importation doit avoir une authentification valide."
+msgstr "Inportazioak autentifikazio egokia eduki behar du"
 
 #: src/ViewHelper/Osii.php:155 src/ViewHelper/Osii.php:174
 msgid "[Not mapped]"
-msgstr "[Non mappé]"
+msgstr "[Mapaketarik ez]"
 
 #: src/Form/DoImportForm.php:14
 msgid "Confirm import snapshot"
-msgstr "Confirmer l’importation de l’instantané"
+msgstr "Baieztatu argazki inportazioa"
 
 #: src/Form/StopImportForm.php:14
 msgid "Confirm stop import snapshot"
-msgstr "Confirmer l’arrêt de l’importation de l’instantané"
+msgstr "Baieztatu argazki inportazioa gelditzea"
 
 #: src/Form/DoSnapshotForm.php:14
 msgid "Confirm take snapshot"
-msgstr "Confirmer la prise de l’instantané"
+msgstr "Baieztatu argazkia ateratzea"
 
 #: src/Form/StopSnapshotForm.php:14
 msgid "Confirm stop snapshot"
-msgstr "Confirmer l’arrêt de l’instantané"
+msgstr "Baieztatu argazkia geratzea"
 
 #: src/Form/ImportForm.php:19
 msgid "Enter the label of this import."
-msgstr "Indiquer le nom de cette importation."
+msgstr "Sartu inportazio honen etiketa"
 
 #: src/Form/ImportForm.php:30
 msgid "Enter the root endpoint of the API."
-msgstr "Indiquer la destination racine de l’API."
+msgstr "Sartu APIaren amaiera-puntuaren erroa."
 
 #: src/Form/ImportForm.php:41
 msgid ""
 "Enter the query used to filter the items to be imported. If no query is "
 "entered, all available items will be imported."
 msgstr ""
+"Sartu inportatu beharreko elementuak iragazteko erabiliko den kontsulta. Ez "
+"bada kontsultarik zehazten, eskuragarri dauden elementu guztiak inportatuko "
+"dira."
 
 #: src/Form/ImportForm.php:52
 msgid "Enter the key_identity used to authenticate the API user."
 msgstr ""
-"Indiquer le champ key_identity utilisé pour authentifier l’utilisateur dans "
-"l’API."
+"Sartu API erabiltzailea autentifikatzeko erabiltzeko key_identify balioa."
 
 #: src/Form/ImportForm.php:63
 msgid "Enter the key_credential used to authenticate the API user."
 msgstr ""
-"Indiquer le champ key_credential utilisé pour authentifier l’utilisateur "
-"dans l’API."
+"Sartu API erabiltzailea autentifikatzeko erabiltzeko key_credential balioa."
 
 #: src/Form/ImportForm.php:74
 msgid "Select the item set to which imported items will be assigned."
-msgstr ""
+msgstr "Sartu inportatutako elementuak lotuko diren elementu multzoa."
 
 #: src/Form/ImportForm.php:75
 msgid "Select an item set"
-msgstr "Choisir une collection"
+msgstr "Hautatu elementu multzoa"
 
 #: src/Form/ImportForm.php:87
 msgid ""
@@ -396,6 +402,10 @@ msgid ""
 "will be imported as normal. Note that, after switching this option, you must"
 " take a snapshot and then import or changes will not take effect."
 msgstr ""
+"Klikatu hau inportazioak multimediak baztertzea nahi baduzu. Ez badago "
+"aukeratuta, multimedia normal inportatuko da. Kontutan izan, aukera hau "
+"aldatu ostean, argazki bat atera beharko zenukeela eta ondoren inportatu edo"
+" aldaketak ez du eraginik izango."
 
 #: src/Form/ImportForm.php:98
 msgid ""
@@ -403,6 +413,10 @@ msgid ""
 " sets will be imported as normal. Note that, after switching this option, "
 "you must take a snapshot and then import or changes will not take effect."
 msgstr ""
+"Klikatu hau inportazioak elementu multzoak baztertzea nahi baduzu. Ez badago"
+" aukeratuta, multimedia multzoak normal inportatuko dira. Kontutan izan, "
+"aukera hau aldatu ostean, argazki bat atera beharko zenukeela eta ondoren "
+"inportatu edo aldaketak ez du eraginik izango."
 
 #: src/Form/ImportForm.php:109
 msgid ""
@@ -411,6 +425,11 @@ msgid ""
 "locally but will no longer be managed by this import. If not checked, "
 "removed resources will be deleted locally as normal."
 msgstr ""
+"Aukeratu hau, inportazio garaian, urruneko argazkitik ezabatuak izan diren "
+"tokiko baliabideak mantendu nahi badituzu. Aukeratuta, ezabatuta baliabideak"
+" lokalki mantenduko dira baina ez ditu gehiago inportazio honek kudeatuko. "
+"Ez badago aukeratuta, ezabatutako baliabideak tokiko instalazioan ere "
+"ezabatuko dira modu normalean."
 
 #: src/Form/ImportForm.php:120
 msgid ""
@@ -428,24 +447,24 @@ msgstr ""
 
 #: src/Controller/Admin/ImportController.php:47
 msgid "Import successfully added."
-msgstr "L’importation a bien été ajoutée."
+msgstr "Inportazioa ongi gehitu da."
 
 #: src/Controller/Admin/ImportController.php:140
 msgid "Taking snapshot. This may take a while."
-msgstr "Copie instantanée en cours. Cela peut prendre un moment."
+msgstr "Argazkia ateratzen. Honek denbora iraun dezake."
 
 #: src/Controller/Admin/ImportController.php:154
 msgid "Stopping snapshot."
-msgstr "Arrêt de la copie instantanée en cours."
+msgstr "Argazkia geratzen."
 
 #: src/Controller/Admin/ImportController.php:171
 msgid "Importing. This may take a while."
-msgstr "Importation en cours. Cela peut prendre un moment."
+msgstr "Inportatzen. Honek denbora iraun dezake."
 
 #: src/Controller/Admin/ImportController.php:185
 msgid "Stopping import."
-msgstr "Arrêt de l’importation en cours."
+msgstr "Inportazioa geratzen."
 
 #: src/Controller/Admin/ImportController.php:200
 msgid "Import successfully deleted."
-msgstr "L’importation a bien été supprimée."
+msgstr "Inportazioa ongi ezabatu da."
