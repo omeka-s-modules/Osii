@@ -1,6 +1,8 @@
 <?php
 namespace Osii\Job;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Omeka\Entity\Job as JobEntity;
 use Omeka\Job\AbstractJob;
 use Osii\Entity as OsiiEntity;
 
@@ -13,6 +15,16 @@ abstract class AbstractOsiiJob extends AbstractJob
     protected $importEntity;
 
     protected $logger;
+
+    protected $originalIdentityMap;
+
+    public function __construct(JobEntity $job, ServiceLocatorInterface $serviceLocator)
+    {
+        parent::__construct($job, $serviceLocator);
+        // Set the original identity map so we have a snapshot of the original
+        // state of the entity manager.
+        $this->originalIdentityMap = $this->getEntityManager()->getUnitOfWork()->getIdentityMap();
+    }
 
     /**
      * Get the API manager.
@@ -170,9 +182,23 @@ abstract class AbstractOsiiJob extends AbstractJob
      */
     public function flushClear()
     {
-        $this->getEntityManager()->flush();
-        $this->getEntityManager()->clear();
-        // Merge the Job entity as managed so logging works as expected.
-        $this->getEntityManager()->merge($this->job);
+        $entityManager = $this->getEntityManager();
+
+        // Flush the entity manager to persist changes.
+        $entityManager->flush();
+
+        // Detach entities that were *not* part of the original state of the
+        // entity manager to avoid reaching the memory limit. Do this instead of
+        // explicitly clearing the entity manager to avoid the uncommon but
+        // irksome "A new entity was found" Doctrine errors.
+        $unitOfWork = $entityManager->getUnitOfWork();
+        $identityMap = $unitOfWork->getIdentityMap();
+        foreach ($identityMap as $entityClass => $entities) {
+            foreach ($entities as $idHash => $entity) {
+                if (!isset($this->originalIdentityMap[$entityClass][$idHash])) {
+                    $entityManager->detach($entity);
+                }
+            }
+        }
     }
 }
