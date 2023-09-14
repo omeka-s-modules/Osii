@@ -1,6 +1,7 @@
 <?php
 namespace Osii\Job;
 
+use Composer\Semver\Comparator;
 use DateTime;
 use Laminas\Http\Client;
 use Omeka\Job\Exception;
@@ -16,9 +17,9 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotItems = [];
         $snapshotMedia = [];
         $snapshotItemSets = [];
-        $snapshotDataTypes = [];
         $snapshotMediaIngesters = [];
         $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
+        $snapshotDataTypes = $this->getSnapshotDataTypes($rootEndpoint);
         $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
         $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
         $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
@@ -87,7 +88,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $propertyId = $value['property_id'];
                     if (!isset($snapshotDataTypes[$dataTypeId])) {
                         $snapshotDataTypes[$dataTypeId] = [
-                            'label' => null, // Placeholder until data_types resource is available
+                            'label' => null,
                             'count' => 0,
                         ];
                     }
@@ -99,7 +100,7 @@ class DoSnapshot extends AbstractOsiiJob
                         $propertyId = $valueAnnotation['property_id'];
                         if (!isset($snapshotDataTypes[$dataTypeId])) {
                             $snapshotDataTypes[$dataTypeId] = [
-                                'label' => null, // Placeholder until data_types resource is available
+                                'label' => null,
                                 'count' => 0,
                             ];
                         }
@@ -181,7 +182,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $propertyId = $value['property_id'];
                     if (!isset($snapshotDataTypes[$dataTypeId])) {
                         $snapshotDataTypes[$dataTypeId] = [
-                            'label' => null, // Placeholder until data_types resource is available
+                            'label' => null,
                             'count' => 0,
                         ];
                     }
@@ -193,7 +194,7 @@ class DoSnapshot extends AbstractOsiiJob
                         $propertyId = $valueAnnotation['property_id'];
                         if (!isset($snapshotDataTypes[$dataTypeId])) {
                             $snapshotDataTypes[$dataTypeId] = [
-                                'label' => null, // Placeholder until data_types resource is available
+                                'label' => null,
                                 'count' => 0,
                             ];
                         }
@@ -275,7 +276,7 @@ class DoSnapshot extends AbstractOsiiJob
                     $propertyId = $value['property_id'];
                     if (!isset($snapshotDataTypes[$dataTypeId])) {
                         $snapshotDataTypes[$dataTypeId] = [
-                            'label' => null, // Placeholder until data_types resource is available
+                            'label' => null,
                             'count' => 0,
                         ];
                     }
@@ -287,7 +288,7 @@ class DoSnapshot extends AbstractOsiiJob
                         $propertyId = $valueAnnotation['property_id'];
                         if (!isset($snapshotDataTypes[$dataTypeId])) {
                             $snapshotDataTypes[$dataTypeId] = [
-                                'label' => null, // Placeholder until data_types resource is available
+                                'label' => null,
                                 'count' => 0,
                             ];
                         }
@@ -303,7 +304,10 @@ class DoSnapshot extends AbstractOsiiJob
             }
         }
 
-        // Remove extraneous properties, classes, and templates.
+        // Remove extraneous data types, properties, classes, and templates.
+        $snapshotDataTypes = array_filter($snapshotDataTypes, function ($dataType) {
+            return $dataType['count'];
+        });
         $snapshotProperties = array_filter($snapshotProperties, function ($property) {
             return $property['count'];
         });
@@ -343,6 +347,33 @@ class DoSnapshot extends AbstractOsiiJob
             $remoteResource = $resourceMapper->prepareResource($remoteResource);
         }
         return $remoteResource;
+    }
+
+    /**
+     * Set all remote data types.
+     *
+     * @param string $rootEndpoint
+     * @return array
+     */
+    public function getSnapshotDataTypes($rootEndpoint)
+    {
+        $snapshotDataTypes = [];
+        // Note that the data_types resource was not available until v3.2.0.
+        if (!Comparator::greaterThanOrEqualTo($this->getRemoteVersion(), '3.2.0')) {
+            return $snapshotDataTypes;
+        }
+        // Note that the data_types endpoint does not paginate, so there's no
+        // need to iterate pages.
+        $endpoint = sprintf('%s/data_types', $rootEndpoint);
+        $client = $this->getApiClient($endpoint);
+        $dataTypes = $this->getApiOutput($client, []);
+        foreach ($dataTypes as $dataType) {
+            $snapshotDataTypes[$dataType['o:id']] = [
+                'label' => $dataType['o:label'],
+                'count' => 0,
+            ];
+        }
+        return $snapshotDataTypes;
     }
 
     /**
@@ -501,5 +532,25 @@ class DoSnapshot extends AbstractOsiiJob
         }
         $output = json_decode($response->getBody(), true);
         return $output;
+    }
+
+    /**
+     * Get the version of the remote Omeka installation.
+     *
+     * @return string
+     */
+    public function getRemoteVersion()
+    {
+        $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
+        $client = $this->getApiClient($endpoint);
+        $response = $client->send();
+        if (!$response->isSuccess()) {
+            throw new Exception\RuntimeException(sprintf('Cannot resolve API endpoint: %s', $endpoint));
+        }
+        $versionHeader = $response->getHeaders()->get('omeka-s-version');
+        if (!$versionHeader) {
+            throw new Exception\RuntimeException(sprintf('Not an Omeka S endpoint: %s', $endpoint));
+        }
+        return $versionHeader->getFieldValue();
     }
 }

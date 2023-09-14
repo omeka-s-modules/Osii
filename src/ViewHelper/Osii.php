@@ -141,7 +141,7 @@ class Osii extends AbstractHelper
             $dataType = $dataTypes->get($dataTypeId);
             $localDataTypes[] = [
                 'value' => $dataTypeId,
-                'label' => $dataTypeId,
+                'label' => sprintf('%s — %s', $dataTypeId, $dataType->getLabel()),
                 'attributes' => [
                     'title' => $dataType->getLabel(),
                     'data-label' => $dataType->getLabel(),
