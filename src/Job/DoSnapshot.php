@@ -9,6 +9,8 @@ use Osii\Entity as OsiiEntity;
 
 class DoSnapshot extends AbstractOsiiJob
 {
+    protected $remoteVersion;
+
     public function perform()
     {
         ini_set('memory_limit', '500M'); // Set a high memory limit.
@@ -18,12 +20,11 @@ class DoSnapshot extends AbstractOsiiJob
         $snapshotMedia = [];
         $snapshotItemSets = [];
         $snapshotMediaIngesters = [];
-        $rootEndpoint = $this->getImportEntity()->getRootEndpoint();
-        $snapshotDataTypes = $this->getSnapshotDataTypes($rootEndpoint);
-        $snapshotProperties = $this->getSnapshotProperties($rootEndpoint);
-        $snapshotClasses = $this->getSnapshotClasses($rootEndpoint);
-        $snapshotVocabularies = $this->getSnapshotVocabularies($rootEndpoint);
-        $snapshotTemplates = $this->getSnapshotTemplates($rootEndpoint);
+        $snapshotDataTypes = $this->getSnapshotDataTypes();
+        $snapshotProperties = $this->getSnapshotProperties();
+        $snapshotClasses = $this->getSnapshotClasses();
+        $snapshotVocabularies = $this->getSnapshotVocabularies();
+        $snapshotTemplates = $this->getSnapshotTemplates();
 
         // Iterate remote items.
         $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
@@ -352,10 +353,9 @@ class DoSnapshot extends AbstractOsiiJob
     /**
      * Set all remote data types.
      *
-     * @param string $rootEndpoint
      * @return array
      */
-    public function getSnapshotDataTypes($rootEndpoint)
+    public function getSnapshotDataTypes()
     {
         $snapshotDataTypes = [];
         // Note that the data_types resource was not available until v3.2.0.
@@ -364,7 +364,7 @@ class DoSnapshot extends AbstractOsiiJob
         }
         // Note that the data_types endpoint does not paginate, so there's no
         // need to iterate pages.
-        $endpoint = sprintf('%s/data_types', $rootEndpoint);
+        $endpoint = sprintf('%s/data_types', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $dataTypes = $this->getApiOutput($client, []);
         foreach ($dataTypes as $dataType) {
@@ -379,12 +379,11 @@ class DoSnapshot extends AbstractOsiiJob
     /**
      * Set all remote properties.
      *
-     * @param string $rootEndpoint
      * @return array
      */
-    public function getSnapshotProperties($rootEndpoint)
+    public function getSnapshotProperties()
     {
-        $endpoint = sprintf('%s/properties', $rootEndpoint);
+        $endpoint = sprintf('%s/properties', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
@@ -410,12 +409,11 @@ class DoSnapshot extends AbstractOsiiJob
     /**
      * Set all remote classes.
      *
-     * @param string $rootEndpoint
      * @return array
      */
-    public function getSnapshotClasses($rootEndpoint)
+    public function getSnapshotClasses()
     {
-        $endpoint = sprintf('%s/resource_classes', $rootEndpoint);
+        $endpoint = sprintf('%s/resource_classes', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
@@ -441,12 +439,11 @@ class DoSnapshot extends AbstractOsiiJob
     /**
      * Set all remote vocabularies.
      *
-     * @param string $rootEndpoint
      * @return array
      */
-    public function getSnapshotVocabularies($rootEndpoint)
+    public function getSnapshotVocabularies()
     {
-        $endpoint = sprintf('%s/vocabularies', $rootEndpoint);
+        $endpoint = sprintf('%s/vocabularies', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
@@ -470,12 +467,11 @@ class DoSnapshot extends AbstractOsiiJob
     /**
      * Set all remote templates.
      *
-     * @param string $rootEndpoint
      * @return array
      */
-    public function getSnapshotTemplates($rootEndpoint)
+    public function getSnapshotTemplates()
     {
-        $endpoint = sprintf('%s/resource_templates', $rootEndpoint);
+        $endpoint = sprintf('%s/resource_templates', $this->getImportEntity()->getRootEndpoint());
         $client = $this->getApiClient($endpoint);
         $query['per_page'] = 50;
         $query['page'] = 1;
@@ -541,16 +537,19 @@ class DoSnapshot extends AbstractOsiiJob
      */
     public function getRemoteVersion()
     {
-        $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
-        $client = $this->getApiClient($endpoint);
-        $response = $client->send();
-        if (!$response->isSuccess()) {
-            throw new Exception\RuntimeException(sprintf('Cannot resolve API endpoint: %s', $endpoint));
+        if (null === $this->remoteVersion) {
+            $endpoint = sprintf('%s/items', $this->getImportEntity()->getRootEndpoint());
+            $client = $this->getApiClient($endpoint);
+            $response = $client->send();
+            if (!$response->isSuccess()) {
+                throw new Exception\RuntimeException(sprintf('Cannot resolve API endpoint: %s', $endpoint));
+            }
+            $versionHeader = $response->getHeaders()->get('omeka-s-version');
+            if (!$versionHeader) {
+                throw new Exception\RuntimeException(sprintf('Not an Omeka S endpoint: %s', $endpoint));
+            }
+            $this->remoteVersion = $versionHeader->getFieldValue();
         }
-        $versionHeader = $response->getHeaders()->get('omeka-s-version');
-        if (!$versionHeader) {
-            throw new Exception\RuntimeException(sprintf('Not an Omeka S endpoint: %s', $endpoint));
-        }
-        return $versionHeader->getFieldValue();
+        return $this->remoteVersion;
     }
 }
