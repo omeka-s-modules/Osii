@@ -89,7 +89,11 @@ echo $this->sectionNav([
         <?php foreach ($remoteDataTypes as $remoteDataTypeId => $remoteDataType): ?>
             <tr>
                 <td>
+                    <?php if ($remoteDataType['label']): ?>
+                    <?php echo sprintf('%s — %s', $remoteDataTypeId, $remoteDataType['label']); ?>
+                    <?php else: ?>
                     <?php echo $remoteDataTypeId; ?>
+                    <?php endif; ?>
                     <input type="hidden"
                         name="<?php echo $this->escapeHtml(sprintf('data_type_map[%s][remote]', $index)); ?>"
                         value="<?php echo $this->escapeHtml($remoteDataTypeId); ?>">
