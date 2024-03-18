@@ -22,6 +22,7 @@ return [
         'factories' => [
             MediaIngesterMapper\Html::class => MediaIngesterMapperFactory::class,
             MediaIngesterMapper\Iiif::class => MediaIngesterMapperFactory::class,
+            MediaIngesterMapper\IiifPresentation::class => MediaIngesterMapperFactory::class,
             MediaIngesterMapper\Oembed::class => MediaIngesterMapperFactory::class,
             MediaIngesterMapper\Youtube::class => MediaIngesterMapperFactory::class,
             MediaIngesterMapper\Upload::class => MediaIngesterMapperFactory::class,
@@ -30,6 +31,7 @@ return [
         'aliases' => [
             'html' => MediaIngesterMapper\Html::class,
             'iiif' => MediaIngesterMapper\Iiif::class,
+            'iiif_presentation' => MediaIngesterMapper\IiifPresentation::class,
             'oembed' => MediaIngesterMapper\Oembed::class,
             'youtube' => MediaIngesterMapper\Youtube::class,
             'upload' => MediaIngesterMapper\Upload::class,
